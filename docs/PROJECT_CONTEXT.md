@@ -1,36 +1,28 @@
 # Ecommerce Platform — Project Context & Architecture Guide
 
-> **Purpose of this document**
+> **Source of truth — updated 2026-09-22**
 >
-> This file is the project context for the developer/Codex. Read this before creating or changing application code. It explains what this ecommerce platform is, who uses it, what each page/module does, how data moves, and the current business rules.
->
-> **Current source of truth:** this document reflects the latest project decisions made for the current build. Do not reintroduce older ideas such as marketplace tenants, Cashfree Easy Split, COD, offline orders, draft orders, direct Admin withdrawals, platform/market/marketing fees, or public Admin registration unless the project owner explicitly changes the plan.
+> Read this file before creating or changing application code. New implementation must follow this document unless the project owner explicitly changes a decision.
 
----
+## 1. Product
 
-# 1. Project Overview
-
-## 1.1 What are we building?
-
-A **single-tenant full-stack ecommerce platform** built as one Next.js application.
-
-The platform has three user areas:
+A **single-tenant full-stack ecommerce platform** with three user areas:
 
 ```text
 CUSTOMER
-   ↓
-Normal ecommerce website
+  ↓
+Storefront
 
 ADMIN
-   ↓
+  ↓
 Internal seller / store operator
 
 SUPER ADMIN
-   ↓
+  ↓
 Platform owner / controller
 ```
 
-One project, one website, different paths:
+Routes:
 
 ```text
 Customer      → /
@@ -38,411 +30,167 @@ Admin         → /admin
 Super Admin   → /super-admin
 ```
 
-## 1.2 Main technology stack
+There is one codebase/repository, but deployment is intentionally split inside the same project boundary:
 
-- Next.js (App Router)
+```text
+Next.js static storefront
+        ↓
+Cloudflare Pages
+
+Cloudflare Pages Functions
+        ↓
+Backend API + Auth + Webhooks
+        ↓
+Neon PostgreSQL
+```
+
+## 2. Locked business decisions
+
+- Single-tenant ecommerce.
+- One Super Admin platform owner.
+- Admins are internal sellers/store operators.
+- No public Admin registration.
+- Customer online payment only.
+- COD disabled.
+- Customer payment uses **Cashfree Payment Gateway**.
+- Admins do not own Cashfree merchant accounts.
+- No Cashfree Easy Split.
+- Admins cannot directly withdraw customer money.
+- Admins can submit payout requests only.
+- Super Admin reviews and pays Admins, using Cashfree Payouts or an approved manual payment process.
+- Super Admin records payout reference, method, amount, proof, date/time and status.
+- Super Admin revenue term is **Commission**.
+- Do not use `Platform Fee`, `Market Fee`, `Marketing Fee`, or `Approved Fee`.
+- `Payment Gateway Fee` is a configurable deduction controlled by Super Admin.
+- `Refund Adjustment` can reduce Admin payable revenue.
+- Admin UI is permission-driven.
+- Backend APIs enforce the same permissions; hiding a UI control is never security.
+- Super Admin can enter an Admin page through controlled Admin Access / Impersonation.
+- Impersonation has a reason, temporary session, visible mode indicator and audit trail. Actions must record the real actor as Super Admin.
+- Admin deletion requires verification and Super Admin approval.
+- Deleted Admin public products are hidden from the storefront; required financial/order history is retained/archived.
+- Recovery requires Super Admin approval.
+- Customer Management is available to Admin and Super Admin, with different permission scope.
+- Admin may view permitted customer details/order metrics and send customer messages/offers only when the permission exists.
+- Super Admin has platform-wide customer visibility and management.
+
+## 3. Final technology stack
+
+### Frontend
+
+- Next.js App Router
 - TypeScript
-- PostgreSQL
-- Drizzle ORM
-- Better Auth
-- Cashfree Payment Gateway
-- Cashfree Payouts / approved manual payment workflow
-- Resend
-- Cloudinary / GCS
 - Tailwind CSS
 - shadcn/ui
+- Zod
+- React Hook Form
+- Zustand only where client state is actually needed
 
-## 1.3 Main business model
+### Static hosting / SEO
 
-- Single-tenant ecommerce platform.
-- Super Admin owns and controls platform.
-- Admins are internal sellers/store operators.
-- Customers buy products online.
-- Customer payment goes to Super Admin's Cashfree Payment Gateway account.
-- Admin does not own a Cashfree merchant account.
-- Admin does not directly receive customer payment.
-- Admin cannot directly withdraw money.
-- Admin can request payout.
-- Super Admin manually processes Admin payment and records proof/reference/time/status.
-- Admin sees earnings and settlement history.
-- Super Admin earns the configured **Commission** from Admin sales.
-- **Payment Gateway Fee** is configured by Super Admin and shown to Admin as a deduction.
-- **Refund Adjustment** may reduce Admin payable revenue when applicable.
-- COD is disabled.
-- Offline Purchase / Draft Order is removed from the project.
-- There is no Cashfree Easy Split in the current plan.
-- Admin UI is controlled by Roles & Permissions.
-- Super Admin can enter an Admin dashboard using controlled Admin Access / Impersonation, after recording a reason/notification, and all actions must be audited.
+- **Cloudflare Pages** for the Next.js static export.
+- Next.js uses `output: "export"`.
+- Static output directory: `out`.
+- Public, crawlable pages are pre-rendered to HTML.
+- Customer private pages and Admin/Super Admin dashboards are not SEO targets.
 
----
+### Backend runtime
 
-# 2. Core Roles
+- **Cloudflare Pages Functions** for `/api/*` and server-side work.
+- Hono is allowed for routing.
+- Better Auth runs in the backend runtime.
+- Cashfree webhooks run in the backend runtime.
+- R2 upload/signing/protected media logic runs server-side.
+- Never put secrets in Next.js client code.
 
-## 2.1 Customer
+### Database
 
-Customer is the buyer.
+- **Neon PostgreSQL**.
+- Drizzle ORM.
+- `@neondatabase/serverless` for Cloudflare/serverless compatibility.
+- Do not use the Node `pg` driver in the deployed Cloudflare runtime.
 
-Customer can:
+### Authentication
 
-- Browse products
-- Search products
-- Filter and sort products
-- View product details
-- Add products to cart
-- Manage wishlist
-- Checkout
-- Pay online through Cashfree
-- View own orders
-- Track orders
-- Cancel/return/refund when eligible
-- View invoice
-- Write reviews
-- Receive notifications
-- Contact support
-- Manage profile and addresses
-- Request account deletion
+- Better Auth.
+- Customer: **Google OAuth** as the primary requested login method. Email/password can remain available only if explicitly enabled later.
+- Admin: email + password, invitation/setup flow.
+- Super Admin: email + password; add stronger controls such as 2FA before production.
+- Passwords are **hashed, not encrypted**. Better Auth currently uses `scrypt` by default. Do not implement plaintext or reversible password storage.
 
-Customer must only access their own account and their own orders.
+### Media
 
----
+- **Cloudflare R2** for product images, review images, proof files and other media.
+- Cloudinary is removed from the stack.
+- Do not store image binaries in PostgreSQL.
+- Store R2 object keys and metadata in PostgreSQL.
 
-## 2.2 Admin
+### Email
 
-Admin is an **internal seller/store operator**.
+- **Resend** for transactional email.
+- Use it for admin invitations, verification, password reset, customer messages/offers, order notifications, payout notifications and system alerts.
 
-Admin can:
+### Payments
 
-- Manage assigned products
-- Manage assigned inventory
-- Manage online orders related to assigned products
-- Manage reviews for assigned products
-- View sales and analytics
-- View earnings
-- View deductions
-- View Net Payable
-- Request payout
-- View payout/settlement status
-- View payment proof/reference after Super Admin marks payment as paid
-- Use support
-- View their recent activity
-- Request account deletion
+- Cashfree Payment Gateway for customer collection.
+- Cashfree Payouts may be used by Super Admin for Admin settlement.
 
-Admin cannot:
+### Source control / deployment
 
-- Create a Cashfree merchant account
-- Receive customer payments directly
-- Withdraw money directly
-- Execute payout directly
-- Change Commission
-- Change Payment Gateway Fee
-- Access other Admin data unless explicitly granted by platform permissions/access
-- Create offline orders
-- Create draft orders
+- GitHub.
+- Cloudflare Pages connected to GitHub.
+- Production branch: `main`.
+- Preview deployments from feature/PR branches.
 
----
+## 4. IMPORTANT architecture correction: SSG is not the backend
 
-## 2.3 Super Admin
+Do **not** build the backend so that it "creates SEO HTML".
 
-Super Admin is the **platform owner/controller**.
-
-Super Admin does not work as a daily seller.
-
-Super Admin can:
-
-- Create and manage Admin accounts
-- Send Admin account setup email
-- Manage Admin status
-- Create roles
-- Create/manage permissions
-- Assign roles/permissions to Admins
-- Control which Admin UI/modules are visible
-- Enter Admin page using controlled Admin Access / Impersonation
-- Edit/update Admin-side data with elevated authority when needed
-- Manage Commission
-- Manage Payment Gateway Fee
-- Review Admin payout requests
-- Manually pay Admin
-- Record payment proof, reference, date/time, and status
-- Manage platform finance
-- Review platform-wide analytics
-- Manage platform payment configuration
-- Manage platform settings
-- Manage refunds/disputes/exceptions
-- Manage account recovery/deletion approvals
-- View audit/activity logs
-- Manage platform content/notifications
-
-Super Admin should not be designed as a normal seller operator.
-
----
-
-# 3. Route Architecture
+Correct model:
 
 ```text
-src/app/
-│
-├── (customer)/
-│   └── ...
-│
-├── admin/
-│   └── ...
-│
-├── super-admin/
-│   └── ...
-│
-└── api/
-    ├── customer/
-    ├── admin/
-    ├── super-admin/
-    └── webhooks/
-        └── cashfree/
+Backend API / Neon
+      ↓
+Next.js build-time data fetch
+      ↓
+Next.js generates HTML
+      ↓
+Cloudflare Pages serves HTML
 ```
 
-The `(customer)` route group is organizational only, so:
+The backend remains responsible for data, auth, business rules, payments and writes. Next.js is responsible for rendering the public storefront HTML.
+
+A pure static export has an important limitation: product pages are generated from the data available at build time. A price/availability/catalog change does not magically rewrite already-generated HTML. Therefore the system must have a rebuild strategy.
+
+Recommended rebuild flow:
 
 ```text
-src/app/(customer)/page.tsx → /
-src/app/(customer)/products → /products
+Super Admin edits product
+        ↓
+Backend writes Neon
+        ↓
+Backend triggers secure Cloudflare Pages Deploy Hook
+        ↓
+Next.js rebuild
+        ↓
+New product/category HTML generated
 ```
 
-There is no `/customer` URL.
+Use rebuilds for SEO/catalog/content changes, not for every order or stock change.
 
----
+For rapidly changing fields such as exact live stock, checkout price and payment amount, the backend remains the source of truth. Never trust the static HTML value for transactional decisions.
 
-# 4. Customer Frontend Pages / Modules
+## 5. SEO rules
 
-## 4.1 Home
-
-Route:
+Public SEO pages:
 
 ```text
 /
-```
-
-Shows:
-
-- Header
-- Search
-- Categories
-- Banners
-- Collections
-- Offers
-- Featured/new/trending products
-- Product suggestions
-- Footer
-
-## 4.2 Authentication
-
-Routes:
-
-```text
-/login
-/register
-/forgot-password
-/reset-password
-/verify
-```
-
-Functions:
-
-- Login
-- Register
-- Logout
-- Session
-- Password reset
-- Verification
-
-## 4.3 Product Discovery
-
-Routes:
-
-```text
 /products
+/products/[slug]
 /categories/[slug]
 /collections/[slug]
-/search
-```
-
-Functions:
-
-- Browse products
-- Categories
-- Brands
-- Filters
-- Sorting
-- Pagination
-- Search suggestions
-- Related products
-
-## 4.4 Product Details
-
-Route:
-
-```text
-/products/[slug]
-```
-
-Shows:
-
-- Product info
-- Images
-- Variants
-- Price
-- Availability
-- Seller information
-- Reviews
-- Related products
-- Add to cart
-- Wishlist
-
-## 4.5 Wishlist
-
-Route:
-
-```text
-/account/wishlist
-```
-
-Functions:
-
-- Add
-- Remove
-- View
-- Move to cart
-
-## 4.6 Cart
-
-Route:
-
-```text
-/cart
-```
-
-Functions:
-
-- Add item
-- Update quantity
-- Remove item
-- Show subtotal
-- Validate stock/price server-side
-- Start checkout
-
-## 4.7 Checkout
-
-Route:
-
-```text
-/checkout
-```
-
-Functions:
-
-- Customer details
-- Address
-- Shipping
-- Coupon
-- Order summary
-- Final amount
-- Start payment
-
-## 4.8 Payment
-
-Routes:
-
-```text
-/payment
-/payment/success
-/payment/failed
-```
-
-Rules:
-
-- Cashfree Payment Gateway only for online customer payment
-- COD disabled
-- Backend verifies payment
-- Frontend payment success is not the final authority
-
-## 4.9 Orders
-
-Routes:
-
-```text
-/orders
-/orders/[id]
-```
-
-Customer can:
-
-- View order
-- View items
-- See payment status
-- Track shipment
-- Cancel when eligible
-- Return when eligible
-- View refund status
-- View invoice
-
-## 4.10 Reviews
-
-Customer can:
-
-- View reviews
-- Write review
-- Upload review image
-- Edit/delete review when allowed
-
-Backend should verify purchase eligibility.
-
-## 4.11 Notifications
-
-Shows:
-
-- Order updates
-- Payment updates
-- Shipping updates
-- Delivery updates
-- Refund updates
-- Promotional/system notifications
-
-## 4.12 Support
-
-Routes/pages:
-
-```text
-/contact
-/account/support
-```
-
-Functions:
-
-- Contact message
-- Support ticket
-- Support messages
-- FAQ/help
-
-## 4.13 Account
-
-Route:
-
-```text
-/account
-```
-
-Contains:
-
-- Profile
-- Addresses
-- Wishlist
-- Orders
-- Notifications
-- Security
-- Delete account
-
-## 4.14 Content / CMS pages
-
-Examples:
-
-```text
+/search (indexability policy must be deliberate)
 /about
 /faq
 /terms
@@ -451,948 +199,95 @@ Examples:
 /return-policy
 ```
 
----
-
-# 5. Customer Backend Modules
+Private/non-index pages:
 
 ```text
-modules/
-├── auth/
-├── customer/
-├── catalog/
-├── categories/
-├── brands/
-├── search/
-├── cart/
-├── checkout/
-├── shipping/
-├── coupons/
-├── orders/
-├── payments/
-├── refunds/
-├── reviews/
-├── notifications/
-├── support/
-├── media/
-├── cms/
-└── analytics/
+/account/*
+/cart
+/checkout
+/payment/*
+/orders/*
+/admin/*
+/super-admin/*
 ```
 
-## Customer request pattern
-
-```text
-Customer UI
-   ↓
-Next.js API
-   ↓
-Authentication / Authorization
-   ↓
-Business Service
-   ↓
-Drizzle ORM
-   ↓
-PostgreSQL
-```
-
-## Customer purchase flow
-
-```text
-Customer enters website
-        ↓
-Home / Discovery
-        ↓
-Search / Browse
-        ↓
-Product Details
-        ↓
-Cart
-        ↓
-Checkout
-        ↓
-Address / Shipping
-        ↓
-Coupon / Final Price
-        ↓
-Create Order
-        ↓
-Cashfree Payment Gateway
-        ↓
-Payment Webhook / Verification
-        ↓
-Order = PAID / CONFIRMED
-        ↓
-Processing
-        ↓
-Shipped
-        ↓
-Out for Delivery
-        ↓
-Delivered
-        ↓
-Track / Invoice / Return / Refund / Review
-```
-
----
-
-# 6. Admin Frontend Pages / Modules
-
-Admin route:
-
-```text
-/admin
-```
-
-The Admin UI is **permission-driven**.
-
-## 6.1 Dashboard
-
-Shows:
-
-- Sales summary
-- Recent orders
-- Product summary
-- Inventory alerts
-- Earnings summary
-- Quick actions
-- Notifications
-
-## 6.2 Products
-
-Functions:
-
-- View assigned products
-- Add product
-- Edit product
-- Delete product
-- Manage variants
-- Manage images
-- Set price/availability
-
-## 6.3 Inventory
-
-Functions:
-
-- Update stock
-- Stock history
-- Low-stock alerts
-- Variant stock
-- Inventory status
-
-## 6.4 Orders
-
-Only **online orders**.
-
-Functions:
-
-- View assigned online orders
-- View order details
-- Update allowed order status
-- Shipping/fulfillment
-- Handle eligible cancellation/returns/refunds according to permission
-
-**NO offline purchase module.**
-
-**NO draft order module.**
-
-## 6.5 Reviews
-
-Functions:
-
-- View reviews for assigned products
-- Respond
-- Moderate if permitted
-
-## 6.6 Analytics
-
-Shows Admin-only data:
-
-- Sales
-- Orders
-- Product performance
-- Revenue
-- Product performance
-- Reports
-
-## 6.7 Earnings & Payments
-
-Admin is view/request only for money.
-
-Show:
-
-```text
-Gross Product Sales
-- Commission
-- Payment Gateway Fee
-- Refund Adjustment
-= Net Payable
-```
-
-Definitions:
-
-### Commission
-
-The configured amount retained by Super Admin from Admin sales.
-
-### Payment Gateway Fee
-
-Payment processing cost configured/updated by Super Admin; Admin can only view it.
-
-### Refund Adjustment
-
-Amount deducted when a refund affects the Admin's revenue.
-
-### Net Payable
-
-The amount the Admin is currently eligible to request as payout.
-
-Admin cannot edit any of these deduction rules.
-
-## 6.8 Payout Request
-
-Admin can:
-
-- View eligible amount
-- Submit payout request
-- Add optional note
-- View request status
-- View settlement history
-
-Admin cannot:
-
-- Withdraw directly
-- Execute payout
-- Mark payout paid
-
-## 6.9 Notifications
-
-Shows:
-
-- Order updates
-- Payment updates
-- Payout updates
-- System notifications
-
-## 6.10 Support
-
-- Support tickets
-- Messages
-- Contact platform support
-
-## 6.11 Activity Logs
-
-Admin can see own recent activity:
-
-- Product changes
-- Inventory changes
-- Order changes
-- Review actions
-- Profile changes
-- Payout requests
-
-## 6.12 Account
-
-Functions:
-
-- Profile
-- Password/security
-- Settings
-- Request account deletion
-- Request recovery after deletion
-
----
-
-# 7. Admin Backend Modules
-
-```text
-modules/admin/
-├── admin-account/
-├── admin-management/
-├── admin-revenue/
-├── payout-requests/
-├── admin-recovery/
-└── admin-activity/
-```
-
-Shared business modules used by Admin:
-
-```text
-modules/
-├── catalog/
-├── inventory/
-├── orders/
-├── reviews/
-├── analytics/
-├── notifications/
-├── support/
-├── media/
-└── payments/
-```
-
-## Admin business flow
-
-```text
-Admin Login
-     ↓
-Authentication
-     ↓
-Role / Permission Check
-     ↓
-Admin Dashboard
-     ↓
-Products
-     ↓
-Inventory
-     ↓
-Online Orders
-     ↓
-Reviews
-     ↓
-Analytics
-     ↓
-Earnings
-     ↓
-Payout Request
-     ↓
-Super Admin Review
-     ↓
-Super Admin Payment
-     ↓
-Payment Proof + Reference + Time
-     ↓
-Admin sees PAID status
-```
-
----
-
-# 8. Admin Payment / Earnings Rules
-
-## 8.1 Customer payment
+Every indexable page must have:
+
+- Server-generated initial HTML.
+- Unique `<title>`.
+- Unique meta description where appropriate.
+- Canonical URL.
+- Correct heading structure.
+- Open Graph/Twitter metadata where useful.
+- Crawlable internal links.
+- Descriptive image `alt` text.
+- Valid sitemap.
+- Valid robots policy.
+- JSON-LD where relevant.
+- Product structured data in the **initial HTML**, not only client-side after hydration.
+- Product `name`, image, description, SKU/identifier when available, offers, price, currency and availability from trusted backend/build data.
+- Product variants represented correctly.
+- Breadcrumb structured data where useful.
+
+Do not use:
+
+- `noindex` accidentally on product/category pages.
+- JS-only rendering for essential product content.
+- Hidden keyword stuffing.
+- Duplicate URLs with conflicting canonicals.
+- Client-only product JSON-LD as the only source.
+
+## 6. Customer authentication rule
+
+Customer login:
 
 ```text
 Customer
   ↓
-Cashfree Payment Gateway
+Google OAuth
   ↓
-Super Admin Cashfree merchant account
+Better Auth
+  ↓
+Session cookie
+  ↓
+Customer APIs
 ```
 
-Admin does NOT receive this customer payment directly.
+Do not expose Google client secret to the browser.
 
-## 8.2 Earnings calculation
+OAuth callback belongs to the backend auth endpoint.
+
+## 7. Admin / Super Admin authentication rule
 
 ```text
-Gross Product Sales
-- Commission
-- Payment Gateway Fee
-- Refund Adjustment
-= Net Payable
+Admin / Super Admin
+      ↓
+Email + Password
+      ↓
+Better Auth
+      ↓
+Password hash stored in DB account record
+      ↓
+Session
+      ↓
+RBAC
+      ↓
+Protected APIs
 ```
 
-## 8.3 Payout process
+Passwords must never be:
+
+- stored as plaintext,
+- encrypted reversibly for later recovery,
+- placed in logs,
+- sent back to the frontend.
+
+Better Auth stores credential passwords in its account table and currently hashes them with `scrypt` by default.
+
+## 8. Core authorization flow
 
 ```text
-Admin requests payout
-        ↓
-Payout Request = PENDING
-        ↓
-Super Admin reviews
-        ↓
-Super Admin pays Admin
-        ↓
-Record amount/reference/method/date/time/proof
-        ↓
-Status = PAID
-        ↓
-Admin sees settlement
-```
-
-## 8.4 Admin payout statuses
-
-Recommended business statuses:
-
-```text
-PENDING
-UNDER_REVIEW
-APPROVED
-PAID
-REJECTED
-FAILED
-CANCELLED
-```
-
----
-
-# 9. Super Admin Frontend Pages / Modules
-
-Route:
-
-```text
-/super-admin
-```
-
-Super Admin is a **platform-control panel**, not a seller dashboard.
-
-## 9.1 Dashboard
-
-Shows:
-
-- Total Admins
-- Active Admins
-- Pending Admin actions
-- Platform sales
-- Commission revenue
-- Payment Gateway Fee information
-- Pending payout requests
-- Paid settlements
-- Refunds
-- Recent activity
-
-## 9.2 Admin Management
-
-This is the main Admin lifecycle area.
-
-Functions:
-
-- Admin list
-- Add Admin
-- Create Admin
-- Edit Admin
-- Activate
-- Suspend
-- Block
-- View details
-- Send account setup email
-- View status
-
-There is no public Admin registration.
-
-## 9.3 Roles & Permissions
-
-Super Admin controls:
-
-- Roles
-- Permissions
-- Assign roles
-- Assign permissions
-- Admin access
-- UI module visibility
-
-### RBAC flow
-
-```text
-Super Admin
-    ↓
-Role
-    ↓
-Permissions
-    ↓
-Admin
-    ↓
-Effective Permissions
-    ↓
-Admin UI
-```
-
-Frontend:
-
-- Hide modules not granted.
-
-Backend:
-
-- Enforce the same permissions on every protected API.
-
-Never rely on UI hiding for security.
-
-## 9.4 Admin Access / Impersonation
-
-Super Admin can enter an Admin dashboard with elevated authority.
-
-Flow:
-
-```text
-Select Admin
-   ↓
-Record reason / send notification
-   ↓
-Start temporary access session
-   ↓
-Enter /admin experience
-   ↓
-View/Edit/Update as authorized
-   ↓
-Exit
-   ↓
-Audit log
-```
-
-Every action must preserve the real actor:
-
-```text
-actor = Super Admin
-acting_on_behalf_of = Admin
-access_mode = IMPERSONATION
-```
-
-The Admin page should visibly indicate Super Admin mode.
-
-## 9.5 Platform Finance
-
-Shows:
-
-- Platform revenue
-- Commission revenue
-- Payment Gateway Fee settings/info
-- Refund adjustments
-- Available platform balance
-- Withdrawal history
-
-## 9.6 Commission Management
-
-Super Admin controls commission.
-
-Use the term:
-
-```text
-Commission
-```
-
-Do NOT use:
-
-```text
-Platform Fee
-Market Fee
-Marketing Fee
-Approved Fee
-```
-
-## 9.7 Admin Payout Management
-
-Super Admin can:
-
-- View pending requests
-- Review Admin earnings
-- Approve/reject request
-- View payout destination
-- Manually pay Admin
-- Record payment reference
-- Upload proof
-- Record date/time
-- Mark PAID
-- View payout history
-
-## 9.8 Payment Gateway Settings
-
-Super Admin controls:
-
-- Cashfree Payment Gateway settings
-- Payment provider configuration
-- Payment Gateway Fee rule/configuration
-- Webhook monitoring
-- Reconciliation
-
-## 9.9 Analytics / Reports
-
-Platform-wide:
-
-- Sales
-- Revenue
-- Commission
-- Admin performance
-- Products
-- Orders
-- Payments
-- Payouts
-- Refunds
-
-## 9.10 Platform Settings
-
-- Payment settings
-- Commission settings
-- Payment Gateway Fee settings
-- Shipping
-- Tax
-- Notifications
-- Security
-- Platform configuration
-
-## 9.11 Activity Logs / Audit
-
-Super Admin can see:
-
-- Admin actions
-- Super Admin actions
-- Impersonation history
-- Role/permission changes
-- Payment actions
-- Payout actions
-- Refund actions
-- Settings changes
-- Security events
-
-## 9.12 Notifications
-
-- Admin notifications
-- Payment alerts
-- Payout alerts
-- System alerts
-- Announcements
-
-## 9.13 Platform Content / CMS
-
-- Homepage
-- Banners
-- Collections
-- FAQ
-- Policies
-- Announcements
-
-## 9.14 Admin Account Recovery
-
-Deletion approval and recovery approval.
-
----
-
-# 10. Super Admin Backend Modules
-
-```text
-modules/super-admin/
-├── admin-management/
-├── roles-permissions/
-├── admin-access/
-├── platform-finance/
-├── commission/
-├── payout-management/
-├── platform-settings/
-└── admin-recovery/
-```
-
-Shared modules:
-
-```text
-modules/
-├── orders/
-├── products/catalog/
-├── payments/
-├── refunds/
-├── analytics/
-├── notifications/
-├── support/
-├── cms/
-└── audit/
-```
-
----
-
-# 11. Super Admin Admin-Access / Impersonation Rules
-
-Super Admin can enter Admin page, but this is controlled access.
-
-Flow:
-
-```text
-Super Admin
-   ↓
-Select Admin
-   ↓
-Send reason/notification
-   ↓
-Create temporary access session
-   ↓
-Admin page
-   ↓
-View/Edit/Update
-   ↓
-Every action → audit_logs
-   ↓
-Exit session
-```
-
-Do not use the Admin's password.
-
-Do not make the action appear as if Admin performed it.
-
----
-
-# 12. Account Deletion and Recovery
-
-## Admin deletion
-
-```text
-Admin
- ↓
-Request deletion
- ↓
-Verify account
- ↓
-Pending Super Admin approval
- ↓
-Super Admin approves
- ↓
-Admin becomes inactive
- ↓
-Products are hidden from customer website
- ↓
-Required history retained
- ↓
-Data archived
-```
-
-Recovery:
-
-```text
-Admin
- ↓
-Recovery request
- ↓
-Super Admin approval
- ↓
-Restore archive
- ↓
-Reactivate
-```
-
-If recovery is not approved:
-
-```text
-Fresh Admin account
-```
-
-Do not destroy required order/financial history blindly.
-
----
-
-# 13. Payment Architecture — Current Source of Truth
-
-## Customer collection
-
-```text
-Customer
-   ↓
-Checkout
-   ↓
-Cashfree Payment Gateway
-   ↓
-Super Admin Cashfree merchant account
-   ↓
-Payment webhook
-   ↓
-Backend verification
-   ↓
-Order = PAID
-```
-
-## Admin earnings
-
-```text
-Order / Sales
-   ↓
-Gross Product Sales
-   ↓
-- Commission
-- Payment Gateway Fee
-- Refund Adjustment
-   ↓
-Net Payable
-```
-
-## Admin payout
-
-```text
-Admin
-   ↓
-Payout Request
-   ↓
-Super Admin Review
-   ↓
-Manual Payment
-   ↓
-Payment Reference
-+ Proof
-+ Date/Time
-+ Method
-   ↓
-Status = PAID
-   ↓
-Admin sees settlement
-```
-
-## Current payment rules
-
-- Cashfree Payment Gateway for customer collection.
-- Cashfree Payouts may be used by Super Admin for Admin payment, but Admin has no direct payout control.
-- No Cashfree Easy Split.
-- No COD.
-- No Admin Cashfree merchant account.
-- No direct Admin withdrawal.
-- No offline purchase.
-- No draft orders.
-- No Platform Fee wording.
-- No Market Fee wording.
-- No Marketing Fee wording.
-- Commission is the Super Admin revenue.
-- Payment Gateway Fee is a configurable deduction controlled by Super Admin.
-
----
-
-# 14. Customer Data Flow (Level 1)
-
-```text
-Customer
-  ↓
-Home / Discovery
-  ↓
-Search / Browse
-  ↓
-Product Details
-  ↓
-Cart
-  ↓
-Checkout
-  ↓
-Address / Shipping
-  ↓
-Coupon / Pricing
-  ↓
-Create Order
-  ↓
-Cashfree Payment
-  ↓
-Payment Verification
-  ↓
-Order Confirmed
-  ↓
-Processing
-  ↓
-Shipped
-  ↓
-Out for Delivery
-  ↓
-Delivered
-  ↓
-Track / Invoice / Return / Refund / Review
-```
-
----
-
-# 15. Admin Data Flow (Level 1)
-
-```text
-Admin
-  ↓
-Login
-  ↓
-Dashboard
-  ↓
-Products
-  ↓
-Inventory
-  ↓
-Online Orders
-  ↓
-Reviews
-  ↓
-Analytics
-  ↓
-Earnings
-  ↓
-Request Payout
-  ↓
-Super Admin Review
-  ↓
-Super Admin Payment
-  ↓
-Payment Proof / Reference / Time
-  ↓
-Admin sees PAID Settlement
-```
-
----
-
-# 16. Super Admin Data Flow (Level 1)
-
-```text
-Super Admin
-  ↓
-Login
-  ↓
-Dashboard
-  ↓
-Admin Management
-  ↓
-Roles & Permissions
-  ↓
-Admin Access / Impersonation
-  ↓
-Platform Finance
-  ↓
-Commission
-  ↓
-Admin Payout Requests
-  ↓
-Manual Admin Payment
-  ↓
-Analytics / Reports
-  ↓
-Platform Settings
-  ↓
-Audit Logs / Recovery
-```
-
----
-
-# 17. DFD Level Definitions
-
-## Level 0
-
-Whole system context.
-
-```text
-Customer / Admin / Super Admin
-          ↓
-   Ecommerce Platform
-          ↓
-Cashfree / Email / Media
-```
-
-Purpose: explain the platform at the highest business level.
-
-## Level 1
-
-Main business modules and journey.
-
-Purpose: Product Manager, HR, business stakeholders, high-level technical planning.
-
-## Level 2
-
-Break one Level-1 module into major internal processes.
-
-Examples:
-
-- Customer Checkout & Payment
-- Admin Earnings & Payout Request
-- Super Admin Admin Management
-
-## Level 3
-
-Deep implementation/process detail.
-
-Examples:
-
-- Payment webhook verification
-- Payout validation and manual payment record
-- Role/permission evaluation
-- Account deletion/recovery steps
-
-Do not make Level 3 an entire-system overview. Level 3 should be a focused decomposition of one Level-2 process.
-
----
-
-# 18. Core Authorization Architecture
-
-All roles use the same auth foundation.
-
-```text
-Login
+Request
  ↓
 Session
  ↓
@@ -1402,51 +297,174 @@ Role(s)
  ↓
 Permission(s)
  ↓
-Effective Permissions
+Resource ownership/scope check
  ↓
-UI visibility
+Business rule check
  ↓
-Backend authorization
+Controller/service
+ ↓
+Database
 ```
 
-The frontend can hide unavailable modules, but the backend must enforce permissions.
+UI permission checks improve UX. Backend authorization is mandatory.
 
-Example:
+## 9. Payment authority
 
 ```text
-products.view
-products.create
-products.update
-products.delete
-inventory.view
-inventory.update
-orders.view
-orders.update
-payouts.view
-payouts.request
+Customer
+  ↓
+Checkout
+  ↓
+Backend creates/revalidates payment context
+  ↓
+Cashfree Payment Gateway
+  ↓
+Cashfree webhook
+  ↓
+Backend verifies webhook/payment status
+  ↓
+Order becomes PAID/CONFIRMED
 ```
 
-Admin-specific permissions determine which modules are visible and which operations are allowed.
+Never mark an order paid because the browser says payment succeeded.
 
----
-
-# 19. Suggested Core Data Model
-
-The exact PostgreSQL schema is a separate implementation artifact, but these domains are expected.
-
-## Identity / Access
+## 10. Admin earnings
 
 ```text
+Gross Product Sales
+- Commission
+- Payment Gateway Fee
+- Refund Adjustment
+= Net Payable
+```
+
+Admin can view these values and request eligible payout.
+
+## 11. Admin payout
+
+```text
+Admin payout request
+        ↓
+PENDING
+        ↓
+Super Admin review
+        ↓
+APPROVED / REJECTED
+        ↓
+Payment execution
+        ↓
+Reference + proof + method + date/time
+        ↓
+PAID / FAILED
+```
+
+Admin has no payout execution authority.
+
+## 12. Super Admin Access / Impersonation
+
+```text
+Super Admin
+  ↓
+Select Admin
+  ↓
+Reason + notification
+  ↓
+Temporary access session
+  ↓
+Admin UI with visible SUPER ADMIN MODE
+  ↓
+Actions
+  ↓
+Audit: real actor = Super Admin
+```
+
+Never use the Admin password. Never log privileged actions as if the Admin performed them.
+
+## 13. Account deletion
+
+### Customer
+
+- Verify identity.
+- Request/confirm deletion.
+- Remove personal data where legally/business-safe.
+- Anonymize required order history instead of destroying financial records.
+- Revoke sessions.
+
+### Admin
+
+- Request deletion.
+- Verify account.
+- Super Admin approves/rejects.
+- Deactivate Admin.
+- Hide public products if required.
+- Archive recoverable Admin data.
+- Preserve necessary order/financial records.
+
+## 14. Main request architecture
+
+### Public storefront
+
+```text
+Browser
+ ↓
+Cloudflare Pages static HTML
+ ↓
+Hydrated React UI
+ ↓
+Backend API only for dynamic actions/data
+```
+
+### Dynamic backend
+
+```text
+Browser / Webhook
+ ↓
+Cloudflare Pages Function
+ ↓
+Authentication / Authorization
+ ↓
+Zod validation
+ ↓
+Business module/service
+ ↓
+Drizzle
+ ↓
+Neon PostgreSQL
+```
+
+### Media
+
+```text
+Admin upload
+ ↓
+Authorized backend
+ ↓
+R2
+ ↓
+R2 object key saved in PostgreSQL
+ ↓
+Public/private media URL
+```
+
+## 15. Core data domains
+
+### Identity / RBAC
+
+```text
+user
+account
+session
+verification
 users
 admins
 roles
 permissions
 user_roles
 role_permissions
-user_permissions (optional if individual overrides are required)
+user_permissions (optional)
 ```
 
-## Catalog
+### Catalog
 
 ```text
 products
@@ -1457,19 +475,19 @@ product_images
 product_variants
 ```
 
-## Customer
+### Customer
 
 ```text
 addresses
 wishlists
 wishlist_items
 notifications
-search_history
 account_verifications
 account_deletion_requests
+customer_communication_preferences
 ```
 
-## Shopping
+### Shopping
 
 ```text
 carts
@@ -1478,7 +496,7 @@ coupons
 coupon_usages
 ```
 
-## Orders
+### Orders
 
 ```text
 orders
@@ -1489,7 +507,7 @@ refunds
 invoices
 ```
 
-## Payments
+### Payments
 
 ```text
 payments
@@ -1497,17 +515,19 @@ payment_attempts
 cashfree_webhook_events
 ```
 
-## Admin Revenue / Payout
+### Admin finance
 
 ```text
 admin_revenue
+commission_rules
 admin_bank_accounts
 payout_beneficiaries
 payout_requests
 admin_payouts
+platform_withdrawals
 ```
 
-## Support / Content
+### Support / CMS / messaging
 
 ```text
 contact_messages
@@ -1519,309 +539,151 @@ faqs
 banners
 collections
 collection_products
+customer_email_messages
 ```
 
-## Audit / Platform
+### Audit
 
 ```text
 audit_logs
 admin_access_sessions
-platform_withdrawals
-commission_rules
 settings
 ```
 
----
-
-# 20. Important Architecture Rules
-
-## Rule 1 — Never trust browser values
-
-Never trust frontend values for:
-
-- Price
-- Stock
-- Discount
-- Coupon result
-- Payment status
-- Order ownership
-- Admin permissions
-- Payout status
-
-Backend validates everything important.
-
-## Rule 2 — Customer isolation
-
-Customer can only access their own:
-
-- Profile
-- Addresses
-- Cart
-- Wishlist
-- Orders
-- Notifications
-- Support data
-
-## Rule 3 — Admin isolation
-
-Admin can only manage:
-
-- Assigned products
-- Assigned inventory
-- Related orders
-- Related reviews
-- Own earnings/payout data
-
-## Rule 4 — Super Admin authority
-
-Super Admin has platform-level authority, but every privileged action must be auditable.
-
-## Rule 5 — Shared business logic
-
-Do not duplicate product/order/payment logic inside customer/admin/super-admin folders.
-
-Use shared modules.
+## 16. Project structure rule
 
 ```text
-Customer UI ──┐
-Admin UI ──────┼──→ Shared Business Modules
-Super Admin UI ┘
+src/app/                 → Next.js storefront/admin UI routes
+src/components/          → UI
+src/modules/             → reusable business/domain logic
+src/lib/                 → infrastructure helpers
+src/validators/          → Zod request schemas
+src/db/schema/           → Drizzle schema
+functions/                → Cloudflare Pages Functions backend
+public/                   → static non-R2 public assets
 ```
 
-## Rule 6 — Page vs business logic
+Do not duplicate order/payment/product business logic in customer/admin/super-admin routes.
+
+## 17. Non-negotiable implementation rules
+
+1. Never trust browser price, stock, coupon result or payment status.
+2. Never trust `userId`, `adminId` or order ID from the browser without ownership/permission checks.
+3. Never put secrets in `NEXT_PUBLIC_*` variables.
+4. Never store passwords as plaintext or reversible encryption.
+5. Never expose Cashfree secrets to client code.
+6. Never expose R2 secret credentials to client code.
+7. Never expose Resend API key to client code.
+8. Never use Cloudinary in this version.
+9. Never reintroduce COD, offline orders, draft orders or Easy Split unless explicitly changed.
+10. Never create direct Admin withdrawal code.
+11. Never rely on frontend-only RBAC.
+12. Never let a static SEO page become the source of truth for transaction values.
+13. Audit privileged actions.
+14. Use idempotency for payment/webhook/payout operations.
+15. Use database transactions for order/stock/revenue state changes where supported by the chosen database path.
+
+## 18. Implementation order
 
 ```text
-app/        = routes/pages
-modules/    = business logic
-components/ = UI
-lib/        = infrastructure
- db/        = PostgreSQL + Drizzle
-validators/ = request/input validation
-```
+Phase 1 — Foundation
+→ project config
+→ environment variables
+→ Neon + Drizzle
+→ Better Auth
+→ Google OAuth
+→ auth/session tests
 
-## Rule 7 — Payment authority
+Phase 2 — Core data + RBAC
+→ users/accounts/sessions
+→ roles/permissions
+→ Admin/Super Admin authorization
 
-Customer browser is never the authority for payment success.
+Phase 3 — SEO storefront foundation
+→ static export
+→ metadata
+→ sitemap/robots
+→ JSON-LD
+→ product/category build-time data
+→ Cloudflare Pages deploy
 
-Cashfree webhook + backend verification control payment status.
+Phase 4 — Catalog
+→ categories
+→ brands
+→ products
+→ variants
+→ R2 media
+→ search/filter
 
-## Rule 8 — Audit privileged actions
+Phase 5 — Shopping
+→ cart
+→ checkout
+→ shipping/address
+→ coupon
 
-Especially:
+Phase 6 — Payments/Orders
+→ Cashfree order/payment creation
+→ webhook verification
+→ orders
+→ payment attempts
+→ refunds/returns
 
-- Role/permission changes
-- Super Admin access to Admin page
-- Commission changes
-- Payment Gateway Fee changes
-- Payout approval
-- Manual Admin payment
-- Refund actions
-- Account deletion/recovery
-- Platform settings changes
+Phase 7 — Admin
+→ product management
+→ inventory
+→ orders
+→ customer management
+→ analytics
+→ earnings
+→ payout requests
 
----
-
-# 21. Coding Guidance for Codex
-
-Before changing code:
-
-1. Read this file.
-2. Check the relevant module and route.
-3. Reuse shared business logic before creating new services.
-4. Follow the current role/permission model.
-5. Preserve the payment architecture.
-6. Preserve the no-offline-order rule.
-7. Preserve the Admin payout-request-only rule.
-8. Preserve Super Admin audit requirements.
-9. Preserve server-side validation.
-10. Do not silently reintroduce removed/old architecture.
-
-When implementing a new feature, explain where it belongs:
-
-```text
-Page / Route
-→ UI Component
-→ API Route
-→ Module / Service
-→ Validation
-→ Database
-→ External Service (if required)
-```
-
----
-
-# 22. Feature Ownership Summary
-
-| Feature | Customer | Admin | Super Admin |
-|---|---|---|---|
-| Browse products | View | Manage assigned | Oversight |
-| Product management | — | Assigned products | Platform oversight |
-| Inventory | View availability | Manage assigned | Oversight |
-| Online orders | Own orders | Assigned orders | All/platform oversight |
-| Offline orders | — | **No** | **No** |
-| Reviews | Create/view own | Manage assigned reviews | Oversight |
-| Cart | Own cart | — | — |
-| Checkout | Use | — | — |
-| Customer payment | Pay | View-related payment info | Owns payment gateway |
-| Admin earnings | — | View | Manage rules/oversight |
-| Commission | — | View deduction | Configure / receives |
-| Payment Gateway Fee | — | View deduction | Configure |
-| Admin payout | — | Request | Approve/process/pay |
-| Direct Admin withdrawal | — | **No** | Controlled platform process |
-| Admin roles/permissions | — | View own effective access | Manage |
-| Admin dashboard access | Own customer area | Own Admin area | Can enter as Super Admin access |
-| Account deletion | Own request | Request own deletion | Approve/reject/recover |
-| Activity logs | Own relevant history | Own activity | Platform-wide audit |
-| Platform settings | — | Limited own settings | Manage |
-| Platform finance | — | — | Manage |
-
----
-
-# 23. Non-Negotiable Current Decisions
-
-These decisions are currently locked unless the project owner explicitly changes them:
-
-```text
-1. Single-tenant ecommerce.
-2. One Super Admin platform owner.
-3. Admins are internal sellers.
-4. Customer storefront = /
-5. Admin = /admin
-6. Super Admin = /super-admin
-7. No marketplace tenant architecture.
-8. No offline purchase module.
-9. No draft order module.
-10. COD disabled.
-11. Online customer payment only.
-12. Cashfree Payment Gateway for customer collection.
-13. No Cashfree Easy Split.
-14. Admin does not own a Cashfree merchant account.
-15. Admin cannot directly withdraw.
-16. Admin can request payout only.
-17. Super Admin manually pays Admin and records proof/reference/time/status.
-18. Commission is Super Admin revenue.
-19. Payment Gateway Fee is configured by Super Admin and shown to Admin.
-20. Refund Adjustment can reduce Admin Net Payable.
-21. Admin UI is controlled by Roles & Permissions.
-22. Backend API permissions are mandatory.
-23. Super Admin can enter Admin page with controlled access/impersonation.
-24. Impersonation actions are audit logged.
-25. Admin deletion requires verification + Super Admin approval.
-26. Deleted Admin public products are hidden.
-27. Deleted Admin data is archived for controlled recovery.
-28. Recovery requires Super Admin approval.
-```
-
----
-
-# 24. Recommended Implementation Order
-
-```text
-Phase 1
-Project setup
-↓
-PostgreSQL + Drizzle
-↓
-Auth foundation
-↓
-Roles + Permissions
-
-Phase 2
-Customer
-→ Catalog
-→ Search
-→ Cart
-→ Checkout
-→ Cashfree Payment
-→ Orders
-
-Phase 3
-Admin
-→ Products
-→ Inventory
-→ Orders
-→ Reviews
-→ Analytics
-→ Earnings
-→ Payout Requests
-
-Phase 4
-Super Admin
-→ Admin Management
-→ Roles & Permissions
+Phase 8 — Super Admin
+→ Admin management
+→ roles/permissions
+→ customer management
 → Admin Access
-→ Commission
-→ Payment Gateway Fee
-→ Payout Management
-→ Platform Finance
-→ Audit
+→ commission
+→ gateway fee
+→ payout management
+→ platform finance
+→ audit
+→ recovery
 
-Phase 5
-Account deletion/recovery
-Notifications
-Support
-CMS
-Analytics refinement
-Testing
-Security review
-Deployment
+Phase 9 — Communication/content
+→ Resend
+→ notifications
+→ support
+→ CMS
+
+Phase 10 — Hardening
+→ rate limits
+→ security headers
+→ CSRF/cookie checks as applicable
+→ abuse protection
+→ webhook idempotency
+→ tests
+→ SEO validation
+→ production deployment
 ```
 
----
+## 19. Current source links
 
-# 25. Quick Project Mental Model
+Verified against current vendor documentation on **2026-09-22**:
 
-```text
-                    ECOMMERCE PLATFORM
-                           │
-          ┌────────────────┼────────────────┐
-          ↓                ↓                ↓
-      CUSTOMER           ADMIN         SUPER ADMIN
-          │                │                │
-          │                │                │
-       BUYERS        INTERNAL SELLER    PLATFORM OWNER
-          │                │                │
-          └────────────────┼────────────────┘
-                           ↓
-                  SHARED BUSINESS LOGIC
-                           ↓
-                    POSTGRESQL / DRIZZLE
-```
-
-Payment:
-
-```text
-Customer
-   ↓
-Cashfree Payment Gateway
-   ↓
-Super Admin Cashfree Account
-   ↓
-Backend
-   ↓
-Commission + Gateway Fee + Refund Adjustment
-   ↓
-Admin Net Payable
-   ↓
-Admin Payout Request
-   ↓
-Super Admin Manual Payment
-   ↓
-Admin Settlement History
-```
-
-Authorization:
-
-```text
-User
- ↓
-Role
- ↓
-Permissions
- ↓
-UI Visibility
- ↓
-Backend Authorization
-```
-
-This document should remain the project's high-level source of truth while the actual implementation is built underneath it.
+- Cloudflare Pages Next.js static export: https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-static-nextjs-site/
+- Cloudflare Pages / Next.js overview: https://developers.cloudflare.com/pages/framework-guides/nextjs/
+- Cloudflare Pages Functions: https://developers.cloudflare.com/pages/functions/
+- Cloudflare Pages Functions pricing: https://developers.cloudflare.com/pages/functions/pricing/
+- Cloudflare Pages limits: https://developers.cloudflare.com/pages/platform/limits/
+- Cloudflare R2 pricing/free tier: https://developers.cloudflare.com/r2/pricing/
+- Cloudflare Pages Deploy Hooks: https://developers.cloudflare.com/pages/configuration/deploy-hooks/
+- Neon Free plan limits: https://github.com/neondatabase/website/blob/main/content/faqs/free-plan-limits-and-quotas.md
+- Neon serverless Postgres driver: https://neon.com/blog/serverless-driver-for-postgres
+- Better Auth email/password: https://better-auth.com/docs/authentication/email-password
+- Better Auth users/accounts: https://better-auth.com/docs/concepts/users-accounts
+- Better Auth Drizzle adapter: https://better-auth.com/docs/adapters/drizzle
+- Better Auth Hono integration: https://better-auth.com/docs/integrations/hono
+- Resend pricing: https://resend.com/pricing
+- Google Search product structured data: https://developers.google.com/search/docs/appearance/structured-data/product-snippet
+- Google Search merchant listing structured data: https://developers.google.com/search/docs/appearance/structured-data/merchant-listing
+- Google Search product variants: https://developers.google.com/search/docs/appearance/structured-data/product-variants

@@ -2,6 +2,7 @@
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.7.5",
     "@hookform/resolvers": "^5.9.1",
+    "@supabase/server": "^1.7.2",
     "better-auth": "^1.7.5",
     "cashfree-payout": "^0.0.14",
     "cashfree-pg": "^6.0.6",
@@ -10,9 +11,9 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "decimal.js": "^10.6.0",
-    "dotenv": "^18.0.1",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "^0.45.3",
     "lucide-react": "^1.47.0",
+    "openai": "^7.21.0",
     "pg": "^8.23.0",
     "react-hook-form": "^7.88.0",
     "resend": "^6.28.1",
@@ -21,8 +22,10 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@types/node": "^26.6.2",
     "@types/pg": "^8.23.1",
-    "drizzle-kit": "^0.31.10",
+    "dotenv": "^18.0.2",
+    "drizzle-kit": "^0.31.11",
     "tsx": "^4.23.15"
   }
 }

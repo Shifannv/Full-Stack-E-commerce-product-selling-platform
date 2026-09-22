@@ -1,0 +1,110 @@
+# Environment Variables
+
+## Local `.env.local`
+
+```env
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8788
+
+DATABASE_URL=
+
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=http://localhost:8788
+
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+CASHFREE_CLIENT_ID=
+CASHFREE_CLIENT_SECRET=
+CASHFREE_ENVIRONMENT=SANDBOX
+
+PAYOUT_CLIENT_ID=
+PAYOUT_CLIENT_SECRET=
+PAYOUT_ENVIRONMENT=SANDBOX
+
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
+
+R2_PUBLIC_URL=
+R2_ACCOUNT_ID=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET_NAME=
+
+CLOUDFLARE_PAGES_DEPLOY_HOOK_URL=
+```
+
+## Important: Pages Functions secrets
+
+Production backend secrets should be stored in Cloudflare Pages/Functions environment variables or secrets, not committed to Git.
+
+Do not use:
+
+```env
+NEXT_PUBLIC_DATABASE_URL=
+NEXT_PUBLIC_CASHFREE_CLIENT_SECRET=
+NEXT_PUBLIC_RESEND_API_KEY=
+NEXT_PUBLIC_R2_SECRET_ACCESS_KEY=
+```
+
+## Public vs secret
+
+Public/client-safe:
+
+```text
+NEXT_PUBLIC_APP_URL
+NEXT_PUBLIC_API_BASE_URL
+GOOGLE_CLIENT_ID (OAuth client ID only, when browser-side configuration needs it)
+R2_PUBLIC_URL (if the bucket/media domain is public)
+```
+
+Secret/server-only:
+
+```text
+DATABASE_URL
+BETTER_AUTH_SECRET
+GOOGLE_CLIENT_SECRET
+CASHFREE_CLIENT_SECRET
+PAYOUT_CLIENT_SECRET
+RESEND_API_KEY
+R2_SECRET_ACCESS_KEY
+R2_ACCESS_KEY_ID
+CLOUDFLARE_PAGES_DEPLOY_HOOK_URL
+```
+
+## `.env.example`
+
+Commit the variable names, not the values.
+
+Example:
+
+```env
+NEXT_PUBLIC_APP_URL=
+NEXT_PUBLIC_API_BASE_URL=
+DATABASE_URL=
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+CASHFREE_CLIENT_ID=
+CASHFREE_CLIENT_SECRET=
+CASHFREE_ENVIRONMENT=SANDBOX
+PAYOUT_CLIENT_ID=
+PAYOUT_CLIENT_SECRET=
+PAYOUT_ENVIRONMENT=SANDBOX
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
+R2_PUBLIC_URL=
+R2_ACCOUNT_ID=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET_NAME=
+CLOUDFLARE_PAGES_DEPLOY_HOOK_URL=
+```
+
+## Credential policy
+
+Do not commit `.env.local`.
+Do not paste secrets into source code.
+Do not put secrets in screenshots or bug reports.
+Rotate leaked secrets immediately.
