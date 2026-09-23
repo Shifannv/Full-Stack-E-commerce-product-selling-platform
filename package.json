@@ -2,6 +2,7 @@
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.7.5",
     "@hookform/resolvers": "^5.9.1",
+    "@neondatabase/serverless": "^1.1.0",
     "@supabase/server": "^1.7.2",
     "better-auth": "^1.7.5",
     "cashfree-payout": "^0.0.14",
@@ -11,10 +12,9 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "decimal.js": "^10.6.0",
-    "drizzle-orm": "^0.45.3",
+    "drizzle-orm": "^1.0.0-rc.4",
     "lucide-react": "^1.47.0",
     "openai": "^7.21.0",
-    "pg": "^8.23.0",
     "react-hook-form": "^7.88.0",
     "resend": "^6.28.1",
     "tailwind-merge": "^3.7.0",
@@ -24,8 +24,9 @@
   "devDependencies": {
     "@types/node": "^26.6.2",
     "@types/pg": "^8.23.1",
-    "dotenv": "^18.0.2",
-    "drizzle-kit": "^0.31.11",
-    "tsx": "^4.23.15"
+    "dotenv": "^18.0.3",
+    "drizzle-kit": "^1.0.0-rc.4",
+    "tsx": "^4.23.15",
+    "wrangler": "^4.136.3"
   }
 }

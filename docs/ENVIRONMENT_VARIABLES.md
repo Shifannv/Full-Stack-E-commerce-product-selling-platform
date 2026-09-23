@@ -1,110 +1,74 @@
 # Environment Variables
 
-## Local `.env.local`
+## Local development
+
+Use `.env.local`. Never commit secrets.
 
 ```env
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_API_BASE_URL=http://localhost:8788
 
+# Aiven PostgreSQL connection string
 DATABASE_URL=
 
+# Better Auth
 BETTER_AUTH_SECRET=
-BETTER_AUTH_URL=http://localhost:8788
+BETTER_AUTH_URL=http://localhost:8787
 
+# Customer Google OAuth
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
+# Resend
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
+
+# Cashfree Payment Gateway
 CASHFREE_CLIENT_ID=
 CASHFREE_CLIENT_SECRET=
 CASHFREE_ENVIRONMENT=SANDBOX
 
+# Cashfree Payouts
 PAYOUT_CLIENT_ID=
 PAYOUT_CLIENT_SECRET=
 PAYOUT_ENVIRONMENT=SANDBOX
 
-RESEND_API_KEY=
-RESEND_FROM_EMAIL=
-
-R2_PUBLIC_URL=
+# R2 S3-compatible API, only if generating signed URLs
 R2_ACCOUNT_ID=
 R2_ACCESS_KEY_ID=
 R2_SECRET_ACCESS_KEY=
 R2_BUCKET_NAME=
+R2_PUBLIC_URL=
 
-CLOUDFLARE_PAGES_DEPLOY_HOOK_URL=
+# Upstash Redis (optional application cache/rate limiting)
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 ```
 
-## Important: Pages Functions secrets
+## Cloudflare Worker production
 
-Production backend secrets should be stored in Cloudflare Pages/Functions environment variables or secrets, not committed to Git.
+Prefer Cloudflare bindings/secrets for Worker runtime values.
 
-Do not use:
+Hyperdrive provides the database connection path rather than exposing the raw production database credentials throughout application code.
 
-```env
-NEXT_PUBLIC_DATABASE_URL=
-NEXT_PUBLIC_CASHFREE_CLIENT_SECRET=
-NEXT_PUBLIC_RESEND_API_KEY=
-NEXT_PUBLIC_R2_SECRET_ACCESS_KEY=
-```
-
-## Public vs secret
-
-Public/client-safe:
-
-```text
-NEXT_PUBLIC_APP_URL
-NEXT_PUBLIC_API_BASE_URL
-GOOGLE_CLIENT_ID (OAuth client ID only, when browser-side configuration needs it)
-R2_PUBLIC_URL (if the bucket/media domain is public)
-```
-
-Secret/server-only:
+Never expose these to the browser:
 
 ```text
 DATABASE_URL
 BETTER_AUTH_SECRET
 GOOGLE_CLIENT_SECRET
+RESEND_API_KEY
 CASHFREE_CLIENT_SECRET
 PAYOUT_CLIENT_SECRET
-RESEND_API_KEY
 R2_SECRET_ACCESS_KEY
-R2_ACCESS_KEY_ID
-CLOUDFLARE_PAGES_DEPLOY_HOOK_URL
+UPSTASH_REDIS_REST_TOKEN
 ```
 
-## `.env.example`
+## Frontend public values
 
-Commit the variable names, not the values.
+Only explicitly public values may use `NEXT_PUBLIC_*`.
 
-Example:
+Do not put secrets in `NEXT_PUBLIC_*` variables.
 
-```env
-NEXT_PUBLIC_APP_URL=
-NEXT_PUBLIC_API_BASE_URL=
-DATABASE_URL=
-BETTER_AUTH_SECRET=
-BETTER_AUTH_URL=
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-CASHFREE_CLIENT_ID=
-CASHFREE_CLIENT_SECRET=
-CASHFREE_ENVIRONMENT=SANDBOX
-PAYOUT_CLIENT_ID=
-PAYOUT_CLIENT_SECRET=
-PAYOUT_ENVIRONMENT=SANDBOX
-RESEND_API_KEY=
-RESEND_FROM_EMAIL=
-R2_PUBLIC_URL=
-R2_ACCOUNT_ID=
-R2_ACCESS_KEY_ID=
-R2_SECRET_ACCESS_KEY=
-R2_BUCKET_NAME=
-CLOUDFLARE_PAGES_DEPLOY_HOOK_URL=
-```
+## Deployment rule
 
-## Credential policy
-
-Do not commit `.env.local`.
-Do not paste secrets into source code.
-Do not put secrets in screenshots or bug reports.
-Rotate leaked secrets immediately.
+Maintain `.env.example` with variable names and safe placeholders only.

@@ -1,225 +1,220 @@
-# AI / Codex Coding Rules — Read Before Writing Code
+# AI / Codex Coding Rules — Must Read Before Code
 
-## Source of truth
+## 1. Source of truth
 
-Always read:
-
-```text
-docs/PROJECT_CONTEXT.md
-docs/STACK_DECISION_AND_CRITIQUE.md
-docs/AUTH_SECURITY.md
-docs/SEO_SSG_RULES.md
-```
-
-before creating architecture-sensitive code.
-
-## Never invent a different stack
-
-Current locked choices:
+Read:
 
 ```text
-Next.js
-TypeScript
-Cloudflare Pages
-Cloudflare Pages Functions
-Neon PostgreSQL
-Drizzle ORM
-@neondatabase/serverless
-Better Auth
-Google OAuth for Customer
-Email/password for Admin + Super Admin
-Cloudflare R2
-Resend
-Cashfree
-Tailwind
-shadcn/ui
-Zod
+PROJECT_CONTEXT.md
+STACK_DECISION_AND_CRITIQUE.md
+DATABASE_PLAN.md
+BACKEND_API_ARCHITECTURE.md
+AUTH_SECURITY.md
+SEO_SSG_RULES.md
+PRODUCT_PRICE_AND_ORDER_SNAPSHOT.md
+CATEGORY_SUBCATEGORY_RULES.md
 ```
 
-Do not replace them with:
+before implementing major features.
 
-```text
-MongoDB
-Firebase
-Supabase
-Prisma
-Clerk
-NextAuth/Auth.js
-Cloudinary
-Vercel
-AWS S3
-```
+## 2. Do not invent architecture
 
-unless the project owner explicitly changes the architecture.
+Never silently add:
 
-## Never reintroduce removed business features
-
-Do not add:
-
-- marketplace tenant architecture
-- public seller registration
-- Cashfree Easy Split
+- Collections
+- Marketplace tenants
 - COD
-- offline orders
-- draft orders
-- direct Admin withdrawals
-- Platform Fee
-- Market Fee
-- Marketing Fee
-- Approved Fee
+- Offline orders
+- Draft orders
+- Easy Split
+- Cloudinary/GCS
+- separate auth systems
+- microservices
+- Elasticsearch
+- deep taxonomy
 
-## Frontend rule
+unless the project owner explicitly changes the source of truth.
 
-Next.js is the storefront rendering layer.
+## 3. Prefer simple domain modules
 
-Public SEO pages should remain compatible with static export.
-
-If a requested feature requires runtime server rendering, discuss the architectural impact before putting it into a static page.
-
-## Backend rule
-
-Business logic goes in modules/services, not React components.
-
-Pattern:
+Use:
 
 ```text
-UI
- ↓
-API
- ↓
-Auth
- ↓
-Permission
- ↓
-Zod
- ↓
-Service
- ↓
-Drizzle
- ↓
-Neon
+route
+→ validator
+→ service/use-case
+→ repository/query
+→ database
 ```
 
-## Security rule
+Keep financial logic explicit.
 
-Never trust:
+## 4. Backend authority
 
-- price from client
-- stock from client
-- coupon amount from client
-- payment success from client
-- customer ID from client
-- Admin ID from client
-- permission from client
+Browser values are untrusted.
 
-## Password rule
+Always re-check:
 
-Say:
+- price
+- stock
+- discount
+- coupon
+- payment result
+- customer ownership
+- Admin ownership/scope
+- role/permission
+
+## 5. Price/history rule
+
+Never update historical `order_items` when `products.price` changes.
+
+Current product price and historical purchase price are different domains.
+
+## 6. Checkout rule
+
+Before creating payment:
 
 ```text
-password hash
+current price
++ current stock
++ current discounts/coupons
++ current shipping
+= server final total
 ```
 
-not:
+Then snapshot the values into the Pending Order.
+
+## 7. Database/performance rule
+
+For large lists:
+
+- paginate
+- index
+- select required columns
+- avoid N+1 queries
+- avoid loading thousands of records into memory
+- use transactions for money/inventory
+
+## 8. API rule
+
+All privileged routes require:
 
 ```text
-encrypted password
+session
+↓
+role/permission
+↓
+input validation
+↓
+business operation
 ```
 
-Do not write a custom password table unless required by Better Auth integration.
+## 9. Payment rule
 
-## SEO rule
+Frontend success is not payment authority.
 
-Before finishing any public page, check:
+Only verified Cashfree events/backend checks can finalize the payment state.
+
+## 10. R2 rule
+
+Images/files belong in R2, not PostgreSQL.
+
+Store metadata/object keys in the database.
+
+## 11. SEO rule
+
+Public content must be crawlable and semantic.
+
+Check:
+
+- title
+- description
+- canonical
+- structured data
+- sitemap
+- robots
+- status codes
+- internal links
+- image alt text
+
+Do not create collection pages.
+
+## 12. Build/deploy rule
+
+Remember that Cloudflare Pages static export is not the backend runtime.
+
+Backend code belongs in the Worker.
+
+## 13. Coding style
+
+Prefer readable, boring, explicit code over clever abstractions.
+
+Do not create generic frameworks inside the project.
+
+Do not add dependencies unless they solve a real project requirement.
+
+## 14. Before merging
+
+Verify:
 
 ```text
-metadata
-canonical
-HTML content
-JSON-LD
-internal links
-image alt text
-robots
-sitemap
+TypeScript passes
+Lint passes
+Tests pass
+Database migration/schema is correct
+No secrets committed
+No old architecture reintroduced
+Price-history rules preserved
+Authorization enforced server-side
+SEO output checked for public pages
 ```
 
-For product pages, Product structured data must be in initial HTML.
 
-## R2 rule
+## 15. Cache rules
 
-Frontend should never receive R2 secret keys.
+Do not add cache layers blindly.
 
-Uploads are authorized server-side.
-
-Database stores object keys, not binary files.
-
-## API rule
-
-Every protected mutation requires:
+Before caching any value, identify:
 
 ```text
-session + permission + resource ownership + validation
+source of truth
+cache key
+scope (public/user/admin)
+TTL
+invalidation event
+fallback behavior
 ```
 
-## Payment rule
-
-Cashfree webhook verification is the payment authority.
-
-Do not create:
+Use:
 
 ```text
-setOrderPaid(true)
+Cloudflare cache → public cache-safe responses
+Upstash Redis → selected server-side hot/derived data and rate limiting
+localStorage → non-sensitive client convenience state
+Aiven PostgreSQL → authoritative application state
 ```
 
-from a browser-only success callback.
+Never cache a payment, payout, inventory, permission, or order decision as authoritative state.
 
-## Idempotency rule
+Do not put customer-specific responses in a shared public cache.
 
-Every external event that can retry must be idempotent.
+## 16. Client storage rules
 
-Examples:
+Never store passwords, session tokens, OAuth secrets, payment secrets, or sensitive account data in localStorage.
 
-- payment creation
-- payment webhook
-- refund webhook
-- payout execution
-- email event processing
+Guest cart may live in localStorage temporarily. After login, merge it into the server cart and make the server cart authoritative.
 
-## Change process
+The same logged-in user on another device must receive account/order/wishlist data from the server, not from localStorage.
 
-Before code:
+## 17. Price/cache correctness
 
-1. Identify route/module.
-2. Identify database tables.
-3. Identify API contract.
-4. Identify permissions.
-5. Identify external service.
-6. Identify SEO impact.
-7. Implement smallest reusable change.
-8. Test failure cases.
-9. Update docs when architecture changes.
-
-## Do not hide failures
-
-If an external API is unavailable:
-
-- return a controlled error;
-- log an internal diagnostic;
-- keep secrets out of logs;
-- do not silently mark transactions successful.
-
-## Final check after implementation
-
-Ask:
+If product price changes:
 
 ```text
-Does this still match PROJECT_CONTEXT.md?
-Does static export still work?
-Does backend still run in Cloudflare Functions?
-Are secrets server-only?
-Is Neon accessed through a serverless-compatible driver?
-Is password storage hashed?
-Is SEO HTML present before hydration?
-Does backend authorization protect the route?
-Can the operation be retried safely?
+update PostgreSQL current price
+→ invalidate public cache
+→ rebuild/revalidate SEO output when required
+→ checkout reads current PostgreSQL price
 ```
+
+Never charge or display an order-history price from a stale current-product cache. Historical order-item snapshots are immutable.

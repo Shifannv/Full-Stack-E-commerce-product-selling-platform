@@ -1,218 +1,176 @@
-# SEO + SSG Engineering Rules
+# SEO and Static Export Rules
 
-## Goal
+## 1. SEO goal
 
-Public ecommerce pages must produce useful HTML before client-side JavaScript is required for the core content.
-
-Google recommends putting Product structured data in the initial HTML for merchant/product experiences and warns that JavaScript-generated markup can be less reliable for fast-changing product price/availability. Product variant pages also need correct variant structure and crawlable URLs. 
-
-## Indexable pages
+Customer public pages should produce real crawlable HTML for:
 
 ```text
-/
-/products
-/products/[slug]
-/categories/[slug]
+Home
+Main category pages
+Subcategory pages
+Product pages
+Useful public content pages
+```
+
+## 2. No Collections for SEO
+
+Do not generate:
+
+```text
 /collections/[slug]
-/about
-/faq
-/terms
-/privacy-policy
-/shipping-policy
-/return-policy
 ```
 
-## Non-indexable pages
+SEO structure is:
 
 ```text
-/account/*
-/cart
-/checkout
-/payment/*
-/orders/*
-/admin/*
-/super-admin/*
+/category/[slug]
+/category/[categorySlug]/[subcategorySlug]
+/product/[slug]
 ```
 
-## Metadata requirements
+Exact route naming may differ in implementation, but the content model is fixed.
 
-Every public page should define:
+## 3. Product page requirements
+
+Each public product page should have:
+
+- unique title
+- meta description
+- canonical URL
+- Open Graph metadata
+- indexability rules
+- Product structured data when eligible
+- stable product slug
+- product image with useful alt text
+- current price/availability
+- breadcrumb structure where useful
+
+## 4. Static export
+
+Current target:
 
 ```text
-<title>
-meta description
-canonical
-Open Graph title/description/image
-robots policy
-```
-
-Use page-specific metadata. Do not copy one generic title to every product page.
-
-## Product page rules
-
-Each product page must have:
-
-1. Human-readable slug.
-2. One canonical URL.
-3. Product name in visible content.
-4. Useful unique description.
-5. Product image(s) with descriptive alt text.
-6. Price and currency from build-time trusted data.
-7. Availability from build-time trusted data.
-8. Product JSON-LD in initial HTML.
-9. Breadcrumb JSON-LD where applicable.
-10. Internal links to category/collection/related products.
-11. No accidental `noindex`.
-
-JSON-LD concept:
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "...",
-  "image": ["..."],
-  "description": "...",
-  "sku": "...",
-  "brand": {
-    "@type": "Brand",
-    "name": "..."
-  },
-  "offers": {
-    "@type": "Offer",
-    "url": "...",
-    "priceCurrency": "INR",
-    "price": "...",
-    "availability": "https://schema.org/InStock"
-  }
-}
-```
-
-Use the actual product data. Never fabricate ratings or availability.
-
-## Variant rules
-
-For variant-heavy products such as clothing/electronics configurations:
-
-- Use a stable parent product URL where appropriate.
-- Give important variants crawlable URLs when the business model needs variant-level search visibility.
-- Ensure the selected variant has matching image, price and availability.
-- Use `ProductGroup`/variant structured data where the page architecture requires it.
-
-## Sitemap
-
-Generate a sitemap for:
-
-- home
-- product URLs
-- category URLs
-- collection URLs
-- public CMS URLs
-
-Do not put:
-
-- cart
-- checkout
-- account pages
-- orders
-- admin
-- super admin
-
-in the sitemap.
-
-## Robots
-
-Default intent:
-
-```text
-Allow public storefront
-Disallow private application areas
-```
-
-Verify actual URL rules after deployment.
-
-## Build-time data flow
-
-```text
-Next.js build
-  ↓
-Fetch published catalog/CMS data from backend/database
-  ↓
-generateStaticParams / page generation
-  ↓
-HTML + metadata + JSON-LD
-  ↓
+next build
+↓
 out/
-  ↓
+↓
 Cloudflare Pages
 ```
 
-## Rebuild strategy
+Cloudflare's current Pages guide uses `npx next build` and `out` for Next.js Static HTML Export.
 
-Because pure SSG is build-time rendering:
+## 5. Dynamic data warning
 
-```text
-Catalog/CMS change
-   ↓
-Backend saves change
-   ↓
-Trigger Cloudflare Pages Deploy Hook
-   ↓
-Rebuild
-   ↓
-Updated HTML
-```
+Static HTML is a snapshot created during a build.
 
-Do not trigger a full SEO rebuild for every customer cart/order action.
-
-## Live commerce safety
-
-Even when HTML says:
+It is not the financial source of truth.
 
 ```text
-₹999
-In Stock
+SEO HTML
+= presentation/discovery
+
+Worker API + Aiven DB
+= authoritative current state
 ```
 
-checkout must call the backend again.
+## 6. Product price change
+
+When the Admin changes a current product price:
 
 ```text
-Cart
- ↓
-Backend re-fetches current product + stock
- ↓
-Backend calculates final amount
- ↓
-Coupon validation
- ↓
-Order creation
- ↓
-Cashfree
+Aiven products.price changes
+↓
+New checkout uses new price
+↓
+Existing orders stay unchanged
 ```
 
-The browser never decides the payable amount.
+SEO HTML may continue showing the old price until the next rebuild.
 
-## SEO validation checklist
+Therefore, the checkout API must always query the current authoritative price.
 
-Before production:
+## 7. Rebuild strategy
 
-- View page source and confirm product content exists in HTML.
-- Confirm JSON-LD exists in initial HTML.
-- Run Google Rich Results Test.
-- Use Search Console URL Inspection.
-- Check canonical URL.
-- Check robots.
-- Check sitemap.
-- Check broken links.
-- Check mobile rendering.
-- Check duplicate metadata.
-- Check 404/redirect behavior.
-- Check image alt text and image URLs.
+For the current Pages architecture, public catalog/content changes should be able to trigger a new Pages deployment through a controlled deploy hook.
 
-## Sources
+Potential triggers:
 
-- Google product structured data: https://developers.google.com/search/docs/appearance/structured-data/product-snippet
-- Google merchant listings: https://developers.google.com/search/docs/appearance/structured-data/merchant-listing
-- Google product variants: https://developers.google.com/search/docs/appearance/structured-data/product-variants
-- Cloudflare static Next.js export: https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-static-nextjs-site/
-- Cloudflare Pages deploy hooks: https://developers.cloudflare.com/pages/configuration/deploy-hooks/
+- product published/updated
+- product deactivated
+- category updated
+- subcategory updated
+- public CMS/banner change
+
+Do not trigger a build for every internal activity. Debounce/aggregate changes when appropriate.
+
+## 8. Large-catalog guardrail
+
+Pure SSG means product pages must be generated at build time.
+
+Do not use an unlimited catalog build strategy without checking build time.
+
+If the catalog becomes large enough that builds become slow/unreliable, migrate the public site to Cloudflare Workers/Next.js ISR instead of building a custom ad-hoc cache system.
+
+## 9. Client-only data
+
+Personal data must not be baked into public HTML:
+
+- cart
+- account information
+- orders
+- private notifications
+- payout data
+- customer-specific offers
+
+These use API calls after authentication.
+
+## 10. SEO safety checklist
+
+Before release:
+
+```text
+[ ] HTML contains meaningful content without JS-only rendering
+[ ] title is unique
+[ ] description is unique
+[ ] canonical is correct
+[ ] robots rules are correct
+[ ] sitemap contains only intended public URLs
+[ ] product structured data is valid
+[ ] category/subcategory pages are indexable when intended
+[ ] admin pages are not indexable
+[ ] account/order pages are not indexable
+[ ] no collection routes exist
+[ ] no accidental duplicate slugs
+```
+
+
+## 11. Cache and SSG relationship
+
+SSG, Cloudflare edge cache, Redis, and PostgreSQL have different responsibilities:
+
+```text
+Aiven PostgreSQL
+= authoritative current catalog data
+
+SSG HTML
+= build-time SEO snapshot
+
+Cloudflare cache
+= public response/asset acceleration
+
+Redis
+= optional server-side derived/hot cache
+```
+
+Do not use a cached page to decide the amount to charge.
+
+When a public product/category/subcategory changes:
+
+```text
+DB write
+→ invalidate affected Redis keys (if used)
+→ purge/revalidate public Cloudflare cache entries
+→ trigger/batch Pages rebuild when SSG HTML must change
+```
+
+A product price can therefore change in PostgreSQL immediately while an old static HTML copy exists briefly until the next rebuild. The checkout API must always read and validate the current database price.

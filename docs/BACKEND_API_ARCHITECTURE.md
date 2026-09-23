@@ -1,22 +1,30 @@
-# Backend API Architecture
+# Backend API Architecture — Cloudflare Worker + Hono
 
-## Runtime
+## 1. Runtime
 
-Backend runs in **Cloudflare Pages Functions**.
+Backend runtime:
 
-Recommended routing library:
+```text
+Cloudflare Workers
+```
+
+Framework:
 
 ```text
 Hono
 ```
 
-Better Auth is mounted under:
+Database path:
 
 ```text
-/api/auth/*
+Worker
+↓
+Cloudflare Hyperdrive
+↓
+Aiven PostgreSQL
 ```
 
-## API groups
+## 2. API areas
 
 ```text
 /api/auth/*
@@ -24,162 +32,207 @@ Better Auth is mounted under:
 /api/admin/*
 /api/super-admin/*
 /api/webhooks/cashfree/*
+/api/health
 ```
 
-## Backend layers
+Do not put runtime backend API logic inside Next.js static-export routes.
+
+The Next.js project is the public/UI build; the Worker is the backend runtime.
+
+## 3. Worker modules
 
 ```text
-Function / Route
-   ↓
-Authentication
-   ↓
-Authorization
-   ↓
-Validation
-   ↓
-Application Service
-   ↓
-Repository / Drizzle
-   ↓
-Neon PostgreSQL
+worker/src/
+├── index.ts
+├── routes/
+│   ├── auth/
+│   ├── customer/
+│   ├── admin/
+│   ├── super-admin/
+│   └── webhooks/
+├── modules/
+│   ├── auth/
+│   ├── users/
+│   ├── categories/
+│   ├── catalog/
+│   ├── inventory/
+│   ├── cart/
+│   ├── checkout/
+│   ├── orders/
+│   ├── payments/
+│   ├── refunds/
+│   ├── reviews/
+│   ├── notifications/
+│   ├── customer-management/
+│   ├── admin-revenue/
+│   ├── payouts/
+│   ├── media/
+│   ├── cms/
+│   └── audit/
+├── middleware/
+├── validators/
+├── db/
+├── lib/
+└── services/
 ```
 
-External service boundary:
+One Worker, domain modules. No microservices.
+
+## 4. Request lifecycle
 
 ```text
-Service
- ├── Cashfree adapter
- ├── Resend adapter
- ├── R2 adapter
- └── Google/Better Auth adapter
+HTTP request
+↓
+Hono route
+↓
+Auth/session check when required
+↓
+RBAC permission check
+↓
+Zod validation
+↓
+Business service
+↓
+Drizzle query/transaction
+↓
+External service if needed
+↓
+Audit/event record when required
+↓
+Response
 ```
 
-## Customer API domains
+## 5. Security rules
+
+Never trust the client for:
+
+- price
+- stock
+- discount
+- coupon result
+- order ownership
+- payment status
+- payout status
+- role
+- permission
+- admin_id
+
+## 6. Idempotency
+
+Implement idempotency where duplicate requests can cause money/inventory problems.
+
+Required examples:
+
+- Checkout/order creation
+- Cashfree payment webhook processing
+- Refund creation
+- Payout state transition
+- Admin manual payment record
+
+## 7. Pagination
+
+Every potentially large list uses server-side pagination.
+
+Examples:
 
 ```text
-GET    /api/customer/products
-GET    /api/customer/products/:slug
-GET    /api/customer/categories
-GET    /api/customer/collections/:slug
-POST   /api/customer/cart/items
-PATCH  /api/customer/cart/items/:id
-DELETE /api/customer/cart/items/:id
-POST   /api/customer/checkout/validate
-POST   /api/customer/orders
-POST   /api/customer/payments/create
-GET    /api/customer/orders
-GET    /api/customer/orders/:id
-POST   /api/customer/reviews
-POST   /api/customer/support
+products
+orders
+customers
+reviews
+notifications
+payout requests
+activity logs
 ```
 
-Exact routes may be changed during implementation, but responsibility must remain the same.
+Use stable ordering and indexed cursors/offsets as appropriate.
 
-## Admin API domains
+## 8. Error model
 
-```text
-GET/PATCH/POST /api/admin/products/*
-GET/PATCH       /api/admin/inventory/*
-GET/PATCH       /api/admin/orders/*
-GET             /api/admin/customers/*
-POST            /api/admin/customers/:id/messages
-GET             /api/admin/reviews/*
-GET             /api/admin/analytics/*
-GET             /api/admin/earnings/*
-POST            /api/admin/payout-requests
-GET             /api/admin/payout-requests/*
-GET             /api/admin/activity
-POST            /api/admin/account-deletion-request
-```
-
-## Super Admin API domains
-
-```text
-/api/super-admin/admins/*
-/api/super-admin/roles/*
-/api/super-admin/permissions/*
-/api/super-admin/customers/*
-/api/super-admin/admin-access/*
-/api/super-admin/commission/*
-/api/super-admin/payment-settings/*
-/api/super-admin/payouts/*
-/api/super-admin/finance/*
-/api/super-admin/refunds/*
-/api/super-admin/settings/*
-/api/super-admin/audit/*
-/api/super-admin/recovery/*
-```
-
-## Cashfree webhook
-
-```text
-POST /api/webhooks/cashfree/payment
-POST /api/webhooks/cashfree/payout
-```
-
-Webhook rules:
-
-1. Read raw body exactly as required by provider verification.
-2. Verify authenticity.
-3. Check event type.
-4. Check idempotency/event ID.
-5. Update payment/order state in one controlled transaction where possible.
-6. Return success only after durable processing is complete.
-7. Store original webhook metadata for troubleshooting.
-
-## Idempotency
-
-Client-side payment/order requests and webhook processing must be idempotent.
-
-Use unique constraints such as:
-
-```text
-provider_payment_id
-provider_order_id
-provider_event_id
-idempotency_key
-```
-
-## Error model
-
-Return stable machine-readable errors:
+Use predictable API errors, for example:
 
 ```json
 {
   "success": false,
-  "error": {
-    "code": "ORDER_NOT_FOUND",
-    "message": "Order not found"
+  "code": "PRICE_CHANGED",
+  "message": "The product price changed. Please review your cart.",
+  "data": {
+    "currentTotal": 79900
   }
 }
 ```
 
-Do not expose stack traces in production.
+Do not expose database errors, provider secrets, stack traces, or internal SQL to clients.
 
-## Validation
+## 9. Payment webhook rules
 
-Zod validation at API boundary:
+Treat Cashfree webhooks as untrusted input until verified.
+
+Flow:
 
 ```text
-HTTP input
- ↓
-Zod
- ↓
-normalized data
- ↓
-service
+Cashfree webhook
+↓
+Verify signature/event
+↓
+Check idempotency
+↓
+Load payment/order
+↓
+Validate amount/reference/order relation
+↓
+Update payment/order transactionally
+↓
+Record webhook event
 ```
 
-Business rules belong in services, not scattered across React components.
+The frontend success page does not mark an order paid.
 
-## Database access
+## 10. Media upload flow
 
-Use Drizzle with Neon serverless driver.
+Preferred flow for product images:
 
-Do not open a new traditional long-lived TCP pool inside Cloudflare Functions.
+```text
+Admin browser
+↓
+Worker requests upload authorization
+↓
+Worker creates signed upload URL
+↓
+Browser uploads directly to R2
+↓
+Worker stores object key + metadata in PostgreSQL
+```
 
-## Sources
+Do not send large files through the database.
 
-- Better Auth Hono: https://better-auth.com/docs/integrations/hono
-- Better Auth Cloudflare/Workers patterns: https://better-auth.com/docs/concepts/options
-- Neon serverless driver: https://neon.com/blog/serverless-driver-for-postgres
+
+## 11. Cache policy
+
+Public cache-safe GET responses may use Cloudflare caching.
+
+Use Upstash Redis only when an endpoint has a documented application-cache need.
+
+Every cache entry must define:
+
+```text
+key
+scope
+TTL
+source of truth
+invalidation event
+fallback behavior
+```
+
+Never let cache decide:
+
+```text
+payment status
+order ownership/status
+inventory commit
+payout status
+permissions
+amount charged
+```
+
+For user-specific data, never construct a shared public cache key that can mix customers.

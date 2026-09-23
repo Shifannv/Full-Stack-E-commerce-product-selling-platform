@@ -1,219 +1,199 @@
-# Authentication + Security Plan
+# Authentication and Security
 
-## Authentication matrix
+## 1. One authentication system
 
-| Role | Login | Account creation | Main provider |
-|---|---|---|---|
-| Customer | Google OAuth | Customer self-service | Better Auth + Google |
-| Admin | Email + password | Super Admin invitation/creation | Better Auth credential |
-| Super Admin | Email + password | One controlled account | Better Auth credential |
-
-## Customer Google OAuth
-
-Use Better Auth social provider support.
-
-Required secrets:
-
-```env
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-```
-
-The client ID may be public in OAuth configuration; the client secret is server-only.
-
-Use exact OAuth redirect URIs for development and production.
-
-## Admin / Super Admin passwords
-
-Password path:
+Use **Better Auth for every role**.
 
 ```text
-password input
-  ↓
 Better Auth
-  ↓
-scrypt password hash
-  ↓
-account.password
+├── Customer: Google OAuth
+├── Admin: Email + password
+└── Super Admin: Email + password
 ```
 
-Do not store:
+Google is only a provider.
+
+## 2. Customer Google login
+
+Customer flow:
 
 ```text
-password = "Admin@123"
+Customer
+↓
+Sign in with Google
+↓
+Google OAuth
+↓
+Better Auth callback
+↓
+User/session
+↓
+Customer role/profile
 ```
 
-Do not encrypt passwords with AES for later decryption.
+Do not make Google OAuth the Admin/Super Admin login method.
 
-Why?
-
-The application never needs the original password. It only needs to verify whether the entered password matches the stored hash.
-
-Better Auth currently uses `scrypt` by default and allows custom hashing if needed. Keep the default unless there is a tested runtime compatibility reason to change it.
-
-## Admin invitation flow
+## 3. Admin/Super Admin password login
 
 ```text
-Super Admin creates Admin
-        ↓
-Create credential account with controlled setup state
-        ↓
-Generate one-time setup/reset flow
-        ↓
-Resend invitation email
-        ↓
-Admin sets password
-        ↓
-Email verification if policy requires
-        ↓
-Admin login
+Email
++
+Password
+↓
+Better Auth
+↓
+Password hash comparison
+↓
+Session
 ```
 
-Do not email permanent plaintext passwords.
+Passwords are hashed using the authentication library's secure password-storage implementation.
 
-## Super Admin
+Never:
 
-Before production, add:
+- store plaintext passwords
+- log passwords
+- email passwords in plain text
+- reversibly encrypt passwords
+- build a custom password hashing system unless there is a documented security requirement
 
-- strong password requirements
-- email verification
-- session freshness checks for sensitive operations
-- 2FA
-- audit logging
-- rate limiting
-- suspicious-login monitoring
+For Admin onboarding, send a setup link or reset/setup flow rather than emailing the permanent password.
 
-## Session rules
+## 4. Super Admin protection
 
-- Secure cookies in production.
-- HttpOnly cookies.
-- SameSite configured intentionally.
-- Shorter session lifetime for privileged users than normal customer sessions where practical.
-- Revoke sessions on password reset/change for Admin/Super Admin.
-- Require recent authentication for sensitive actions.
+Super Admin is the highest-value role.
 
-## Sensitive actions requiring re-authentication/freshness
+Required controls:
 
-```text
-Change password
-Change email
-Delete account
-Approve payout
-Change commission
-Change gateway fee
-Change roles/permissions
-Enter Admin impersonation
-Reset Super Admin security settings
-```
+- secure password requirements
+- session expiration/rotation strategy
+- brute-force/rate limiting
+- audit logs
+- protected admin routes
+- explicit role check
+- no public registration
+- no password sharing
 
-## RBAC
+Add MFA later if required, without redesigning the identity model.
 
-Use permissions such as:
+## 5. RBAC
+
+Permission examples:
 
 ```text
-products.view
-products.create
-products.update
-products.delete
-inventory.view
-inventory.update
-orders.view
-orders.update
-customers.view
-customers.message
-customers.manage
-analytics.view
-earnings.view
-payouts.view
-payouts.request
 admin.manage
 roles.manage
 permissions.manage
-admin.access
-commission.manage
-payment_gateway.manage
-payouts.manage
-refunds.manage
-audit.view
+customers.view
+customers.message
+products.view
+products.create
+products.update
+inventory.update
+orders.view
+orders.update
+payouts.view
+payouts.request
+payouts.process
 settings.manage
+impersonation.start
 ```
 
-Backend check example concept:
+## 6. Impersonation
+
+Super Admin must not become the Admin user's identity.
+
+Store the real actor separately from the target Admin.
 
 ```text
-session
- ↓
-role resolution
- ↓
-effective permissions
- ↓
-resource ownership
- ↓
-business rules
- ↓
-allow/deny
-```
-
-## Impersonation
-
-Never copy the Admin credentials into a Super Admin session.
-
-Use a dedicated temporary access session record:
-
-```text
-admin_access_sessions
-
-id
-super_admin_user_id
-admin_user_id
+actor_user_id
+acting_on_behalf_of_user_id
+admin_access_session_id
 reason
 started_at
-expires_at
 ended_at
-access_mode
-notification_sent_at
 ```
 
-Audit each action:
+## 7. Secrets
+
+Secrets are server-side only:
 
 ```text
-actor_user_id = Super Admin
-target_user_id = Admin
-access_mode = IMPERSONATION
+DATABASE_URL
+BETTER_AUTH_SECRET
+GOOGLE_CLIENT_SECRET
+R2 access credentials, if S3 presigning is used
+RESEND_API_KEY
+CASHFREE_CLIENT_SECRET
+PAYOUT_CLIENT_SECRET
 ```
 
-## Secrets
+Only public identifiers may be exposed to the browser.
 
-Server-only:
+## 8. Cookies / sessions
 
-```env
-DATABASE_URL=
-BETTER_AUTH_SECRET=
-GOOGLE_CLIENT_SECRET=
-CASHFREE_CLIENT_SECRET=
-PAYOUT_CLIENT_SECRET=
-RESEND_API_KEY=
+Use secure, HTTP-only session cookies for authenticated server interactions where applicable.
+
+Do not store privileged session secrets in localStorage.
+
+## 9. Validation
+
+Use Zod at API boundaries.
+
+Validate:
+
+- IDs
+- slugs
+- amounts
+- quantities
+- email addresses
+- permissions
+- upload metadata
+- payout requests
+
+Authorization happens after identity is established and before protected business operations.
+
+
+## 10. Client storage
+
+`localStorage` is not an authentication database.
+
+Allowed:
+
+- guest cart before login
+- recently viewed IDs
+- non-sensitive UI preferences
+
+Not allowed:
+
+- passwords
+- Better Auth session tokens
+- OAuth client secrets
+- Cashfree secrets
+- payout secrets
+- private order/payment records as the authority
+
+After login, merge guest cart into the server cart. The authenticated server/database state is authoritative.
+
+
+## 11. Cross-subdomain deployment
+
+Production target may use:
+
+```text
+www.example.com → Cloudflare Pages
+api.example.com → Cloudflare Worker
 ```
 
-Never prefix these with `NEXT_PUBLIC_`.
+Keep the frontend and API under the same parent domain. Configure Better Auth trusted origins/cross-subdomain cookie handling for the actual production domains.
 
-## Security baseline
+Do not move session tokens to localStorage to work around cross-subdomain cookies.
 
-- Validate every request with Zod.
-- Rate-limit login, password reset, contact and auth endpoints.
-- Rate-limit sensitive admin endpoints.
-- Add webhook idempotency.
-- Verify Cashfree webhook authenticity according to Cashfree's current webhook verification method.
-- Use least-privilege Cloudflare API tokens.
-- Never log secrets.
-- Do not log passwords, OAuth secrets, session tokens or full payment credentials.
-- Sanitize file names/metadata.
-- Validate R2 upload content type and size.
-- Keep proof documents private unless explicitly intended otherwise.
+Test:
 
-## Sources
-
-- Better Auth email/password: https://better-auth.com/docs/authentication/email-password
-- Better Auth users/accounts: https://better-auth.com/docs/concepts/users-accounts
-- Better Auth Drizzle: https://better-auth.com/docs/adapters/drizzle
-- Better Auth Hono/Cloudflare: https://better-auth.com/docs/integrations/hono
+- Chrome login/session
+- Safari login/session
+- refresh after login
+- logout on another page/tab
+- Google OAuth callback
+- Admin/Super Admin email/password login

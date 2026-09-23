@@ -1,195 +1,121 @@
-# Frontend + Backend Module Map
+# Frontend and Backend Modules
 
-## Frontend routes
-
-```text
-src/app/
-├── (customer)/
-│   ├── page.tsx
-│   ├── products/
-│   │   ├── page.tsx
-│   │   └── [slug]/page.tsx
-│   ├── categories/[slug]/page.tsx
-│   ├── collections/[slug]/page.tsx
-│   ├── search/page.tsx
-│   ├── cart/page.tsx
-│   ├── checkout/page.tsx
-│   ├── payment/
-│   ├── orders/
-│   ├── account/
-│   ├── login/page.tsx
-│   ├── register/page.tsx
-│   ├── forgot-password/page.tsx
-│   ├── reset-password/page.tsx
-│   ├── contact/page.tsx
-│   ├── faq/page.tsx
-│   ├── about/page.tsx
-│   └── policies/
-│
-├── admin/
-│   ├── page.tsx
-│   ├── products/
-│   ├── inventory/
-│   ├── orders/
-│   ├── customers/
-│   ├── reviews/
-│   ├── analytics/
-│   ├── earnings/
-│   ├── payout-requests/
-│   ├── notifications/
-│   ├── support/
-│   ├── activity/
-│   └── account/
-│
-└── super-admin/
-    ├── page.tsx
-    ├── admins/
-    ├── customers/
-    ├── roles/
-    ├── permissions/
-    ├── admin-access/
-    ├── finance/
-    ├── commissions/
-    ├── payment-settings/
-    ├── payouts/
-    ├── orders/
-    ├── products/
-    ├── analytics/
-    ├── refunds/
-    ├── activity-logs/
-    ├── notifications/
-    ├── content/
-    ├── recovery/
-    └── settings/
-```
-
-## Shared backend domains
+## Customer frontend
 
 ```text
-src/modules/
-├── auth/
-├── customer/
-├── catalog/
-├── categories/
-├── brands/
-├── search/
-├── inventory/
-├── cart/
-├── checkout/
-├── shipping/
-├── coupons/
-├── orders/
-├── payments/
-├── refunds/
-├── reviews/
-├── notifications/
-├── support/
-├── media/
-├── cms/
-├── analytics/
-└── audit/
+/
+/products
+/products/[slug]
+/categories/[slug]
+/categories/[category]/[subcategory]
+/search
+/cart
+/checkout
+/payment/success
+/payment/failed
+/orders
+/orders/[id]
+/account
+/account/wishlist
+/account/addresses
+/account/support
+/login
 ```
 
-## Admin-specific domains
+No collections routes.
+
+## Admin frontend
 
 ```text
-src/modules/admin/
-├── account/
-├── customer-management/
-├── revenue/
-├── payout-requests/
-├── recovery/
-└── activity/
+/admin
+/admin/products
+/admin/categories/subcategories
+/admin/inventory
+/admin/orders
+/admin/customers
+/admin/reviews
+/admin/analytics
+/admin/earnings
+/admin/payout-requests
+/admin/notifications
+/admin/activity
+/admin/account
 ```
 
-## Super Admin-specific domains
+Admin product creation:
 
 ```text
-src/modules/super-admin/
-├── admin-management/
-├── customer-management/
-├── roles-permissions/
-├── admin-access/
-├── commission/
-├── payment-settings/
-├── payout-management/
-├── finance/
-├── recovery/
-└── settings/
+main category → existing/new permitted subcategory → product
 ```
 
-## Customer business modules
+## Super Admin frontend
 
 ```text
-Auth
-Catalog
-Search
-Cart
-Checkout
-Shipping
-Coupons
-Orders
-Payments
-Refunds/Returns
-Reviews
-Notifications
-Support
-Account
+/super-admin
+/super-admin/admins
+/super-admin/roles
+/super-admin/permissions
+/super-admin/admin-access
+/super-admin/customers
+/super-admin/products
+/super-admin/categories
+/super-admin/orders
+/super-admin/analytics
+/super-admin/finance
+/super-admin/commissions
+/super-admin/payment-settings
+/super-admin/payouts
+/super-admin/refunds
+/super-admin/activity
+/super-admin/notifications
+/super-admin/content
+/super-admin/recovery
+/super-admin/settings
 ```
 
-## Admin business modules
+## Shared backend modules
 
 ```text
-Products
-Inventory
-Online Orders
-Customer Management
-Reviews
-Analytics
-Earnings
-Payout Requests
-Notifications
-Support
-Activity
-Account
+worker/src/modules/
+├── auth
+├── users
+├── categories
+├── catalog
+├── inventory
+├── search
+├── cart
+├── checkout
+├── shipping
+├── coupons
+├── orders
+├── payments
+├── refunds
+├── reviews
+├── notifications
+├── customer-management
+├── support
+├── media
+├── cms
+├── analytics
+├── admin-revenue
+├── payouts
+└── audit
 ```
 
-## Super Admin business modules
+## Ownership boundaries
 
-```text
-Admin Management
-Customer Management
-Roles/Permissions
-Admin Access
-Products/Orders oversight
-Commission
-Payment Gateway settings
-Payout Management
-Platform Finance
-Refunds
-Analytics
-Content
-Audit
-Recovery
-Settings
-```
+### Customer
 
-## Module rule
+Own account/cart/wishlist/orders/support/reviews.
 
-A feature belongs to the **domain module** first and to a role UI second.
+### Admin
 
-Bad:
+Assigned products/inventory/orders/reviews, permitted customer visibility, earnings and payout requests, own activity/account.
 
-```text
-admin/orders/service.ts
-super-admin/orders/service.ts
-customer/orders/service.ts
-```
+### Super Admin
 
-Preferred:
+Platform-wide authority, Admin lifecycle, roles/permissions, customer management, payments, payouts, finance, audit, content, recovery.
 
-```text
-modules/orders/service.ts
-```
+## Collection removal
 
-with authorization at the API/use-case boundary.
+Do not add a `collections` module back into this structure.

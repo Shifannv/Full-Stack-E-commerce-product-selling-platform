@@ -1,97 +1,118 @@
-# References + Current Verification Notes
+# References and Research Notes — 2026-09-23
 
-Research date: **2026-09-22**
+## Cloudflare Pages + Next.js static export
 
-## Cloudflare
-
-### Next.js static export to Pages
 https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-static-nextjs-site/
 
-Cloudflare's current guide specifically documents static Next.js export to Pages using `npx next build` and `out`.
+Cloudflare documents Next.js Static HTML Export on Pages with `npx next build` and the `out` directory.
 
-### Pages Functions
-https://developers.cloudflare.com/pages/functions/
+## Cloudflare Next.js / Workers
 
-Pages Functions provide server-side code for dynamic behavior without a dedicated server.
+https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/
 
-### Pages Functions pricing
-https://developers.cloudflare.com/pages/functions/pricing/
+Cloudflare currently recommends vinext for full-stack Next.js on Workers and documents static export/ISR support. This is the future migration path if pure static export becomes insufficient.
 
-Static asset requests remain free/unlimited; Pages Function requests count toward Workers plan quotas.
+## Cloudflare Hyperdrive
 
-### Pages routing
-https://developers.cloudflare.com/pages/functions/routing/
+https://developers.cloudflare.com/hyperdrive/
 
-Use routing exclusions so static routes do not unnecessarily invoke Functions.
+Hyperdrive supports PostgreSQL/MySQL and provides connection pooling close to Workers.
 
-### Pages limits
-https://developers.cloudflare.com/pages/platform/limits/
+## Hyperdrive PostgreSQL
 
-Current Free limits include a 20,000-file site limit and 25 MiB maximum asset size.
+https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/
 
-### R2 pricing
-https://developers.cloudflare.com/r2/pricing/
+## Aiven PostgreSQL Free Tier
 
-Current Standard free tier includes 10 GB-month storage, 1M Class A operations, 10M Class B operations and free internet egress.
+https://aiven.io/docs/products/postgresql/concepts/pg-free-tier
 
-### Pages Deploy Hooks
-https://developers.cloudflare.com/pages/configuration/deploy-hooks/
+Current free-tier facts used in this project:
 
-Deploy Hooks trigger new Pages builds by POSTing to a unique hook URL.
+- 1 CPU
+- 1 GB RAM
+- 1 GB disk
+- single node
+- 20 max connections
+- no connection pooling
+- no 99.99% SLA
+- possible inactivity power-off
 
-## Neon
+## Aiven PostgreSQL pricing
 
-### Free plan limits
-https://github.com/neondatabase/website/blob/main/content/faqs/free-plan-limits-and-quotas.md
+https://aiven.io/postgresql
 
-Current documented Free plan: 100 projects, 100 CU-hours/project/month, 0.5 GB storage/project, 10 branches/project, 5 GB public network transfer/project/month. Compute scales to zero after inactivity.
+## Cloudflare R2
 
-### Serverless driver
-https://neon.com/blog/serverless-driver-for-postgres
+https://developers.cloudflare.com/r2/get-started/s3/
+https://developers.cloudflare.com/r2/api/s3/api/
 
-Neon documents its serverless driver for environments including Cloudflare Workers.
+R2 supports an S3-compatible API and Worker bindings. The project can use presigned uploads or Worker bindings.
 
-## Better Auth
+## Better Auth basic usage
 
-### Email + password
-https://better-auth.com/docs/authentication/email-password
+https://better-auth.com/docs/basic-usage
 
-Current docs: password credentials are stored in the account table and password hashing uses `scrypt` by default.
+Better Auth supports email/password and social providers including Google.
 
-### Users/accounts
-https://better-auth.com/docs/concepts/users-accounts
+## Better Auth Hono integration
 
-Covers password changes, account linking and account/session-related behavior.
-
-### Drizzle adapter
-https://better-auth.com/docs/adapters/drizzle
-
-Official Drizzle integration.
-
-### Hono integration
 https://better-auth.com/docs/integrations/hono
 
-Official Hono integration, including Cloudflare Workers compatibility guidance.
+Cloudflare Workers require the appropriate Node.js compatibility setting for the current Hono integration.
 
-## Resend
+## Google OAuth reference
 
-https://resend.com/pricing
+https://developers.google.com/identity/protocols/oauth2/web-server
 
-Current Free plan: 3,000 emails/month, 100 emails/day and 3 domains.
+Use the Google credentials already created by the project owner for Customer login.
 
-## Google Search
+## Payment
 
-### Product structured data
-https://developers.google.com/search/docs/appearance/structured-data/product-snippet
+Cashfree official documentation should be used for current SDK/API/webhook details before implementation because provider APIs and signing requirements can change.
 
-Google recommends Product structured data in initial HTML for merchant/product search experiences.
+## Source-of-truth note
 
-### Merchant listings
-https://developers.google.com/search/docs/appearance/structured-data/merchant-listing
+The URLs above are references for implementation details. Business rules in `PROJECT_CONTEXT.md` remain the project-specific source of truth.
 
-### Product variants
-https://developers.google.com/search/docs/appearance/structured-data/product-variants
+## Cloudflare Workers Cache
 
-## Verification caution
+https://developers.cloudflare.com/workers/runtime-apis/cache/
 
-Provider pricing, free quotas, framework support and platform limits can change. Treat current vendor documentation as authoritative at implementation/deployment time.
+The Cache API provides programmatic cache control from Workers. Cache entries are not a globally synchronized database, and cache placement/behavior should be designed around public cache-safe responses.
+
+## Cloudflare Workers Caching configuration
+
+https://developers.cloudflare.com/workers/cache/configuration/
+
+Workers caching can be controlled with cache configuration and cache headers. Requests/responses with authentication or private/no-store characteristics need explicit handling and should not become shared public customer data.
+
+## Cloudflare Hyperdrive connection pooling
+
+https://developers.cloudflare.com/hyperdrive/concepts/connection-pooling/
+
+Hyperdrive maintains origin connection pools and is useful for protecting a small PostgreSQL service from excessive direct Worker connections.
+
+## Upstash Redis pricing
+
+https://upstash.com/pricing/redis
+
+Current Free plan facts used in the cache plan:
+
+- 256 MB data size
+- 10 GB monthly bandwidth
+- 500K monthly commands
+- $0/month
+
+These values can change; check the provider before deployment decisions.
+
+## Better Auth cookies
+
+https://better-auth.com/docs/concepts/cookies
+
+Better Auth documents secure/httpOnly cookie handling for sessions. The application should not move privileged session secrets into localStorage.
+
+## Better Auth session management
+
+https://better-auth.com/docs/concepts/session-management
+
+Better Auth documents cookie-based sessions and optional short-lived session cookie caching. This does not make localStorage the account authority.

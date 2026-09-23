@@ -1,201 +1,131 @@
-# Stack Decision + Critique
+# Stack Decision and Critique — 2026-09-23
 
-## Decision
+## Final stack
 
-The project can use the following stack:
+| Area | Decision |
+|---|---|
+| Frontend | Next.js App Router + TypeScript |
+| UI | Tailwind CSS + shadcn/ui |
+| SEO target | Static export / prebuilt HTML on Cloudflare Pages |
+| Backend | Cloudflare Worker + Hono |
+| DB | Aiven PostgreSQL |
+| Worker DB access | Cloudflare Hyperdrive |
+| ORM | Drizzle ORM |
+| Auth | Better Auth |
+| Customer login | Google OAuth through Better Auth |
+| Admin login | Better Auth email/password |
+| Super Admin login | Better Auth email/password |
+| Images/files | Cloudflare R2 |
+| Application cache | Upstash Redis (controlled/optional) |
+| Email | Resend |
+| Payment | Cashfree Payment Gateway |
+| Admin settlements | Cashfree Payouts or controlled manual payment |
+| Source control | GitHub |
 
-```text
-Frontend
-  Next.js + TypeScript + Tailwind + shadcn/ui
+## Critique
 
-Static hosting
-  Cloudflare Pages
+### 1. Aiven is acceptable, but its free tier is a starting tier
 
-Backend
-  Cloudflare Pages Functions
-  Hono for routing (recommended)
+Aiven currently documents a Free PostgreSQL service with 1 CPU, 1 GB RAM, 1 GB disk, a maximum of 20 connections, no built-in connection pooling, and no SLA. It can power down after inactivity. This is useful for development and small-scale use, but the project should not assume that this tier can support high traffic or large catalogs forever.
 
-Database
-  Neon PostgreSQL
-  Drizzle ORM
-  @neondatabase/serverless
+Design the application so the database provider can be upgraded without rewriting business logic.
 
-Auth
-  Better Auth
-  Customer → Google OAuth
-  Admin → email/password
-  Super Admin → email/password
+### 2. Hyperdrive is important for the Worker → Aiven path
 
-Media
-  Cloudflare R2
+Cloudflare Hyperdrive supports PostgreSQL and keeps a managed connection pool close to the Worker. That is especially useful because Aiven Free itself does not provide connection pooling and has a 20-connection limit.
 
-Email
-  Resend
+Use Hyperdrive rather than opening a new database connection for every request.
 
-Payments
-  Cashfree
-```
+### 3. Cloudflare Pages static export is good for the SEO-first storefront, but it has a scaling limitation
 
-## Critique 1 — Your SSG choice is valid, but pure SSG has a real ecommerce limitation
+A pure static export means public pages are produced during a build. New products/categories and content changes require a new build to regenerate the affected HTML.
 
-Cloudflare documents Next.js static export to Pages and uses `out` as the build directory. Static assets are served for free/unlimited requests on Pages. See official source in PROJECT_CONTEXT.md
+That is acceptable for the current plan, but the docs include a migration path to Cloudflare Workers/ISR if the catalog becomes large or updates become frequent. Do not prematurely build a complex ISR system.
 
-The problem is data freshness.
+### 4. Do not create a second authentication system
 
-Example:
+Google OAuth and Better Auth are not competing products in this design.
 
-```text
-Product page HTML generated at 10:00
-Price = ₹999
+Better Auth owns users, sessions, account linking, authorization integration, and authentication flows. Google is simply the Customer OAuth provider.
 
-Admin changes price at 14:00
-Price = ₹899
-```
+### 5. Do not encrypt passwords
 
-The old HTML remains until a new static build occurs.
+Passwords are hashed. Reversible encryption of user passwords creates unnecessary risk and is not the correct authentication storage model.
 
-Therefore:
+### 6. R2 replaces Cloudinary/GCS
 
-- SSG is good for SEO/public storefront content.
-- Backend must still be the authority for live prices, stock, coupons and payments.
-- Product/category/CMS changes need a rebuild trigger.
-- Use a Cloudflare Pages Deploy Hook after important content/catalog changes.
+R2 is the single file/image store. Store object keys/URLs in PostgreSQL; store binary media in R2.
 
-## Critique 2 — Do not make the backend responsible for SEO HTML
+### 7. Keep one backend Worker
 
-Wrong:
+Do not split the platform into many services. One Hono Worker with domain modules is easier to maintain and adequate for this application.
+
+## Current deployment architecture
 
 ```text
-Backend → creates HTML → frontend
+                 CUSTOMER
+                    │
+                    ▼
+          Cloudflare Pages
+          Next.js static export
+                    │
+                    ▼
+              API requests
+                    │
+                    ▼
+        Cloudflare Worker + Hono
+                    │
+         ┌──────────┼───────────┬───────────┐
+         ▼          ▼           ▼           ▼
+   Better Auth    Hyperdrive   Upstash      R2
+                    │           Redis
+                    │
+
+                    ▼
+               Aiven Postgres
+
+        Worker → Cashfree
+        Worker → Resend
+        Worker → Google OAuth
 ```
 
-Correct:
+## Scale trigger
+
+Start with Pages static export.
+
+Plan a controlled migration to Next.js on Cloudflare Workers/ISR when one or more of these become true:
+
+- Product count makes full builds slow.
+- Category/product updates happen frequently enough that rebuild latency is unacceptable.
+- The business needs server-rendered personalization on public pages.
+- The storefront needs request-time data that cannot be represented in static HTML.
+
+This is a planned upgrade, not a reason to over-engineer version 1.
+
+
+### 8. Cache architecture is layered, not a second database
+
+The current plan uses:
 
 ```text
-Neon/backend data
-      ↓
-Next.js build
-      ↓
-HTML files
-      ↓
-Cloudflare Pages
+Browser localStorage
+→ only non-sensitive client state
+
+Cloudflare cache
+→ public HTTP/SEO/static responses
+
+Upstash Redis
+→ short-lived server-side cache/rate limits only when useful
+
+Hyperdrive
+→ PostgreSQL connection pooling + eligible read caching
+
+Aiven PostgreSQL
+→ source of truth
 ```
 
-Backend owns data and business logic. Next.js owns storefront rendering.
+Do not cache customer-specific or financial data in a shared public cache. Do not make Redis a replacement for PostgreSQL. See `CACHE_AND_CLIENT_STATE.md`.
 
-## Critique 3 — Do not put normal Next.js server API routes inside a pure static export
+### 9. Free-tier critique of Redis
 
-A static export is not the place for server-only application code.
-
-Use:
-
-```text
-src/app/          → pages/UI
-functions/        → backend runtime
-```
-
-This prevents deployment confusion where `src/app/api/*` expects a Node/Next server but the site is being deployed as static files.
-
-## Critique 4 — Neon is a good match for Cloudflare serverless code
-
-Use:
-
-```text
-@neondatabase/serverless
-```
-
-rather than relying on a normal persistent TCP PostgreSQL driver inside the Cloudflare runtime. Neon documents its serverless driver specifically for serverless environments including Cloudflare Workers. See official source in PROJECT_CONTEXT.md
-
-## Critique 5 — R2 is the correct media direction for this plan
-
-R2 has no internet-egress charge and currently includes a monthly free tier of 10 GB-month Standard storage, 1 million Class A operations and 10 million Class B operations. See official source in PROJECT_CONTEXT.md
-
-Still:
-
-- Free tier limits are not unlimited.
-- Do not upload every original file forever.
-- Validate file type and file size.
-- Generate predictable object keys.
-- Delete abandoned uploads.
-- Keep private proof files private.
-
-## Critique 6 — Password wording must change
-
-Do not say:
-
-> "Password should be encrypted in DB."
-
-Correct security model:
-
-```text
-password
-   ↓
-slow password hash
-   ↓
-DB
-```
-
-Better Auth currently uses `scrypt` by default. Its documentation states that passwords are stored in the `account` table with `providerId = credential`. See official source in PROJECT_CONTEXT.md
-
-The application never needs to decrypt a password because passwords should not be decryptable.
-
-## Critique 7 — Free forever is not a guarantee
-
-The architecture is intentionally designed around free/low-cost services, but no provider can guarantee that a free quota or product remains free forever.
-
-Current documented examples:
-
-- Cloudflare Pages static requests are unlimited/free; Pages Functions share the Workers Free request quota. See official source in PROJECT_CONTEXT.md
-- Workers Free currently has a 100,000 requests/day limit. See official source in PROJECT_CONTEXT.md
-- R2 currently has a free Standard tier of 10 GB-month + operation allowances. See official source in PROJECT_CONTEXT.md
-- Neon Free currently provides 100 CU-hours/project/month, 0.5 GB storage/project, 10 branches/project and 5 GB public network transfer/project/month. See official Neon source in PROJECT_CONTEXT.md
-- Resend Free currently provides 3,000 emails/month with a 100/day cap. See official source in PROJECT_CONTEXT.md
-
-Cashfree transaction/payment costs are separate from hosting free tiers.
-
-## Critique 8 — Keep build-time SEO and runtime commerce separate
-
-Use build-time rendering for:
-
-- product descriptions
-- category copy
-- collection pages
-- static CMS pages
-- structured data
-- canonical metadata
-
-Use runtime backend for:
-
-- login/session
-- cart changes
-- checkout
-- final price
-- inventory check
-- payment
-- orders
-- refunds
-- admin actions
-- payouts
-
-This separation prevents SEO from becoming a security problem.
-
-## Critique 9 — Use one repo, but two runtime responsibilities
-
-Recommended repository boundary:
-
-```text
-ecommerce/
-├── src/                 # Next.js UI
-├── functions/           # Cloudflare backend
-├── db/ / src/db/        # Drizzle schema
-├── public/              # small static assets only
-└── docs/
-```
-
-Do not create a second unrelated ecommerce project just to host the API.
-
-## Final architecture judgment
-
-The stack is internally coherent **when the project is treated as a static Next.js storefront plus Cloudflare serverless backend**.
-
-The biggest mistake to avoid is treating `next export` as if it were a full backend runtime. It is not.
+Upstash Redis Free is currently documented at 256 MB data, 10 GB monthly bandwidth, and 500K monthly commands. It can be useful as a small early-stage cache, but those limits are not large enough to justify putting the entire application's state into Redis. Use it selectively and keep PostgreSQL authoritative.

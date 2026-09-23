@@ -1,218 +1,273 @@
-# PostgreSQL + Drizzle Database Plan
+# Database Plan — Aiven PostgreSQL + Drizzle
 
-## Database provider
+## 1. Database provider
 
-**Neon PostgreSQL**
+Current provider: **Aiven PostgreSQL**.
 
-Current free plan documentation lists 100 CU-hours/project/month, 0.5 GB storage/project, 10 branches/project and 5 GB public network transfer/project/month. Free plan computes scale to zero after inactivity. Verify the current dashboard before production because provider limits can change.
+Local development connects through `DATABASE_URL` directly to Aiven.
 
-## Driver
-
-Use:
-
-```bash
-npm install drizzle-orm @neondatabase/serverless
-npm install -D drizzle-kit
-```
-
-Do not use the Node `pg` package in the Cloudflare runtime.
-
-## Connection
-
-```env
-DATABASE_URL=
-```
-
-Use the Neon connection string appropriate to the serverless driver.
-
-Never expose `DATABASE_URL` through `NEXT_PUBLIC_*`.
-
-## Schema organization
-
-Recommended:
+Cloudflare Worker production path:
 
 ```text
-src/db/
-├── index.ts
-├── schema/
-│   ├── auth.ts
-│   ├── users.ts
-│   ├── rbac.ts
-│   ├── catalog.ts
-│   ├── customer.ts
-│   ├── cart.ts
-│   ├── orders.ts
-│   ├── payments.ts
-│   ├── refunds.ts
-│   ├── admin-finance.ts
-│   ├── support.ts
-│   ├── cms.ts
-│   └── audit.ts
-└── migrations/
+Worker → Hyperdrive → Aiven PostgreSQL
 ```
 
-## Auth tables
+## 2. Domains
 
-Better Auth manages its required auth tables. Integrate them with the application's user identity model instead of creating a second competing password table.
-
-Common Better Auth tables include:
+### Identity / Auth
 
 ```text
-user
-account
-session
-verification
-```
-
-## Business tables
-
-```text
+users
 admins
 roles
 permissions
 user_roles
 role_permissions
-user_permissions
+account_verifications
+```
 
-products
+Better Auth tables required by the selected adapter are authoritative for auth. Do not invent a second custom user/session system.
+
+### Categories
+
+```text
 categories
-brands
-product_categories
-product_images
-product_variants
-product_admins
+subcategories
+```
 
+Rules:
+
+- Categories are top-level/main categories.
+- Subcategories are exactly one level below a category.
+- No unlimited parent-child tree.
+- Admin-created subcategories can be owned by that Admin.
+- Super Admin has global control.
+
+### Catalog
+
+```text
+products
+product_admins
+product_variants
+product_images
+```
+
+Recommended product fields:
+
+```text
+id
+name
+slug
+description
+category_id
+subcategory_id
+status
+base_price
+compare_at_price
+currency
+sku
+is_featured
+is_new
+is_active
+seo_title
+seo_description
+created_at
+updated_at
+```
+
+Never use one current product price as historical order data.
+
+### Inventory
+
+```text
+inventory_items
+inventory_movements
+stock_reservations
+```
+
+Keep inventory simple and transactional.
+
+### Customer / shopping
+
+```text
 addresses
 wishlists
 wishlist_items
-notifications
-customer_communication_preferences
-account_verifications
-account_deletion_requests
-
 carts
 cart_items
 coupons
 coupon_usages
+notifications
+```
 
+### Orders
+
+```text
 orders
 order_items
 returns
 return_items
 refunds
 invoices
+```
 
+## 3. Order snapshot model
+
+`order_items` should contain immutable historical data.
+
+Required snapshot fields:
+
+```text
+order_id
+product_id nullable
+variant_id nullable
+product_name_snapshot
+sku_snapshot
+unit_price
+quantity
+discount_amount
+tax_amount
+line_total
+```
+
+Optional but useful:
+
+```text
+product_image_snapshot
+variant_name_snapshot
+```
+
+Use integer minor units for money where practical, e.g. paise for INR, rather than floating point.
+
+## 4. Payment
+
+```text
 payments
 payment_attempts
 cashfree_webhook_events
+```
 
+Use idempotency keys and unique provider reference IDs.
+
+Webhook processing must be idempotent: receiving the same webhook twice must not create a second payment or double-fulfill an order.
+
+## 5. Admin revenue / payout
+
+```text
 admin_revenue
-commission_rules
 admin_bank_accounts
 payout_beneficiaries
 payout_requests
 admin_payouts
-platform_withdrawals
+commission_rules
+```
 
+Formula:
+
+```text
+Gross Product Sales
+- Commission
+- Payment Gateway Fee
+- Refund Adjustment
+= Net Payable
+```
+
+## 6. Customer messaging
+
+```text
 customer_email_messages
-contact_messages
-support_tickets
-support_messages
+customer_communication_preferences
+```
 
+Admin messaging is permission-controlled; Super Admin has broader authority.
+
+## 7. CMS / home page
+
+```text
 pages
 page_sections
 faqs
 banners
-collections
-collection_products
+```
 
+No collection tables.
+
+Home merchandising can use banners, home sections, category cards, product flags, and explicit product references.
+
+## 8. Audit / access
+
+```text
 audit_logs
 admin_access_sessions
-settings
+admin_account_deletion_requests
+admin_archives
 ```
 
-## Monetary values
+## 9. Financial/history rule
 
-Do not use floating-point JavaScript numbers as the database source of truth for money.
-
-Prefer PostgreSQL `numeric` for currency amounts and a central money utility.
-
-Concept:
+Never use the current `products.base_price` to render the price paid in an old order.
 
 ```text
-amount: numeric(12,2)
-currency: char(3)
+CURRENT PRODUCT
+products.base_price
+      ↓
+used only for current catalog/checkout validation
+
+HISTORICAL ORDER
+order_items.unit_price
+      ↓
+used for order history/invoice/refund history
 ```
 
-## Order invariants
+## 10. Required indexes
 
-- Order items must preserve purchased unit price at purchase time.
-- Product current price can change later.
-- Refunds must reference the affected order/item.
-- Payment records must be distinct from order business state.
-- Order payment status must be controlled by verified backend events.
-
-## Inventory invariants
-
-- Stock cannot go negative unless a business rule explicitly permits it.
-- Checkout re-checks stock.
-- Payment success alone does not guarantee stock was valid.
-- Concurrent purchase paths require transaction/locking strategy appropriate to the chosen Neon/Postgres flow.
-
-## Admin ownership
-
-Current plan allows product assignment to Admins. Use:
+At minimum, plan indexes for:
 
 ```text
-product_admins
+products(slug)
+products(category_id, is_active)
+products(subcategory_id, is_active)
+products(status, created_at)
+product_admins(admin_id, product_id)
+order_items(order_id)
+orders(customer_id, created_at)
+orders(status, created_at)
+payments(order_id)
+payment_attempts(provider_reference)
+cashfree_webhook_events(provider_event_id)
+subcategories(category_id, is_active)
 ```
 
-when multiple Admin access to a product is required.
+Add indexes based on real query patterns; do not index every column.
 
-If business rules later guarantee one Admin per product, `products.admin_id` can simplify the relationship.
+## 11. Scale rules
 
-## Soft deletion
+- Paginate every admin/customer/product/order table.
+- Never load the full product table for an admin page.
+- Never perform N+1 queries for product lists/order lists.
+- Select only columns required by a page.
+- Use transactions for checkout, inventory reservation, payout state changes, refund changes, and other financial operations.
+- Use database constraints for uniqueness and important data integrity.
+- Keep audit logs append-oriented.
 
-For business records that must remain for finance/order history, use state columns rather than physical deletion.
 
-Examples:
+## 12. Cache boundary
+
+Aiven PostgreSQL remains the database of record.
 
 ```text
-deleted_at
-archived_at
-status
+Cache miss → PostgreSQL
+Cache hit  → response acceleration only
 ```
 
-## Audit records
+Cache entries must never be treated as authoritative for:
 
-Audit should capture:
+- payment status
+- order ownership/status
+- price charged
+- inventory commit
+- Admin earnings
+- payout status
+- permissions
 
-```text
-actor_user_id
-actor_role
-acting_on_behalf_of_user_id (nullable)
-action
-resource_type
-resource_id
-before_snapshot (when appropriate)
-after_snapshot (when appropriate)
-ip / request metadata where policy allows
-created_at
-```
-
-## Migration rule
-
-Use:
-
-```bash
-npx drizzle-kit generate
-npx drizzle-kit migrate
-```
-
-Do not manually edit production tables outside the migration process unless an emergency procedure explicitly requires it.
-
-## Sources
-
-- Neon free limits: https://github.com/neondatabase/website/blob/main/content/faqs/free-plan-limits-and-quotas.md
-- Neon serverless driver: https://neon.com/blog/serverless-driver-for-postgres
-- Better Auth Drizzle: https://better-auth.com/docs/adapters/drizzle
+Historical order values are stored in `order_items` and are never reconstructed from cached/current product data.

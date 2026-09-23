@@ -1,179 +1,183 @@
-# Cloudflare Deployment Plan
+# Cloudflare Deployment Architecture
 
-## Target
+## Current target
+
+### Public web
 
 ```text
 GitHub
-  ↓
+↓
 Cloudflare Pages
-  ├── Next.js static build → out/
-  └── Pages Functions → backend APIs
+↓
+Next.js Static HTML Export
+↓
+out/
+```
 
-Neon PostgreSQL
+### API
+
+```text
+GitHub
+↓
+Cloudflare Worker
+↓
+Hono
+↓
+Hyperdrive
+↓
+Aiven PostgreSQL
+```
+
+### Files
+
+```text
+Cloudflare Worker
+↓
+Cloudflare R2
+```
+
+
+## Cache architecture
+
+```text
+Browser localStorage
+    ↓ (non-sensitive client state only)
+Cloudflare Pages / edge cache
+    ↓ (public cache-safe content)
+Cloudflare Worker
+    ├── Upstash Redis (optional hot/derived cache)
+    ├── R2
+    ├── Cashfree
+    └── Resend
+          ↓
+      Hyperdrive
+          ↓
+     Aiven PostgreSQL
+```
+
+Cloudflare cache and Redis are not synchronized databases. PostgreSQL remains authoritative.
+
+### Cache rules
+
+- Public product/category/subcategory/catalog responses may be cached.
+- Authenticated account/order/admin/super-admin responses are private and must not become shared public cache entries.
+- Payment, payout, inventory and permission decisions always come from authoritative backend/database state.
+- Cache invalidation must happen after authoritative writes for affected public data.
+- Never use browser localStorage as the source of account/order truth.
+
+### Redis
+
+Use Upstash Redis only for documented cache/rate-limit/temporary-state use cases. Each Redis key must have a clear TTL, cache key scope, invalidation event, and PostgreSQL fallback.
+
+Do not add Redis to every request path just because Redis exists.
+
+## Aiven + Hyperdrive capacity note
+
+Aiven Free currently allows 20 database connections and does not provide built-in connection pooling. Hyperdrive maintains a connection pool at the database origin; configure it conservatively for the Aiven Free service instead of creating many direct application connections.
+
+## Cloudflare products used
+
+```text
+Pages
+Workers
+Hyperdrive
 R2
-Resend
-Cashfree
-Google OAuth
+DNS/custom domain
 ```
 
-## Pages build settings
+## Database path
 
-Current Cloudflare Pages documentation for Next.js static export uses:
+Do not open many direct DB connections from a Worker.
+
+Use:
 
 ```text
-Framework preset: Next.js (Static HTML Export)
-Build command: npx next build
-Build directory: out
+Worker → Hyperdrive → Aiven
 ```
 
-## Next.js config
+Hyperdrive is specifically designed to pool connections to existing PostgreSQL databases and can be used with PostgreSQL-compatible providers.
 
-Expected:
+## Worker bindings
 
-```ts
-const nextConfig = {
-  output: "export",
-};
-
-export default nextConfig;
-```
-
-Do not add server-only Next.js features that require a Next.js server runtime to public export pages.
-
-## Backend functions
-
-Use Cloudflare Pages Functions for server-side API/auth/webhook behavior.
-
-Possible structure:
+Typical bindings:
 
 ```text
-functions/
-├── api/
-│   ├── auth/
-│   ├── customer/
-│   ├── admin/
-│   ├── super-admin/
-│   └── webhooks/
-└── _middleware.ts
+HYPERDRIVE
+R2_MEDIA
 ```
 
-If a function framework/router is used, keep it behind this Cloudflare Functions boundary.
-
-## Local development
-
-Recommended two-process development:
-
-Terminal 1:
-
-```bash
-npm run dev
-```
-
-Terminal 2 for Cloudflare Functions/runtime testing:
-
-```bash
-npx wrangler pages dev out
-```
-
-Exact local command may evolve with the chosen Wrangler/Pages configuration.
-
-## Pages Functions free limit
-
-Cloudflare documents that Pages Functions requests count toward the Workers Free plan. Current free usage is 100,000 requests/day. Static asset requests remain free/unlimited.
-
-This means:
-
-- normal SEO page delivery should stay static whenever possible;
-- API/auth requests consume function quota.
-
-## `_routes.json`
-
-When Pages Functions exist, use route exclusions so static asset requests do not invoke functions unnecessarily.
-
-Goal:
+Typical secrets:
 
 ```text
-/static page → static asset path
-/api/*       → function
+BETTER_AUTH_SECRET
+GOOGLE_CLIENT_SECRET
+RESEND_API_KEY
+CASHFREE_CLIENT_SECRET
+PAYOUT_CLIENT_SECRET
+R2 secret values when S3 presigning is used
 ```
 
-## Deploy Hook for SEO rebuilds
+## Cloudflare Pages build
 
-Create a Cloudflare Pages Deploy Hook.
-
-Store the URL as a server secret:
-
-```env
-CLOUDFLARE_PAGES_DEPLOY_HOOK_URL=
-```
-
-Backend/catalog events can trigger a rebuild for:
-
-- product create/update/delete
-- category changes
-- collection changes
-- major CMS changes
-
-Do not trigger a build for:
-
-- every cart update
-- every order
-- every login
-- every payment webhook
-
-Batch content rebuild triggers where possible.
-
-## Custom domain
-
-Recommended eventual domain structure:
+Current static target:
 
 ```text
-https://www.example.com        → storefront
-https://api.example.com        → backend API if a separate API origin is used
-https://media.example.com      → R2 public media/custom domain if desired
+Build command:
+npx next build
+
+Build output:
+out
 ```
 
-Same-origin `/api/*` routing is also possible with Cloudflare routing patterns, but keep the first implementation simple.
+## Important Pages limitation
 
-## Cloudflare R2
+Static export does not run the Hono backend.
 
-Use R2 for:
+Do not put business APIs, payment webhooks, or privileged database logic in the static Pages deployment.
+
+## GitHub deployment flow
 
 ```text
-products/
-reviews/
-proofs/
-avatars/
-content/
+feature branch
+↓
+PR
+↓
+dev/test
+↓
+main
+↓
+Cloudflare deployment
 ```
 
-Public product images may use a public R2 bucket/custom domain.
+## SEO rebuild trigger
 
-Private files such as payment proof should not be publicly readable.
+Catalog/content changes that affect public HTML may call a protected Cloudflare Pages deploy hook.
 
-## Deployment safety
+The backend must authenticate/authorize any deployment trigger so arbitrary customers cannot start builds.
 
-Before production:
+## Authentication domain rule
 
-- Add production environment variables.
-- Confirm Google OAuth production redirect URL.
-- Confirm Cashfree production credentials.
-- Confirm Resend sending domain.
-- Confirm R2 bucket and media URL.
-- Confirm Neon production branch.
-- Confirm database migrations.
-- Confirm webhook URLs.
-- Confirm domain DNS.
-- Run SEO checks.
-- Run auth/security checks.
-- Test rollback.
+Prefer the same parent domain for the public site and API:
 
-## Sources
+```text
+www.example.com
+api.example.com
+```
 
-- Cloudflare Next.js static export: https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-static-nextjs-site/
-- Pages Functions: https://developers.cloudflare.com/pages/functions/
-- Pages Functions pricing: https://developers.cloudflare.com/pages/functions/pricing/
-- Pages routing: https://developers.cloudflare.com/pages/functions/routing/
-- Pages Deploy Hooks: https://developers.cloudflare.com/pages/configuration/deploy-hooks/
-- Pages limits: https://developers.cloudflare.com/pages/platform/limits/
-- R2 pricing: https://developers.cloudflare.com/r2/pricing/
+Configure Better Auth trusted origins and cross-subdomain cookie settings for the exact production origins. Do not solve cross-domain auth by storing session secrets in localStorage.
+
+## Production domains
+
+Recommended conceptual domains:
+
+```text
+www.example.com        → Pages
+api.example.com        → Worker
+cdn.example.com        → R2 public media/custom domain
+```
+
+The exact domains are placeholders.
+
+## Future scale migration
+
+Cloudflare's current documentation recommends Workers/vinext for full-stack Next.js applications and supports ISR/static generation there. If the static-export catalog becomes too expensive to rebuild, migrate the public site to Workers/ISR without changing database/order/auth business rules.

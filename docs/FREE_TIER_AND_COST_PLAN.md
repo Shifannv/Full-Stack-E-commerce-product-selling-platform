@@ -1,95 +1,89 @@
-# Free-Tier / Low-Cost Plan
+# Free-Tier and Cost Plan — Current Reality
 
-## Principle
+## Goal
 
-Target maximum use of free/open-source tiers during development and low traffic, while accepting that commercial payment processing and domain registration may still cost money.
+Use free/low-cost services during development and early operation while keeping the architecture easy to upgrade.
 
-No provider's free tier should be treated as a permanent contractual guarantee.
+No provider can guarantee that a free tier will remain unchanged forever. Treat free-tier details as current published limits, not permanent promises.
 
-## Current service plan
+## Aiven PostgreSQL
 
-| Service | Current choice | Free/low-cost note | Risk to plan |
-|---|---|---|---|
-| Next.js | Open source | Free | Low |
-| TypeScript | Open source | Free | Low |
-| Tailwind | Open source | Free | Low |
-| shadcn/ui | Open source | Free | Low |
-| Drizzle | Open source | Free | Low |
-| Better Auth | Open source | Free | Low |
-| Cloudflare Pages | Free tier | Static assets free/unlimited | Quotas/features can change |
-| Pages Functions | Cloudflare Free | Shares Workers free request quota | 100k requests/day current documented limit |
-| Neon PostgreSQL | Free tier | Current documented free plan available | Database quota limits |
-| R2 | Free tier | Current documented 10 GB-month + operation allowance | Overages after free quota |
-| Resend | Free tier | 3,000 emails/month; 100/day current | Email quota |
-| Google OAuth | Google Cloud | OAuth setup does not require a paid runtime service | Provider policy can change |
-| Cashfree | Payment service | Payment processing fees are separate | Not a free payment rail |
-| GitHub | Free | Git hosting | Account/repo limits/policy can change |
+Aiven currently documents a Free PostgreSQL service at $0/month with:
 
-## Current Cloudflare Pages facts
+- 1 CPU
+- 1 GB RAM
+- 1 GB disk
+- single node
+- monitoring/metrics/logs
+- backups
+- maximum 20 connections
+- no built-in connection pooling
+- no 99.99% SLA
+- possible inactivity shutdown
 
-- Static asset requests are free and unlimited on Pages.
-- Pages site file count on Free is currently capped at 20,000 files.
-- Individual Pages asset size is currently capped at 25 MiB.
-- Pages Functions requests count toward Workers free usage.
+Use Hyperdrive for the Worker → Aiven connection path.
 
-## Current Neon facts
+## Cloudflare R2
 
-Neon's current Free plan documentation lists:
+R2 is the project media store. Current published pricing includes monthly free usage and no egress bandwidth charge, with storage/operation charges above included usage.
 
-- 100 projects
-- 100 CU-hours/project/month
-- 0.5 GB database storage/project
-- 10 branches/project
-- 5 GB public network transfer/project/month
-- scale-to-zero after inactivity
+## Cloudflare Pages / Workers
 
-For this ecommerce project, keep media out of Neon because R2 is the object store.
+Use Pages for the current static public site and Workers for the backend API. Monitor request usage rather than treating free service quotas as unlimited.
 
-## Current R2 facts
+## Resend
 
-R2 Standard currently includes monthly:
+Use for transactional/customer email. Verify a sender domain before production. Respect customer communication preferences.
 
-- 10 GB-month storage
-- 1 million Class A operations
-- 10 million Class B operations
-- no internet egress charge
+## Cashfree
 
-## Current Resend facts
-
-Free plan currently includes:
-
-- 3,000 emails/month
-- 100 emails/day
-- 3 domains
-
-## Avoid free-tier abuse
-
-Do not:
-
-- create many fake accounts to bypass quotas;
-- store large files repeatedly;
-- trigger full static rebuilds after every small change;
-- send promotional mail without user preferences/controls;
-- use production as a testing database;
-- create unlimited preview branches and keep them forever.
+Sandbox is for development. Production payment/payout activity can incur provider charges.
 
 ## Cost-control rules
 
-1. Store images in R2, not Neon.
-2. Keep static pages static so normal page delivery does not consume function quota.
-3. Make auth/API endpoints efficient.
-4. Cache public catalog queries where safe.
-5. Batch rebuild triggers.
-6. Delete abandoned R2 uploads.
-7. Delete stale Neon preview branches.
-8. Keep Resend messages transactional and permissioned.
-9. Use Cashfree sandbox during development.
-10. Monitor actual usage before adding paid services.
+- Compress images.
+- Avoid duplicate R2 objects.
+- Store metadata in PostgreSQL, binaries in R2.
+- Paginate large lists.
+- Add indexes based on real queries.
+- Avoid N+1 queries.
+- Batch/debounce SEO rebuild triggers.
+- Do not rebuild Pages for internal-only changes.
+- Use Hyperdrive pooling.
+- Do not add expensive infrastructure before measured need.
 
-## Sources
+## Upgrade signals
 
-- Cloudflare Pages Functions pricing: https://developers.cloudflare.com/pages/functions/pricing/
-- Cloudflare Pages limits: https://developers.cloudflare.com/pages/platform/limits/
-- Cloudflare R2 pricing: https://developers.cloudflare.com/r2/pricing/
-- Neon Free limits: https://github.com/neondatabase/website/blob/main/content/faqs/free-plan-limits-and-quotas.md
-- Resend pricing: https://resend.com/pricing
+Upgrade when actual metrics show:
+
+- Aiven storage approaching 1 GB.
+- Connection/latency pressure.
+- Frequent inactivity shutdown is unacceptable.
+- Production workload requires SLA/HA.
+- Pages build time becomes operationally painful.
+- Worker/database usage exceeds the chosen free limits.
+
+The architecture intentionally keeps provider-specific logic isolated so these upgrades can happen without rewriting order/auth business rules.
+
+
+## Upstash Redis
+
+Current selected Redis provider for the free/early stage: **Upstash Redis**.
+
+Current published Free limits:
+
+- 256 MB data size
+- 10 GB monthly bandwidth
+- 500K monthly commands
+- $0/month
+
+Use Redis for small, controlled cache/rate-limit/temporary-state workloads only. Do not treat the free tier as a guarantee for long-term production traffic.
+
+## Cache cost-control rules
+
+- Cloudflare edge cache is the first choice for public cache-safe HTTP responses.
+- Do not duplicate every response into Redis.
+- Use Redis only for measurable hot paths or utility features.
+- Keep TTLs short for derived data.
+- Invalidate cache after product/category changes.
+- Keep PostgreSQL as the authority so cache loss never causes data loss.

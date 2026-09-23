@@ -1,28 +1,29 @@
 # Ecommerce Platform — Project Context & Architecture Guide
 
-> **Source of truth — updated 2026-09-22**
+> **Status:** Current source of truth — updated 2026-09-23.
 >
-> Read this file before creating or changing application code. New implementation must follow this document unless the project owner explicitly changes a decision.
+> Read this file before creating, changing, refactoring, or reviewing code. If existing code conflicts with this file, do not silently invent a third architecture. Explain the conflict and implement the current decision.
 
 ## 1. Product
 
-A **single-tenant full-stack ecommerce platform** with three user areas:
+This is a **single-tenant ecommerce platform** with one Super Admin, multiple internal Admin sellers, and public Customers.
+
+The application is one repository, but it has two runtime deliverables:
 
 ```text
-CUSTOMER
-  ↓
-Storefront
+PUBLIC WEB
+Next.js App Router
+→ static SEO HTML target
+→ Cloudflare Pages
 
-ADMIN
-  ↓
-Internal seller / store operator
-
-SUPER ADMIN
-  ↓
-Platform owner / controller
+BACKEND API
+Hono
+→ Cloudflare Worker
+→ Cloudflare Hyperdrive
+→ Aiven PostgreSQL
 ```
 
-Routes:
+Public routes:
 
 ```text
 Customer      → /
@@ -30,51 +31,9 @@ Admin         → /admin
 Super Admin   → /super-admin
 ```
 
-There is one codebase/repository, but deployment is intentionally split inside the same project boundary:
+The Customer storefront is SEO-first. The Admin and Super Admin areas are authenticated application UIs and are not treated as SEO pages.
 
-```text
-Next.js static storefront
-        ↓
-Cloudflare Pages
-
-Cloudflare Pages Functions
-        ↓
-Backend API + Auth + Webhooks
-        ↓
-Neon PostgreSQL
-```
-
-## 2. Locked business decisions
-
-- Single-tenant ecommerce.
-- One Super Admin platform owner.
-- Admins are internal sellers/store operators.
-- No public Admin registration.
-- Customer online payment only.
-- COD disabled.
-- Customer payment uses **Cashfree Payment Gateway**.
-- Admins do not own Cashfree merchant accounts.
-- No Cashfree Easy Split.
-- Admins cannot directly withdraw customer money.
-- Admins can submit payout requests only.
-- Super Admin reviews and pays Admins, using Cashfree Payouts or an approved manual payment process.
-- Super Admin records payout reference, method, amount, proof, date/time and status.
-- Super Admin revenue term is **Commission**.
-- Do not use `Platform Fee`, `Market Fee`, `Marketing Fee`, or `Approved Fee`.
-- `Payment Gateway Fee` is a configurable deduction controlled by Super Admin.
-- `Refund Adjustment` can reduce Admin payable revenue.
-- Admin UI is permission-driven.
-- Backend APIs enforce the same permissions; hiding a UI control is never security.
-- Super Admin can enter an Admin page through controlled Admin Access / Impersonation.
-- Impersonation has a reason, temporary session, visible mode indicator and audit trail. Actions must record the real actor as Super Admin.
-- Admin deletion requires verification and Super Admin approval.
-- Deleted Admin public products are hidden from the storefront; required financial/order history is retained/archived.
-- Recovery requires Super Admin approval.
-- Customer Management is available to Admin and Super Admin, with different permission scope.
-- Admin may view permitted customer details/order metrics and send customer messages/offers only when the permission exists.
-- Super Admin has platform-wide customer visibility and management.
-
-## 3. Final technology stack
+## 2. Locked current stack
 
 ### Frontend
 
@@ -82,253 +41,146 @@ Neon PostgreSQL
 - TypeScript
 - Tailwind CSS
 - shadcn/ui
-- Zod
 - React Hook Form
+- Zod
 - Zustand only where client state is actually needed
 
-### Static hosting / SEO
+### Backend
 
-- **Cloudflare Pages** for the Next.js static export.
-- Next.js uses `output: "export"`.
-- Static output directory: `out`.
-- Public, crawlable pages are pre-rendered to HTML.
-- Customer private pages and Admin/Super Admin dashboards are not SEO targets.
-
-### Backend runtime
-
-- **Cloudflare Pages Functions** for `/api/*` and server-side work.
-- Hono is allowed for routing.
-- Better Auth runs in the backend runtime.
-- Cashfree webhooks run in the backend runtime.
-- R2 upload/signing/protected media logic runs server-side.
-- Never put secrets in Next.js client code.
+- Cloudflare Workers
+- Hono
+- TypeScript
+- Drizzle ORM
+- Cloudflare Hyperdrive for the Worker → PostgreSQL connection/pooling layer
 
 ### Database
 
-- **Neon PostgreSQL**.
-- Drizzle ORM.
-- `@neondatabase/serverless` for Cloudflare/serverless compatibility.
-- Do not use the Node `pg` driver in the deployed Cloudflare runtime.
+- Aiven for PostgreSQL
+- Current development/initial deployment target: Aiven Free PostgreSQL
+- `DATABASE_URL` is the Aiven PostgreSQL connection string for local tooling/migrations
+- Production Worker database access should use Hyperdrive rather than opening many direct database connections
+
+Aiven Free currently documents 1 CPU, 1 GB RAM, 1 GB disk, a 20-connection limit, no connection pooling, and possible inactivity shutdown. Treat it as a development/small-scale starting tier, not an unlimited production guarantee. See `FREE_TIER_AND_COST_PLAN.md`.
 
 ### Authentication
 
-- Better Auth.
-- Customer: **Google OAuth** as the primary requested login method. Email/password can remain available only if explicitly enabled later.
-- Admin: email + password, invitation/setup flow.
-- Super Admin: email + password; add stronger controls such as 2FA before production.
-- Passwords are **hashed, not encrypted**. Better Auth currently uses `scrypt` by default. Do not implement plaintext or reversible password storage.
+- **Better Auth is the authentication system for all roles.**
+- Customer sign-in: Google OAuth through Better Auth.
+- Admin sign-in: Better Auth email/password.
+- Super Admin sign-in: Better Auth email/password.
+- Do not build two separate authentication/session systems.
+- Google is a login provider, not a second auth framework.
 
-### Media
+Passwords are **hashed**, not encrypted. The original password must never be recoverable from the database.
 
-- **Cloudflare R2** for product images, review images, proof files and other media.
-- Cloudinary is removed from the stack.
-- Do not store image binaries in PostgreSQL.
-- Store R2 object keys and metadata in PostgreSQL.
+### Storage
+
+- Cloudflare R2 for product images, variant images, review images, banners, and approved uploads.
+- Do not use Cloudinary or GCS in the current architecture.
 
 ### Email
 
-- **Resend** for transactional email.
-- Use it for admin invitations, verification, password reset, customer messages/offers, order notifications, payout notifications and system alerts.
+- Resend.
 
 ### Payments
 
-- Cashfree Payment Gateway for customer collection.
-- Cashfree Payouts may be used by Super Admin for Admin settlement.
+- Cashfree Payment Gateway for Customer online payments.
+- Cashfree Payouts may be used by Super Admin for Admin settlements.
+- COD disabled.
+- No Cashfree Easy Split.
+- Admins do not have Cashfree merchant accounts.
+- Admins cannot directly withdraw.
+- Super Admin reviews and pays Admin payout requests.
 
-### Source control / deployment
+## 3A. Cache and client-state architecture
 
-- GitHub.
-- Cloudflare Pages connected to GitHub.
-- Production branch: `main`.
-- Preview deployments from feature/PR branches.
-
-## 4. IMPORTANT architecture correction: SSG is not the backend
-
-Do **not** build the backend so that it "creates SEO HTML".
-
-Correct model:
+The project now uses a layered cache strategy for performance while keeping Aiven PostgreSQL authoritative.
 
 ```text
-Backend API / Neon
-      ↓
-Next.js build-time data fetch
-      ↓
-Next.js generates HTML
-      ↓
-Cloudflare Pages serves HTML
+Browser localStorage
+    ↓
+Cloudflare public cache / CDN
+    ↓
+Cloudflare Worker
+    ↓
+Upstash Redis (only selected hot/derived/rate-limit use cases)
+    ↓
+Cloudflare Hyperdrive
+    ↓
+Aiven PostgreSQL
 ```
 
-The backend remains responsible for data, auth, business rules, payments and writes. Next.js is responsible for rendering the public storefront HTML.
+### Browser localStorage
 
-A pure static export has an important limitation: product pages are generated from the data available at build time. A price/availability/catalog change does not magically rewrite already-generated HTML. Therefore the system must have a rebuild strategy.
+Allowed for non-sensitive client convenience state such as:
 
-Recommended rebuild flow:
+- guest cart before login
+- recently viewed product IDs
+- UI/filter/sort preferences
+
+Never store passwords, Better Auth session tokens, OAuth secrets, payment secrets, payout secrets, or private account records as the authority.
+
+When a guest logs in, merge the local cart into the server cart and then treat the server cart as authoritative.
+
+A customer on a different device gets account/order/wishlist data from the backend, not from another device's localStorage.
+
+### Cloudflare cache
+
+Use Cloudflare's edge cache for public, cache-safe responses and assets. Do not make account, order, payment, payout, Admin, or Super Admin responses shared public cache entries.
+
+### Upstash Redis
+
+Upstash Redis is selected for the free/early stage as a **controlled application cache/utility layer**.
+
+Use it only when there is a documented need, for example:
+
+- expensive derived catalog query cache
+- short-lived hot data
+- rate limiting counters
+- temporary non-authoritative state
+
+Redis must never replace PostgreSQL as the source of truth.
+
+### Cache invalidation
+
+Caching is not automatic synchronization.
+
+After a catalog write:
 
 ```text
-Super Admin edits product
-        ↓
-Backend writes Neon
-        ↓
-Backend triggers secure Cloudflare Pages Deploy Hook
-        ↓
-Next.js rebuild
-        ↓
-New product/category HTML generated
+Aiven PostgreSQL write
+→ invalidate Redis key(s) if used
+→ purge/revalidate public Cloudflare cache
+→ rebuild/revalidate SSG HTML when public HTML must change
 ```
 
-Use rebuilds for SEO/catalog/content changes, not for every order or stock change.
+Payment/checkout/order decisions always re-read authoritative backend state.
 
-For rapidly changing fields such as exact live stock, checkout price and payment amount, the backend remains the source of truth. Never trust the static HTML value for transactional decisions.
-
-## 5. SEO rules
-
-Public SEO pages:
+### Current price vs historical order price
 
 ```text
-/
-/products
-/products/[slug]
-/categories/[slug]
-/collections/[slug]
-/search (indexability policy must be deliberate)
-/about
-/faq
-/terms
-/privacy-policy
-/shipping-policy
-/return-policy
+products.base_price
+= current public/checkout price
+
+order_items.unit_price
+= immutable price paid in that order
 ```
 
-Private/non-index pages:
+A product price change must not alter old order amounts.
 
-```text
-/account/*
-/cart
-/checkout
-/payment/*
-/orders/*
-/admin/*
-/super-admin/*
-```
+## 3. Business model
 
-Every indexable page must have:
+- One platform owner = Super Admin.
+- Admins are internal sellers/store operators.
+- Products can be assigned to Admins.
+- Customers buy online only.
+- Customer money first reaches the Super Admin Cashfree merchant account.
+- Backend calculates Admin revenue.
+- Super Admin revenue is **Commission**.
+- Payment Gateway Fee is a configurable deduction controlled by Super Admin.
+- Refund Adjustment can reduce Admin Net Payable.
 
-- Server-generated initial HTML.
-- Unique `<title>`.
-- Unique meta description where appropriate.
-- Canonical URL.
-- Correct heading structure.
-- Open Graph/Twitter metadata where useful.
-- Crawlable internal links.
-- Descriptive image `alt` text.
-- Valid sitemap.
-- Valid robots policy.
-- JSON-LD where relevant.
-- Product structured data in the **initial HTML**, not only client-side after hydration.
-- Product `name`, image, description, SKU/identifier when available, offers, price, currency and availability from trusted backend/build data.
-- Product variants represented correctly.
-- Breadcrumb structured data where useful.
-
-Do not use:
-
-- `noindex` accidentally on product/category pages.
-- JS-only rendering for essential product content.
-- Hidden keyword stuffing.
-- Duplicate URLs with conflicting canonicals.
-- Client-only product JSON-LD as the only source.
-
-## 6. Customer authentication rule
-
-Customer login:
-
-```text
-Customer
-  ↓
-Google OAuth
-  ↓
-Better Auth
-  ↓
-Session cookie
-  ↓
-Customer APIs
-```
-
-Do not expose Google client secret to the browser.
-
-OAuth callback belongs to the backend auth endpoint.
-
-## 7. Admin / Super Admin authentication rule
-
-```text
-Admin / Super Admin
-      ↓
-Email + Password
-      ↓
-Better Auth
-      ↓
-Password hash stored in DB account record
-      ↓
-Session
-      ↓
-RBAC
-      ↓
-Protected APIs
-```
-
-Passwords must never be:
-
-- stored as plaintext,
-- encrypted reversibly for later recovery,
-- placed in logs,
-- sent back to the frontend.
-
-Better Auth stores credential passwords in its account table and currently hashes them with `scrypt` by default.
-
-## 8. Core authorization flow
-
-```text
-Request
- ↓
-Session
- ↓
-User
- ↓
-Role(s)
- ↓
-Permission(s)
- ↓
-Resource ownership/scope check
- ↓
-Business rule check
- ↓
-Controller/service
- ↓
-Database
-```
-
-UI permission checks improve UX. Backend authorization is mandatory.
-
-## 9. Payment authority
-
-```text
-Customer
-  ↓
-Checkout
-  ↓
-Backend creates/revalidates payment context
-  ↓
-Cashfree Payment Gateway
-  ↓
-Cashfree webhook
-  ↓
-Backend verifies webhook/payment status
-  ↓
-Order becomes PAID/CONFIRMED
-```
-
-Never mark an order paid because the browser says payment succeeded.
-
-## 10. Admin earnings
+Formula:
 
 ```text
 Gross Product Sales
@@ -338,352 +190,419 @@ Gross Product Sales
 = Net Payable
 ```
 
-Admin can view these values and request eligible payout.
+Admin can view earnings and request payout. Super Admin processes payout and records reference/proof/date/method/status.
 
-## 11. Admin payout
+## 4. Product organisation — NO collections
+
+The platform does **not** use a Collection module.
+
+Remove from current design:
 
 ```text
-Admin payout request
-        ↓
-PENDING
-        ↓
-Super Admin review
-        ↓
-APPROVED / REJECTED
-        ↓
-Payment execution
-        ↓
-Reference + proof + method + date/time
-        ↓
-PAID / FAILED
+/collections/[slug]
+collections table
+collection_products table
+collections backend module
+collection SEO pages
 ```
 
-Admin has no payout execution authority.
-
-## 12. Super Admin Access / Impersonation
+Customer Home uses:
 
 ```text
-Super Admin
-  ↓
-Select Admin
-  ↓
-Reason + notification
-  ↓
-Temporary access session
-  ↓
-Admin UI with visible SUPER ADMIN MODE
-  ↓
-Actions
-  ↓
-Audit: real actor = Super Admin
+Feature cards / banners
+Main categories
+Subcategories
+Featured/new/trending products
+Product suggestions
+Offers
 ```
 
-Never use the Admin password. Never log privileged actions as if the Admin performed them.
+This is merchandising through home sections/banners/flags, not through a Collection entity.
 
-## 13. Account deletion
+### Category rules
 
-### Customer
+- Super Admin manages the main/global categories.
+- Example main categories may be Clothing, Gadgets, Accessories, Electronics.
+- Admin product creation shows only the current active main categories they are allowed to use.
+- An Admin may create a custom **subcategory** under an existing main category for their own assigned products, when the permission `categories.subcategories.manage` is granted.
+- An Admin can manage only the subcategories they own/created unless Super Admin grants broader access.
+- Super Admin can manage every category and subcategory.
+- Customers can browse/filter by main category and subcategory.
+- Do not create a deep unlimited category tree. Keep one main category → one subcategory level.
 
-- Verify identity.
-- Request/confirm deletion.
-- Remove personal data where legally/business-safe.
-- Anonymize required order history instead of destroying financial records.
-- Revoke sessions.
-
-### Admin
-
-- Request deletion.
-- Verify account.
-- Super Admin approves/rejects.
-- Deactivate Admin.
-- Hide public products if required.
-- Archive recoverable Admin data.
-- Preserve necessary order/financial records.
-
-## 14. Main request architecture
-
-### Public storefront
+Recommended model:
 
 ```text
-Browser
- ↓
-Cloudflare Pages static HTML
- ↓
-Hydrated React UI
- ↓
-Backend API only for dynamic actions/data
-```
-
-### Dynamic backend
-
-```text
-Browser / Webhook
- ↓
-Cloudflare Pages Function
- ↓
-Authentication / Authorization
- ↓
-Zod validation
- ↓
-Business module/service
- ↓
-Drizzle
- ↓
-Neon PostgreSQL
-```
-
-### Media
-
-```text
-Admin upload
- ↓
-Authorized backend
- ↓
-R2
- ↓
-R2 object key saved in PostgreSQL
- ↓
-Public/private media URL
-```
-
-## 15. Core data domains
-
-### Identity / RBAC
-
-```text
-user
-account
-session
-verification
-users
-admins
-roles
-permissions
-user_roles
-role_permissions
-user_permissions (optional)
-```
-
-### Catalog
-
-```text
-products
 categories
-brands
-product_categories
-product_images
-product_variants
+  id
+  name
+  slug
+  is_active
+  sort_order
+
+subcategories
+  id
+  category_id
+  admin_id nullable
+  name
+  slug
+  is_active
+  sort_order
 ```
 
-### Customer
+Product should reference:
 
 ```text
-addresses
-wishlists
-wishlist_items
-notifications
-account_verifications
-account_deletion_requests
-customer_communication_preferences
+category_id
+subcategory_id nullable
 ```
 
-### Shopping
+Do not add category trees, nested collections, tagging systems, or arbitrary taxonomies unless the project owner explicitly changes the plan.
+
+## 5. Critical pricing/order rule
+
+**Product price is mutable. Order price is immutable.**
+
+`products.price` is the current live selling price.
+
+When an order is created, the backend copies the relevant purchase facts into `order_items`.
+
+At minimum:
 
 ```text
-carts
-cart_items
-coupons
-coupon_usages
+product_id
+variant_id nullable
+product_name_snapshot
+sku_snapshot
+unit_price
+quantity
+discount_amount
+tax_amount
+line_total
 ```
 
-### Orders
+These order-item values are historical snapshots.
+
+Changing the product price later must NOT update:
 
 ```text
-orders
-order_items
-returns
-return_items
-refunds
+old orders
+paid orders
+shipped orders
+delivered orders
+refund calculations based on the original purchase
 invoices
 ```
 
-### Payments
+A customer looking at an old order sees the amount actually paid/charged at that purchase time, not the current product price.
+
+The link from an old order to the product may show the current product page, but the order detail itself uses the immutable snapshot.
+
+## 6. Safe checkout price-change workflow
+
+Never trust the price shown in the browser.
+
+Use this flow:
 
 ```text
-payments
-payment_attempts
-cashfree_webhook_events
+Customer Cart
+    ↓
+Checkout request
+    ↓
+Backend reads CURRENT product price + stock + active discounts/coupon
+    ↓
+Compare against cart/client values
+    ↓
+If mismatch → return PRICE_CHANGED / refreshed totals
+    ↓
+Customer reviews new total
+    ↓
+Backend creates Pending Order with price snapshots
+    ↓
+Backend creates Cashfree payment for that exact order amount
+    ↓
+Customer pays
+    ↓
+Cashfree webhook + backend verification
+    ↓
+Order becomes PAID
 ```
 
-### Admin finance
+Do not create a payment session using an old browser price.
+
+If price changes while a customer is sitting on the checkout page, the server re-validates and forces the checkout total to refresh before payment.
+
+Once a Pending Order has been created for a payment attempt, its order-item price snapshot is fixed. If the payment expires/fails, the order is not silently rewritten to a different price; it is cancelled/expired and the customer starts a fresh checkout.
+
+## 7. Stock safety
+
+Initial implementation should use a simple, reliable reservation workflow. Do not build a complex distributed inventory system.
+
+Recommended flow:
 
 ```text
-admin_revenue
-commission_rules
-admin_bank_accounts
-payout_beneficiaries
-payout_requests
-admin_payouts
-platform_withdrawals
+Checkout validated
+→ create pending order
+→ reserve/reduce available stock atomically
+→ create payment
+→ payment success → PAID
+→ payment failure/expiry/cancel → release reservation
 ```
 
-### Support / CMS / messaging
+All stock updates must be transactional and protected against overselling.
+
+## 8. Customer historical-data rules
+
+### Product page
+
+Shows current active product data.
+
+### Cart
+
+May contain stale display data. Backend re-checks current price/stock at checkout.
+
+### Checkout
+
+Uses only server-revalidated values.
+
+### Paid order
+
+Uses immutable order snapshots.
+
+### Delivered order
+
+Still uses immutable historical snapshots.
+
+### Refund
+
+Uses the stored order/payment facts, not today's product price.
+
+This separation prevents price edits from corrupting historical customer data.
+
+## 9. Authentication rules
+
+Customer:
 
 ```text
-contact_messages
-support_tickets
-support_messages
-pages
-page_sections
-faqs
-banners
-collections
-collection_products
-customer_email_messages
+Google OAuth
+↓
+Better Auth
+↓
+Customer user/session
 ```
 
-### Audit
+Admin:
 
 ```text
-audit_logs
-admin_access_sessions
-settings
+Email + password
+↓
+Better Auth
+↓
+Role + permissions
 ```
 
-## 16. Project structure rule
+Super Admin:
 
 ```text
-src/app/                 → Next.js storefront/admin UI routes
-src/components/          → UI
-src/modules/             → reusable business/domain logic
-src/lib/                 → infrastructure helpers
-src/validators/          → Zod request schemas
-src/db/schema/           → Drizzle schema
-functions/                → Cloudflare Pages Functions backend
-public/                   → static non-R2 public assets
+Email + password
+↓
+Better Auth
+↓
+Super Admin authorization
 ```
 
-Do not duplicate order/payment/product business logic in customer/admin/super-admin routes.
+No public Admin registration.
 
-## 17. Non-negotiable implementation rules
+Super Admin creates Admin accounts and can send a setup/invitation email through Resend.
 
-1. Never trust browser price, stock, coupon result or payment status.
-2. Never trust `userId`, `adminId` or order ID from the browser without ownership/permission checks.
-3. Never put secrets in `NEXT_PUBLIC_*` variables.
-4. Never store passwords as plaintext or reversible encryption.
-5. Never expose Cashfree secrets to client code.
-6. Never expose R2 secret credentials to client code.
-7. Never expose Resend API key to client code.
-8. Never use Cloudinary in this version.
-9. Never reintroduce COD, offline orders, draft orders or Easy Split unless explicitly changed.
-10. Never create direct Admin withdrawal code.
-11. Never rely on frontend-only RBAC.
-12. Never let a static SEO page become the source of truth for transaction values.
-13. Audit privileged actions.
-14. Use idempotency for payment/webhook/payout operations.
-15. Use database transactions for order/stock/revenue state changes where supported by the chosen database path.
+## 10. Authorization
 
-## 18. Implementation order
+Use RBAC.
 
 ```text
-Phase 1 — Foundation
-→ project config
-→ environment variables
-→ Neon + Drizzle
-→ Better Auth
-→ Google OAuth
-→ auth/session tests
-
-Phase 2 — Core data + RBAC
-→ users/accounts/sessions
-→ roles/permissions
-→ Admin/Super Admin authorization
-
-Phase 3 — SEO storefront foundation
-→ static export
-→ metadata
-→ sitemap/robots
-→ JSON-LD
-→ product/category build-time data
-→ Cloudflare Pages deploy
-
-Phase 4 — Catalog
-→ categories
-→ brands
-→ products
-→ variants
-→ R2 media
-→ search/filter
-
-Phase 5 — Shopping
-→ cart
-→ checkout
-→ shipping/address
-→ coupon
-
-Phase 6 — Payments/Orders
-→ Cashfree order/payment creation
-→ webhook verification
-→ orders
-→ payment attempts
-→ refunds/returns
-
-Phase 7 — Admin
-→ product management
-→ inventory
-→ orders
-→ customer management
-→ analytics
-→ earnings
-→ payout requests
-
-Phase 8 — Super Admin
-→ Admin management
-→ roles/permissions
-→ customer management
-→ Admin Access
-→ commission
-→ gateway fee
-→ payout management
-→ platform finance
-→ audit
-→ recovery
-
-Phase 9 — Communication/content
-→ Resend
-→ notifications
-→ support
-→ CMS
-
-Phase 10 — Hardening
-→ rate limits
-→ security headers
-→ CSRF/cookie checks as applicable
-→ abuse protection
-→ webhook idempotency
-→ tests
-→ SEO validation
-→ production deployment
+User
+ ↓
+Role(s)
+ ↓
+Permissions
+ ↓
+Effective permissions
+ ↓
+Backend authorization
+ ↓
+UI visibility
 ```
 
-## 19. Current source links
+Frontend hiding is for UX only. Every protected Worker API must enforce authorization.
 
-Verified against current vendor documentation on **2026-09-22**:
+Examples:
 
-- Cloudflare Pages Next.js static export: https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-static-nextjs-site/
-- Cloudflare Pages / Next.js overview: https://developers.cloudflare.com/pages/framework-guides/nextjs/
-- Cloudflare Pages Functions: https://developers.cloudflare.com/pages/functions/
-- Cloudflare Pages Functions pricing: https://developers.cloudflare.com/pages/functions/pricing/
-- Cloudflare Pages limits: https://developers.cloudflare.com/pages/platform/limits/
-- Cloudflare R2 pricing/free tier: https://developers.cloudflare.com/r2/pricing/
-- Cloudflare Pages Deploy Hooks: https://developers.cloudflare.com/pages/configuration/deploy-hooks/
-- Neon Free plan limits: https://github.com/neondatabase/website/blob/main/content/faqs/free-plan-limits-and-quotas.md
-- Neon serverless Postgres driver: https://neon.com/blog/serverless-driver-for-postgres
-- Better Auth email/password: https://better-auth.com/docs/authentication/email-password
-- Better Auth users/accounts: https://better-auth.com/docs/concepts/users-accounts
-- Better Auth Drizzle adapter: https://better-auth.com/docs/adapters/drizzle
-- Better Auth Hono integration: https://better-auth.com/docs/integrations/hono
-- Resend pricing: https://resend.com/pricing
-- Google Search product structured data: https://developers.google.com/search/docs/appearance/structured-data/product-snippet
-- Google Search merchant listing structured data: https://developers.google.com/search/docs/appearance/structured-data/merchant-listing
-- Google Search product variants: https://developers.google.com/search/docs/appearance/structured-data/product-variants
+```text
+products.view
+products.create
+products.update
+products.delete
+inventory.view
+inventory.update
+orders.view
+orders.update
+customers.view
+customers.message
+categories.subcategories.create
+categories.subcategories.update
+payouts.view
+payouts.request
+```
+
+## 11. Super Admin Admin-access / impersonation
+
+Super Admin can enter an Admin experience through a temporary, audited access session.
+
+Do not use the Admin password.
+
+Every action preserves:
+
+```text
+actor = Super Admin
+acting_on_behalf_of = Admin
+access_mode = IMPERSONATION
+reason = recorded reason
+session_id = access session
+```
+
+The Admin UI must show a clear Super Admin mode indicator.
+
+## 12. Account deletion
+
+Customer account deletion must not blindly destroy financial/order history.
+
+Admin deletion requires verification + Super Admin approval.
+
+On approved Admin deletion:
+
+- Admin becomes inactive.
+- Customer-visible assigned products are hidden/unavailable according to business rules.
+- Financial/order history is retained where required.
+- Required data is archived for controlled recovery.
+
+## 13. No unnecessary complexity
+
+Do NOT introduce these unless explicitly requested later:
+
+- Microservices
+- Redis
+- Kafka
+- Elasticsearch/OpenSearch
+- Separate catalog service
+- Separate payment service
+- Separate inventory service
+- Marketplace tenant isolation
+- Cashfree Easy Split
+- COD
+- Offline orders
+- Draft orders
+- Collection module
+- Deep category trees
+- Event-sourcing
+- Complex recommendation ML
+
+Start with one backend Worker, one Aiven PostgreSQL database, one R2 bucket, Better Auth, Resend, and Cashfree.
+
+## 14. High-level request flow
+
+```text
+Browser
+   ↓
+Cloudflare Pages (Customer static HTML/assets)
+   ↓
+API calls
+   ↓
+Cloudflare Worker + Hono
+   ↓
+Authentication / Authorization
+   ↓
+Business module
+   ↓
+Drizzle ORM
+   ↓
+Cloudflare Hyperdrive
+   ↓
+Aiven PostgreSQL
+```
+
+External services:
+
+```text
+Worker → R2
+Worker → Resend
+Worker → Cashfree
+Worker → Google OAuth through Better Auth
+```
+
+## 15. Current implementation order
+
+```text
+1. Aiven PostgreSQL
+2. Drizzle schema foundation
+3. Cloudflare Worker + Hono
+4. Hyperdrive → Aiven
+5. Better Auth
+6. RBAC
+7. Category/Subcategory
+8. Catalog/Product
+9. Inventory
+10. Cart/Checkout
+11. Cashfree payment + webhook
+12. Orders + historical snapshots
+13. Admin earnings/payouts
+14. Customer management
+15. R2 media
+16. Resend notifications/email
+17. Cloudflare public cache rules
+18. Upstash Redis for measured hot/derived cache or rate limiting
+19. Cache invalidation/fallback tests
+20. SEO + static export
+21. Cloudflare Pages deployment
+22. Testing/security/performance
+```
+
+## 16. Non-negotiable decisions
+
+```text
+1. Single-tenant ecommerce.
+2. One Super Admin platform owner.
+3. Admins are internal sellers.
+4. Customer = /
+5. Admin = /admin
+6. Super Admin = /super-admin
+7. No marketplace tenant architecture.
+8. No Collection entity/module/pages.
+9. No offline purchase module.
+10. No draft order module.
+11. COD disabled.
+12. Online customer payment only.
+13. Cashfree Payment Gateway for customer collection.
+14. No Cashfree Easy Split.
+15. Admin does not own Cashfree merchant account.
+16. Admin cannot directly withdraw.
+17. Admin requests payout only.
+18. Super Admin processes Admin payout.
+19. Commission is Super Admin revenue.
+20. Payment Gateway Fee is Super Admin-controlled deduction.
+21. Refund Adjustment can reduce Admin Net Payable.
+22. Better Auth is the single auth system.
+23. Google OAuth is Customer login provider.
+24. Admin/Super Admin use email/password.
+25. Passwords are hashed, never reversibly encrypted.
+26. Aiven PostgreSQL is the database.
+27. Cloudflare Hyperdrive sits between Worker and PostgreSQL.
+28. Cloudflare R2 is the media store.
+29. Customer page is SEO-first.
+30. Product/category SEO does not depend on Collections.
+31. Product price can change.
+32. Order item price snapshot never changes.
+33. Checkout always re-validates current price/stock server-side.
+34. Old orders use historical snapshots.
+35. Backend APIs are authoritative.
+36. Role/permission checks are server-side.
+37. Privileged actions are audited.
