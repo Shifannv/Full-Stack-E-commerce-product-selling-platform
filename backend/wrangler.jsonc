@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ecommerce-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-02-04",
+  "observability": {
+    "enabled": true
+  },
+
+  // Add nodejs_compat compatibility flag to support common database drivers
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+
+  // Add this to your wrangler.jsonc
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "0c6bae39855446449b1276eecf3dd4d3",
+      
+    }
+  ]
+}
