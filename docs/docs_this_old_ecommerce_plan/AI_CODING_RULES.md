@@ -1,5 +1,7 @@
 # AI / Codex Coding Rules — Must Read Before Code
 
+> **Updated 2026-09-24:** shadcn-first UI and platform-inspired commerce guidelines are mandatory context for new UI/commerce work.
+
 ## 1. Source of truth
 
 Read:
@@ -218,3 +220,61 @@ update PostgreSQL current price
 ```
 
 Never charge or display an order-history price from a stale current-product cache. Historical order-item snapshots are immutable.
+
+## 21. shadcn-first UI rule
+
+When implementing frontend UI:
+
+```text
+read docs
+→ check official shadcn component/block
+→ add only what is needed
+→ customize the project-owned source
+→ compose before inventing a primitive
+```
+
+Never generate a custom Button/Card/Dialog/Table/Form/Sidebar equivalent when an appropriate official shadcn primitive already exists.
+
+Do not add another full UI library without explicit approval.
+
+## 22. Platform-inspired commerce rule
+
+For product, policy, review, customer-support, pricing, order and communication features, consult:
+
+- `PLATFORM_INSPIRED_COMMERCE_GUIDELINES.md`
+- `LEGAL_POLICY_BLUEPRINT.md`
+
+Use the documented principles as product requirements. Do not copy or reproduce another company's legal text.
+
+## 23. Policy visibility rule
+
+Important purchase rules such as returns, refunds, shipping, terms, and privacy must be easy to find and must describe the system's actual behavior. Never create policy copy that claims a feature the backend does not implement.
+
+## 24. Review integrity rule
+
+Product reviews are customer-generated product content. Do not build flows that reward, pressure, or selectively suppress positive/negative reviews. Provide validation, moderation/reporting, and auditability.
+
+# Latest Product/Catalog Coding Rules — 2026-09-25
+
+Before changing product/catalog code, read:
+
+- `PRODUCT_CATALOG_SCHEMA.md`
+- `ADMIN_PRODUCT_ADD_SPEC.md`
+- `CUSTOMER_PRODUCT_PAGE_SPEC.md`
+- `CATEGORY_SUBCATEGORY_RULES.md`
+- `PRODUCT_PRICE_AND_ORDER_SNAPSHOT.md`
+
+Non-negotiable:
+
+1. Main Category → Subcategory → Product.
+2. Optional Product Variants come under the Product.
+3. No Collections.
+4. Do not create a generic attribute/variant engine unless the current feature needs it.
+5. Keep core filterable relational data normalized; use flexible JSON only for truly flexible specifications/variant combinations.
+6. Current price and historical order price are separate.
+7. Checkout calculates the effective price server-side.
+8. Product images go to R2, not PostgreSQL.
+9. Inventory authority is backend/database, not browser/cache.
+10. Use shadcn/ui components for the Admin form and Customer product UI before creating custom UI.
+11. Do not build machine-learning recommendations in V1; start with simple catalog-based suggestions.
+12. Do not expose internal Admin/finance/audit fields on public product pages.

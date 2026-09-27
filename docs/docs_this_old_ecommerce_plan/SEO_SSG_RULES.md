@@ -1,4 +1,4 @@
-# SEO and Static Export Rules
+# SEO and Static Export Rules — 2026-09-24
 
 ## 1. SEO goal
 
@@ -174,3 +174,24 @@ DB write
 ```
 
 A product price can therefore change in PostgreSQL immediately while an old static HTML copy exists briefly until the next rebuild. The checkout API must always read and validate the current database price.
+
+## 12. UI implementation and SEO
+
+Use shadcn/ui for accessible UI primitives and blocks, but keep the final public page semantic and crawlable. Do not allow client-only UI abstractions to turn important product/category content into JS-only content.
+
+The component source is not the SEO authority; the rendered HTML and metadata are.
+
+## 13. Commerce policy pages
+
+Public policy pages should be statically renderable and linked from the storefront footer/navigation where appropriate:
+
+```text
+/terms
+/privacy-policy
+/shipping-policy
+/return-policy
+/refund-policy
+/review-policy
+```
+
+See `LEGAL_POLICY_BLUEPRINT.md`.

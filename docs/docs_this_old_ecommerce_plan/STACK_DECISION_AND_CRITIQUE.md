@@ -1,11 +1,11 @@
-# Stack Decision and Critique — 2026-09-23
+# Stack Decision and Critique — 2026-09-24
 
 ## Final stack
 
 | Area | Decision |
 |---|---|
 | Frontend | Next.js App Router + TypeScript |
-| UI | Tailwind CSS + shadcn/ui |
+| UI | Tailwind CSS + shadcn/ui (shadcn-first) |
 | SEO target | Static export / prebuilt HTML on Cloudflare Pages |
 | Backend | Cloudflare Worker + Hono |
 | DB | Aiven PostgreSQL |
@@ -129,3 +129,39 @@ Do not cache customer-specific or financial data in a shared public cache. Do no
 ### 9. Free-tier critique of Redis
 
 Upstash Redis Free is currently documented at 256 MB data, 10 GB monthly bandwidth, and 500K monthly commands. It can be useful as a small early-stage cache, but those limits are not large enough to justify putting the entire application's state into Redis. Use it selectively and keep PostgreSQL authoritative.
+
+
+## 10. shadcn/ui is the default UI source, not a separate visual layer
+
+The project should use the official shadcn/ui component system as the first source for reusable UI primitives and blocks. shadcn/ui distributes component source code into the application, which the project owns and can customize. Do not treat it as a locked black-box package.
+
+Rules:
+
+- Check the official shadcn/ui component catalog before writing a custom component.
+- Use official blocks for larger patterns when they fit.
+- Add only the components actually required.
+- Prefer composition of existing shadcn components over new primitives.
+- Keep business logic out of generic UI components.
+- Do not add another complete UI library without an explicit architecture decision.
+- Review third-party registry components before using them.
+
+See `SHADCN_UI_BUILD_GUIDELINES.md`.
+
+## 11. Platform-inspired product guidelines
+
+The product workflow uses **documented principles** inspired by Shopify, Amazon, and Airbnb, not copied legal wording.
+
+The implementation should emphasize:
+
+- accurate product information
+- clear public policies
+- transparent pricing and promotion rules
+- immutable historical order values
+- authentic reviews and anti-manipulation controls
+- clear support/dispute flows
+- auditable privileged actions
+- privacy-aware customer communication
+
+See `PLATFORM_INSPIRED_COMMERCE_GUIDELINES.md` and `LEGAL_POLICY_BLUEPRINT.md`.
+
+These are engineering/product requirements. Legal policy text must be written for this business and reviewed appropriately before production.

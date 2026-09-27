@@ -76,7 +76,7 @@ main category → existing/new permitted subcategory → product
 ## Shared backend modules
 
 ```text
-worker/src/modules/
+backend/src/modules/
 ├── auth
 ├── users
 ├── categories
@@ -119,3 +119,62 @@ Platform-wide authority, Admin lifecycle, roles/permissions, customer management
 ## Collection removal
 
 Do not add a `collections` module back into this structure.
+
+
+## UI source rule
+
+Frontend feature UI should use official shadcn/ui components/blocks first. Keep `components/ui/` for project-owned shadcn component source and keep business logic in feature/lib layers.
+
+## Policy/trust modules
+
+Customer-facing policy and trust behavior should be implemented where required by: pricing, orders, refunds, reviews, notifications, support, CMS/content, and customer communication modules. See `PLATFORM_INSPIRED_COMMERCE_GUIDELINES.md`.
+
+# Latest Product UI/Data Contract Addendum — 2026-09-25
+
+## Admin product form
+
+The Admin Product module must support:
+
+- Main Category selection
+- Subcategory selection
+- permitted custom Subcategory creation
+- product name
+- short description
+- full description
+- brand when available
+- images
+- SEO title/description
+- current price
+- compare-at price
+- variant builder
+- variant SKU
+- optional barcode
+- variant price override
+- inventory/stock
+- product status
+- Featured/New/Trending merchandising flags
+
+## Customer product page
+
+The public page should display:
+
+- image gallery
+- product name
+- brand when available
+- current effective price
+- valid compare-at price
+- rating/review count
+- availability
+- variant selectors
+- quantity
+- Add to Cart
+- Buy/checkout CTA
+- wishlist
+- highlights
+- full description
+- specifications
+- shipping/return information
+- reviews
+- related/suggested products
+
+See `ADMIN_PRODUCT_ADD_SPEC.md` and `CUSTOMER_PRODUCT_PAGE_SPEC.md`.

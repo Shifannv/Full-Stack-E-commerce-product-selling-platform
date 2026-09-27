@@ -4,6 +4,7 @@
     "@hookform/resolvers": "^5.9.1",
     "@neondatabase/serverless": "^1.1.0",
     "@supabase/server": "^1.7.2",
+    "@upstash/redis": "^1.39.0",
     "better-auth": "^1.7.5",
     "cashfree-payout": "^0.0.14",
     "cashfree-pg": "^6.0.6",
@@ -13,8 +14,11 @@
     "date-fns": "^4.4.0",
     "decimal.js": "^10.6.0",
     "drizzle-orm": "^1.0.0-rc.4",
+    "hono": "^4.13.8",
     "lucide-react": "^1.47.0",
     "openai": "^7.21.0",
+    "pg": "^8.23.0",
+    "postgres": "^3.4.9",
     "react-hook-form": "^7.88.0",
     "resend": "^6.28.1",
     "tailwind-merge": "^3.7.0",
@@ -27,6 +31,7 @@
     "dotenv": "^18.0.3",
     "drizzle-kit": "^1.0.0-rc.4",
     "tsx": "^4.23.15",
-    "wrangler": "^4.136.3"
+    "typescript": "^7.0.2",
+    "wrangler": "^4.137.0"
   }
 }

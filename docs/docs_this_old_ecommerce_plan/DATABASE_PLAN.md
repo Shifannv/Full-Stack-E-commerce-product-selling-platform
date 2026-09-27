@@ -271,3 +271,47 @@ Cache entries must never be treated as authoritative for:
 - permissions
 
 Historical order values are stored in `order_items` and are never reconstructed from cached/current product data.
+
+# Latest Product Schema Addendum — 2026-09-25
+
+The product data model must support:
+
+```text
+categories
+    ↓
+subcategories
+    ↓
+products
+    ├── product_variants
+    ├── product_images
+    └── inventory
+```
+
+Required product concepts:
+
+- customer-facing name
+- slug
+- short/full description
+- category/subcategory
+- optional brand
+- product-level SKU where applicable
+- current base price
+- optional compare-at price
+- status
+- simple merchandising flags
+- SEO overrides
+
+Variant concepts:
+
+- SKU
+- optional barcode
+- option-value combination
+- optional price override
+- optional compare-at price
+- status
+
+Inventory should be variant-aware when a product has variants.
+
+Historical order values must be stored on `order_items`, not derived from the current product row.
+
+See `PRODUCT_CATALOG_SCHEMA.md` for the detailed planned field list.
