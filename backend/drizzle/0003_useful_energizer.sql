@@ -1,1 +1,0 @@
-ALTER TABLE "shipments" ADD COLUMN "pickup_requested_at" timestamp with time zone;

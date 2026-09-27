@@ -19,11 +19,5 @@
       "id": "0c6bae39855446449b1276eecf3dd4d3",
       
     }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "KYC_BUCKET",
-      "bucket_name": "ecommerce-admin-kyc-private"
-    }
   ]
 }
