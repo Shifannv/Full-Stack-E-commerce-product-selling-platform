@@ -4,19 +4,28 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node scripts/dev.mjs",
+    "seed:rbac": "tsx scripts/seed-rbac.ts",
+    "seed:shipping": "tsx scripts/seed-shipping.ts",
+    "verify:integrity": "tsx scripts/verify-integrity.ts",
+    "bootstrap:super-admin": "tsx scripts/bootstrap-super-admin.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test src/services/shipping/status.test.ts src/services/shipping/providers/shiprocket.adapter.test.ts src/services/returns/return.test.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@better-auth/drizzle-adapter": "^1.7.5",
+    "better-auth": "^1.7.5",
     "drizzle-orm": "^0.45.3",
     "hono": "^4.13.9",
     "postgres": "^3.4.9"
   },
   "devDependencies": {
     "@types/node": "^26.6.2",
+    "auth": "^1.7.5",
     "dotenv": "^18.0.3",
     "drizzle-kit": "^0.31.11",
     "tsx": "^4.23.15",
