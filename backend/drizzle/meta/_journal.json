@@ -29,6 +29,41 @@
       "when": 1790421652444,
       "tag": "0003_useful_energizer",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790512983688,
+      "tag": "0004_customer_catalog_orders_reviews_finance",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790513431524,
+      "tag": "0005_variant_checkout_snapshots",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790514851206,
+      "tag": "0006_aromatic_wonder_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790519101404,
+      "tag": "0007_wide_ghost_rider",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790612120322,
+      "tag": "0008_products_featured_flag",
+      "breakpoints": true
     }
   ]
 }

@@ -5,8 +5,15 @@ import { createDb } from "./db";
 import { createAuth, type AuthBindings } from "./lib/auth/auth";
 import { requireAuth, type Actor } from "./middleware/authorization";
 import { adminRoutes } from "./routes/admin";
+import { superAdminDashboardRoutes } from "./routes/super-admin-dashboard";
+import { invitationRoutes } from "./routes/invitations";
 import { shippingRoutes, webhookRoutes } from "./routes/shipping";
 import { returnRoutes } from "./routes/returns";
+import { customerRoutes, publicCatalogRoutes } from "./routes/customer";
+import { orderRoutes } from "./routes/orders";
+import { publicReviewRoutes, reviewRoutes } from "./routes/reviews";
+import { financeRoutes } from "./routes/finance";
+import { paymentRoutes, paymentWebhookRoutes } from "./routes/payments";
 
 const app = new Hono<{ Bindings: AuthBindings; Variables: { actor: Actor } }>();
 
@@ -71,9 +78,19 @@ app.get("/health/db", async (c) => {
 });
 
 app.get("/api/me", requireAuth, (c) => c.json(c.get("actor")));
+app.route("/api", publicCatalogRoutes);
+app.route("/api", publicReviewRoutes);
+app.route("/api/customer", customerRoutes);
+app.route("/api", orderRoutes);
+app.route("/api", reviewRoutes);
+app.route("/api", financeRoutes);
+app.route("/api", paymentRoutes);
+app.route("/api", invitationRoutes);
 app.route("/api/admin", adminRoutes);
+app.route("/api/super-admin", superAdminDashboardRoutes);
 app.route("/api", shippingRoutes);
 app.route("/api", returnRoutes);
 app.route("/webhooks", webhookRoutes);
+app.route("/webhooks", paymentWebhookRoutes);
 
 export default app;

@@ -4,9 +4,9 @@ import { requireAuth, type AuthorizedEnv } from "../middleware/authorization";
 import { DomainError } from "../services/admin/admin.service";
 import { getAdminId } from "../services/admin/admin.service";
 import { assignShipmentAwb, createForwardShipment, getOrderTracking, ingestShiprocketWebhook, requestShipmentPickup } from "../services/shipping/shipping.service";
-import { ShiprocketAdapter } from "../services/shipping/providers/shiprocket.adapter";
+import { getShiprocketAdapter } from "../services/shipping/providers/shiprocket.adapter";
 
-type ShippingEnv = AuthorizedEnv & { Bindings: AuthorizedEnv["Bindings"] & { SHIPPING_PROVIDER?: string; SHIPROCKET_API_USER_EMAIL?: string; SHIPROCKET_API_USER_PASSWORD?: string; SHIPROCKET_WEBHOOK_TOKEN?: string } };
+type ShippingEnv = AuthorizedEnv & { Bindings: AuthorizedEnv["Bindings"] & { SHIPPING_PROVIDER?: string; SHIPROCKET_API_EMAIL?: string; SHIPROCKET_API_PASSWORD?: string; SHIPROCKET_API_BASE_URL?: string; SHIPROCKET_WEBHOOK_TOKEN?: string } };
 export const shippingRoutes = new Hono<ShippingEnv>();
 export const webhookRoutes = new Hono<ShippingEnv>();
 
@@ -26,8 +26,8 @@ function seller(actor: { roles: string[]; permissions: string[]; adminApproved: 
 }
 function provider(env: ShippingEnv["Bindings"]) {
   if (env.SHIPPING_PROVIDER !== "shiprocket") throw new DomainError("Shipping provider unavailable", 409);
-  if (!env.SHIPROCKET_API_USER_EMAIL || !env.SHIPROCKET_API_USER_PASSWORD) throw new DomainError("Shipping provider credentials unavailable", 409);
-  return new ShiprocketAdapter(env.SHIPROCKET_API_USER_EMAIL, env.SHIPROCKET_API_USER_PASSWORD);
+  if (!env.SHIPROCKET_API_EMAIL || !env.SHIPROCKET_API_PASSWORD) throw new DomainError("Shipping provider credentials unavailable", 409);
+  return getShiprocketAdapter(env.SHIPROCKET_API_EMAIL, env.SHIPROCKET_API_PASSWORD, env.SHIPROCKET_API_BASE_URL);
 }
 
 const onError = (error: Error, c: Parameters<Parameters<typeof shippingRoutes.onError>[0]>[1]) => {
@@ -78,8 +78,10 @@ webhookRoutes.post("/shipping/events", async (c) => {
   const expected = c.env.SHIPROCKET_WEBHOOK_TOKEN;
   if (!expected) return c.json({ error: "Webhook unavailable" }, 503);
   if (!sameToken(c.req.header("x-api-key") ?? "", expected)) return c.json({ error: "Unauthorized" }, 401);
+  const contentType = c.req.header("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
+  if (contentType !== "application/json") return c.json({ error: "Content-Type must be application/json" }, 415);
   const raw = await c.req.text();
-  if (raw.length > 65536) return c.json({ error: "Payload too large" }, 413);
+  if (new TextEncoder().encode(raw).byteLength > 65536) return c.json({ error: "Payload too large" }, 413);
   let payload: unknown;
   try { payload = JSON.parse(raw); } catch { throw new DomainError("Invalid JSON body", 422); }
   const result = await withDb(c.env.HYPERDRIVE.connectionString, (db) => ingestShiprocketWebhook(db, payload));

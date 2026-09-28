@@ -1,7 +1,7 @@
-import { and, eq } from "drizzle-orm";
+import { and, asc, count, desc, eq, sql } from "drizzle-orm";
 import type { createDb } from "../../db";
 import { adminCategoryAssignments } from "../../db/schema/admin";
-import { categories, categoryProductFields, productAdmins, products, subcategories } from "../../db/schema/catalog";
+import { categories, categoryProductFields, inventories, productAdmins, productImages, products, productVariants, subcategories } from "../../db/schema/catalog";
 import { admins } from "../../db/schema/rbac";
 import { DomainError, requiredText } from "./admin.service";
 
@@ -20,6 +20,23 @@ const slug = (value: unknown): string => {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(result)) throw new DomainError("Invalid slug", 422);
   return result;
 };
+
+async function validateAttributes(db: Db, categoryId: string, input: unknown): Promise<Record<string, unknown>> {
+  if (!input || typeof input !== "object" || Array.isArray(input)) throw new DomainError("Invalid product attributes", 422);
+  const values = input as Record<string, unknown>;
+  const fields = await db.select().from(categoryProductFields).where(eq(categoryProductFields.categoryId, categoryId));
+  if (Object.keys(values).some((key) => !fields.some((field) => field.key === key))) throw new DomainError("Unknown category product field", 422);
+  for (const field of fields) {
+    const value = values[field.key];
+    if ((value === undefined || value === null || value === "") && field.required) throw new DomainError(`${field.key} is required`, 422);
+    if (value === undefined || value === null || value === "") continue;
+    if (field.inputType === "TEXT" && (typeof value !== "string" || value.length > 500)) throw new DomainError(`Invalid ${field.key}`, 422);
+    if (field.inputType === "NUMBER" && (typeof value !== "number" || !Number.isFinite(value))) throw new DomainError(`Invalid ${field.key}`, 422);
+    if (field.inputType === "BOOLEAN" && typeof value !== "boolean") throw new DomainError(`Invalid ${field.key}`, 422);
+    if (field.inputType === "SELECT" && !field.options?.includes(String(value))) throw new DomainError(`Invalid ${field.key}`, 422);
+  }
+  return values;
+}
 
 export async function assertCategoryScope(db: Db, adminId: string, categoryId: string): Promise<void> {
   const [admin] = await db.select({ status: admins.status }).from(admins).where(eq(admins.id, adminId)).limit(1);
@@ -75,27 +92,17 @@ export async function createProduct(db: Db, adminId: string, input: Record<strin
   await assertCategoryScope(db, adminId, categoryId);
   const [subcategory] = await db.select({ id: subcategories.id }).from(subcategories).where(and(eq(subcategories.id, subcategoryId), eq(subcategories.categoryId, categoryId), eq(subcategories.status, "PUBLISHED"))).limit(1);
   if (!subcategory) throw new DomainError("Subcategory does not belong to the selected main category", 422);
-  const fields = await db.select().from(categoryProductFields).where(eq(categoryProductFields.categoryId, categoryId));
-  const attributes = input.attributes;
-  if (!attributes || typeof attributes !== "object" || Array.isArray(attributes)) throw new DomainError("Invalid product attributes", 422);
-  const values = attributes as Record<string, unknown>;
-  if (Object.keys(values).some((key) => !fields.some((field) => field.key === key))) throw new DomainError("Unknown category product field", 422);
-  for (const field of fields) {
-    const value = values[field.key];
-    if ((value === undefined || value === null || value === "") && field.required) throw new DomainError(`${field.key} is required`, 422);
-    if (value === undefined || value === null || value === "") continue;
-    if (field.inputType === "TEXT" && (typeof value !== "string" || value.length > 500)) throw new DomainError(`Invalid ${field.key}`, 422);
-    if (field.inputType === "NUMBER" && (typeof value !== "number" || !Number.isFinite(value))) throw new DomainError(`Invalid ${field.key}`, 422);
-    if (field.inputType === "BOOLEAN" && typeof value !== "boolean") throw new DomainError(`Invalid ${field.key}`, 422);
-    if (field.inputType === "SELECT" && !field.options?.includes(String(value))) throw new DomainError(`Invalid ${field.key}`, 422);
-  }
+  const values = await validateAttributes(db, categoryId, input.attributes);
+  const [category] = await db.select({ slug: categories.slug }).from(categories).where(eq(categories.id, categoryId)).limit(1);
+  if (input.returnEnabled !== undefined && typeof input.returnEnabled !== "boolean") throw new DomainError("returnEnabled must be a boolean", 422);
+  if (input.returnEnabled === true && category?.slug !== "dress") throw new DomainError("Only Dress products can enable returns", 422);
   return db.transaction(async (tx) => {
     const [result] = await tx.insert(products).values({
       categoryId, subcategoryId, createdByAdminId: adminId,
       name: requiredText(input.name, "name"), slug: slug(input.slug),
       description: typeof input.description === "string" ? input.description.trim().slice(0, 5000) : null,
       sku: typeof input.sku === "string" ? input.sku.trim().slice(0, 100) : null,
-      price: money(input.price), attributes: values,
+      price: money(input.price), attributes: values, returnEnabled: input.returnEnabled === true,
       weightKg: optionalPositive(input.weightKg, "weightKg"),
       lengthCm: optionalPositive(input.lengthCm, "lengthCm"),
       breadthCm: optionalPositive(input.breadthCm, "breadthCm"),
@@ -104,4 +111,114 @@ export async function createProduct(db: Db, adminId: string, input: Record<strin
     await tx.insert(productAdmins).values({ productId: result.id, adminId });
     return result;
   });
+}
+
+async function assertProductAdmin(db: Db, adminId: string, productId: string) {
+  const [owned] = await db.select({ id: productAdmins.productId }).from(productAdmins).where(and(eq(productAdmins.productId, productId), eq(productAdmins.adminId, adminId))).limit(1);
+  if (!owned) throw new DomainError("Product unavailable", 404);
+  const [product] = await db.select({ categoryId: products.categoryId }).from(products).where(eq(products.id, productId)).limit(1);
+  if (!product) throw new DomainError("Product unavailable", 404);
+  await assertCategoryScope(db, adminId, product.categoryId);
+}
+
+export async function updateProduct(db: Db, adminId: string, productId: string, input: Record<string, unknown>) {
+  await assertProductAdmin(db, adminId, productId);
+  const [current] = await db.select().from(products).where(eq(products.id, productId)).limit(1);
+  if (!current) throw new DomainError("Product unavailable", 404);
+  if (input.categoryId !== undefined || input.subcategoryId !== undefined || input.status !== undefined || input.createdByAdminId !== undefined || input.featured !== undefined) {
+    throw new DomainError("Category, owner, publication status, and featured status cannot be changed here", 422);
+  }
+  const changes: Partial<typeof products.$inferInsert> = { updatedAt: new Date() };
+  if (input.name !== undefined) changes.name = requiredText(input.name, "name");
+  if (input.slug !== undefined) changes.slug = slug(input.slug);
+  if (input.description !== undefined) changes.description = typeof input.description === "string" ? input.description.trim().slice(0, 5000) || null : null;
+  if (input.sku !== undefined) changes.sku = typeof input.sku === "string" ? input.sku.trim().slice(0, 100) || null : null;
+  if (input.price !== undefined) changes.price = money(input.price);
+  if (input.attributes !== undefined) changes.attributes = await validateAttributes(db, current.categoryId, input.attributes);
+  if (input.returnEnabled !== undefined) {
+    if (typeof input.returnEnabled !== "boolean") throw new DomainError("returnEnabled must be a boolean", 422);
+    const [category] = await db.select({ slug: categories.slug }).from(categories).where(eq(categories.id, current.categoryId)).limit(1);
+    if (input.returnEnabled && category?.slug !== "dress") throw new DomainError("Only Dress products can enable returns", 422);
+    changes.returnEnabled = input.returnEnabled;
+  }
+  for (const key of ["weightKg", "lengthCm", "breadthCm", "heightCm"] as const) {
+    if (input[key] !== undefined) changes[key] = optionalPositive(input[key], key);
+  }
+  const [result] = await db.update(products).set(changes).where(eq(products.id, productId)).returning();
+  return result;
+}
+
+export async function createVariant(db: Db, adminId: string, productId: string, input: Record<string, unknown>) {
+  await assertProductAdmin(db, adminId, productId);
+  const attributes = input.attributes && typeof input.attributes === "object" && !Array.isArray(input.attributes) ? input.attributes as Record<string, unknown> : {};
+  const [variant] = await db.insert(productVariants).values({ productId, sku: requiredText(input.sku, "sku", 100), title: requiredText(input.title, "title", 200), price: money(input.price), attributes }).returning();
+  return variant;
+}
+
+export async function saveProductImageMetadata(db: Db, adminId: string, productId: string, input: Record<string, unknown>) {
+  await assertProductAdmin(db, adminId, productId);
+  const objectKey = requiredText(input.objectKey, "objectKey", 500);
+  if (!objectKey.startsWith(`products/${productId}/`)) throw new DomainError("Invalid product image object key", 422);
+  const variantId = typeof input.variantId === "string" ? input.variantId : null;
+  if (variantId) {
+    const [variant] = await db.select({ id: productVariants.id }).from(productVariants).where(and(eq(productVariants.id, variantId), eq(productVariants.productId, productId))).limit(1);
+    if (!variant) throw new DomainError("Variant unavailable", 404);
+  }
+  const sortOrder = Number(input.sortOrder ?? 0);
+  if (!Number.isInteger(sortOrder) || sortOrder < 0 || sortOrder > 1000) throw new DomainError("Invalid sortOrder", 422);
+  const [image] = await db.insert(productImages).values({ productId, variantId, objectKey, altText: typeof input.altText === "string" ? input.altText.trim().slice(0, 300) : null, sortOrder }).returning();
+  return image;
+}
+
+export async function setProductInventory(db: Db, adminId: string, productId: string, quantity: number, variantId?: string) {
+  await assertProductAdmin(db, adminId, productId);
+  if (!Number.isInteger(quantity) || quantity < 0 || quantity > 10_000_000) throw new DomainError("Invalid inventory quantity", 422);
+  if (variantId) {
+    const [variant] = await db.select({ id: productVariants.id }).from(productVariants).where(and(eq(productVariants.id, variantId), eq(productVariants.productId, productId))).limit(1);
+    if (!variant) throw new DomainError("Variant unavailable", 404);
+  }
+  const [existing] = await db.select({ id: inventories.id }).from(inventories).where(variantId ? eq(inventories.variantId, variantId) : and(eq(inventories.productId, productId), sql`${inventories.variantId} is null`)).limit(1);
+  const [inventory] = existing
+    ? await db.update(inventories).set({ availableQuantity: quantity, updatedAt: new Date() }).where(eq(inventories.id, existing.id)).returning()
+    : await db.insert(inventories).values({ productId, variantId: variantId ?? null, availableQuantity: quantity }).returning();
+  return inventory;
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/admin/products — Admin's own product list with category scope check.
+// Returns paginated list of products created by or assigned to this admin.
+// ---------------------------------------------------------------------------
+export async function listAdminProducts(
+  db: Db,
+  adminId: string,
+  opts: { status?: string; limit: number; offset: number },
+) {
+  const conditions = [eq(productAdmins.adminId, adminId), eq(adminCategoryAssignments.status, "ACTIVE"), eq(categories.status, "PUBLISHED")];
+  if (opts.status) conditions.push(eq(products.status, opts.status));
+  return db
+    .select({
+      id: products.id,
+      name: products.name,
+      slug: products.slug,
+      price: products.price,
+      currency: products.currency,
+      status: products.status,
+      featured: products.featured,
+      returnEnabled: products.returnEnabled,
+      category: categories.name,
+      categorySlug: categories.slug,
+      subcategory: subcategories.name,
+      subcategorySlug: subcategories.slug,
+      createdAt: products.createdAt,
+      updatedAt: products.updatedAt,
+    })
+    .from(productAdmins)
+    .innerJoin(products, eq(productAdmins.productId, products.id))
+    .innerJoin(categories, eq(products.categoryId, categories.id))
+    .innerJoin(adminCategoryAssignments, and(eq(adminCategoryAssignments.adminId, adminId), eq(adminCategoryAssignments.categoryId, products.categoryId)))
+    .innerJoin(subcategories, eq(products.subcategoryId, subcategories.id))
+    .where(and(...conditions))
+    .orderBy(desc(products.updatedAt))
+    .limit(opts.limit)
+    .offset(opts.offset);
 }

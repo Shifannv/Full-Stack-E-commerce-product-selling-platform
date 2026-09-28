@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import { check, index, integer, jsonb, numeric, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 import { users } from "./auth";
-import { products } from "./catalog";
+import { products, productVariants } from "./catalog";
 import { admins } from "./rbac";
 
 export type AddressSnapshot = {
@@ -29,6 +29,7 @@ export const orders = pgTable("orders", {
   shippingAddressSnapshot: jsonb("shipping_address_snapshot").$type<AddressSnapshot>().notNull(),
   paymentStatus: text("payment_status").notNull().default("PENDING"),
   placedAt: timestamp("placed_at", { withTimezone: true }),
+  deliveredAt: timestamp("delivered_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
@@ -41,7 +42,9 @@ export const orderItems = pgTable("order_items", {
   orderId: uuid("order_id").notNull().references(() => orders.id),
   adminId: uuid("admin_id").notNull().references(() => admins.id),
   productId: uuid("product_id").notNull().references(() => products.id),
+  variantId: uuid("variant_id").references(() => productVariants.id),
   productNameSnapshot: text("product_name_snapshot").notNull(),
+  variantTitleSnapshot: text("variant_title_snapshot"),
   skuSnapshot: text("sku_snapshot"),
   unitPrice: numeric("unit_price", { precision: 12, scale: 2 }).notNull(),
   weightKgSnapshot: numeric("weight_kg_snapshot", { precision: 8, scale: 3 }),
@@ -72,3 +75,18 @@ export const payments = pgTable("payments", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [index("payments_order_idx").on(table.orderId), check("payments_amount_check", sql`${table.amount} >= 0`)]);
+
+export const cashfreeWebhookEvents = pgTable("cashfree_webhook_events", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  eventKey: text("event_key").notNull().unique(),
+  eventType: text("event_type").notNull(),
+  providerOrderId: text("provider_order_id").notNull(),
+  providerPaymentId: text("provider_payment_id").notNull(),
+  orderId: uuid("order_id").references(() => orders.id),
+  result: text("result").notNull(),
+  processedAt: timestamp("processed_at", { withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [
+  index("cashfree_webhook_events_order_idx").on(table.orderId),
+  index("cashfree_webhook_events_provider_order_idx").on(table.providerOrderId),
+]);

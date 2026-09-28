@@ -3,15 +3,49 @@ import { and, eq } from "drizzle-orm";
 import { createDb } from "../db";
 import { adminAddresses, adminAuditEvents, adminCategoryAssignments, adminKycDocuments, adminKycSubmissions } from "../db/schema/admin";
 import { admins } from "../db/schema/rbac";
-import { categories, subcategories } from "../db/schema/catalog";
+import { categories, products, subcategories } from "../db/schema/catalog";
 import { shippingProviderConfigs, shippingProviderLocations } from "../db/schema/shipping";
 import { requireAuth, type AuthorizedEnv } from "../middleware/authorization";
 import { correctApplication, DomainError, getAdminId, parseAddress, requestCategory, requiredText, reviewApplication, saveAddress, saveKyc, setCategoryAssignment, submitApplication } from "../services/admin/admin.service";
-import { configureField, createCategory, createProduct, createSubcategory, getAdminCategoryConfig } from "../services/admin/catalog.service";
-import { ShiprocketAdapter } from "../services/shipping/providers/shiprocket.adapter";
-import { provisionCredentialUser } from "../services/admin/provision.service";
+import { configureField, createCategory, createProduct, createSubcategory, createVariant, getAdminCategoryConfig, listAdminProducts, saveProductImageMetadata, setProductInventory, updateProduct } from "../services/admin/catalog.service";
+import { getAdminSummary } from "../services/admin/summary.service";
+import { getShiprocketAdapter } from "../services/shipping/providers/shiprocket.adapter";
+import { activateAdminAccount, createInvitation, peekInvitation, reissueInvitation } from "../services/admin/invitation.service";
+import { sendInvitationEmail } from "../services/admin/invitation-email.service";
 
-export const adminRoutes = new Hono<AuthorizedEnv>();
+type AdminEnv = AuthorizedEnv & {
+  Bindings: AuthorizedEnv["Bindings"] & {
+    RESEND_API_KEY?: string;
+    RESEND_FROM_EMAIL?: string;
+    ADMIN_SETUP_URL?: string;
+  };
+};
+
+export const adminRoutes = new Hono<AdminEnv>();
+
+// ---------------------------------------------------------------------------
+// Unauthenticated activation routes — Admin has no session before password setup.
+// These MUST be registered before the requireAuth middleware below.
+// ---------------------------------------------------------------------------
+adminRoutes.get("/activate", async (c) => {
+  const token = c.req.query("token") ?? "";
+  if (!token) return c.json({ error: "token is required" }, 422);
+  return withDbPublic(c.env.HYPERDRIVE.connectionString, async (db) => {
+    const info = await peekInvitation(db, token);
+    return c.json({ email: info.email, expiresAt: info.expiresAt });
+  }, c);
+});
+
+adminRoutes.post("/activate", async (c) => {
+  const v = await bodyPublic(c);
+  const rawToken = requiredText(v.token, "token", 200);
+  const password = requiredText(v.password, "password", 256);
+  return withDbPublic(c.env.HYPERDRIVE.connectionString, async (db) => {
+    const result = await activateAdminAccount(db, { rawToken, password });
+    return c.json({ userId: result.userId, email: result.email, adminId: result.adminId });
+  }, c);
+});
+
 adminRoutes.use("*", requireAuth);
 
 async function withDb<T>(connectionString: string, action: (db: ReturnType<typeof createDb>["db"]) => Promise<T>): Promise<T> {
@@ -19,11 +53,33 @@ async function withDb<T>(connectionString: string, action: (db: ReturnType<typeo
   try { return await action(db); } finally { await client.end({ timeout: 1 }); }
 }
 
+async function withDbPublic(connectionString: string, action: (db: ReturnType<typeof createDb>["db"]) => Promise<Response>, c: { json: (body: unknown, status?: number) => Response }): Promise<Response> {
+  const { client, db } = createDb(connectionString);
+  try { return await action(db); } catch (error) {
+    if (error instanceof DomainError) return c.json({ error: error.message }, error.status);
+    console.error("Activation request failed", { name: error instanceof Error ? error.name : "UnknownError" });
+    return c.json({ error: "Activation unavailable" }, 503);
+  } finally { await client.end({ timeout: 1 }); }
+}
+
+async function bodyPublic(c: { req: { json: () => Promise<unknown> } }): Promise<Record<string, unknown>> {
+  const value = await c.req.json().catch(() => null);
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new DomainError("Invalid JSON body", 422);
+  return value as Record<string, unknown>;
+}
+
 function ownAdmin(actor: { roles: string[] }) {
   if (!actor.roles.includes("ADMIN")) throw new DomainError("Forbidden", 403);
 }
 function superAdmin(actor: { roles: string[] }) {
   if (!actor.roles.includes("SUPER_ADMIN")) throw new DomainError("Forbidden", 403);
+}
+function requireSetupUrl(value: string | undefined): string {
+  if (!value) throw new DomainError("Admin invitation delivery is not configured", 409);
+  let url: URL;
+  try { url = new URL(value); } catch { throw new DomainError("Admin setup URL is invalid", 409); }
+  if (url.protocol !== "https:" || url.username || url.password || url.hash) throw new DomainError("Admin setup URL must use HTTPS", 409);
+  return value;
 }
 async function body(c: { req: { json: () => Promise<unknown> } }): Promise<Record<string, unknown>> {
   const value = await c.req.json().catch(() => null);
@@ -45,8 +101,8 @@ adminRoutes.get("/onboarding", async (c) => {
     const [application] = await db.select().from(adminKycSubmissions).where(eq(adminKycSubmissions.adminId, adminId)).limit(1);
     const documents = application ? await db.select({ id: adminKycDocuments.id, documentType: adminKycDocuments.documentType, createdAt: adminKycDocuments.createdAt }).from(adminKycDocuments).where(eq(adminKycDocuments.submissionId, application.id)) : [];
     const addresses = await db.select().from(adminAddresses).where(eq(adminAddresses.adminId, adminId));
-    const categories = await db.select().from(adminCategoryAssignments).where(eq(adminCategoryAssignments.adminId, adminId));
-    return { profile, application, documents, addresses, categories };
+    const cats = await db.select().from(adminCategoryAssignments).where(eq(adminCategoryAssignments.adminId, adminId));
+    return { profile, application, documents, addresses, categories: cats };
   }));
 });
 
@@ -113,19 +169,84 @@ adminRoutes.get("/review/:adminId", async (c) => {
     const [application] = await db.select().from(adminKycSubmissions).where(eq(adminKycSubmissions.adminId, adminId)).limit(1);
     const documents = application ? await db.select({ id: adminKycDocuments.id, documentType: adminKycDocuments.documentType, createdAt: adminKycDocuments.createdAt }).from(adminKycDocuments).where(eq(adminKycDocuments.submissionId, application.id)) : [];
     const addresses = await db.select().from(adminAddresses).where(eq(adminAddresses.adminId, adminId));
-    const categories = await db.select().from(adminCategoryAssignments).where(eq(adminCategoryAssignments.adminId, adminId));
+    const cats = await db.select().from(adminCategoryAssignments).where(eq(adminCategoryAssignments.adminId, adminId));
     const audit = await db.select().from(adminAuditEvents).where(eq(adminAuditEvents.adminId, adminId));
-    return { profile, application, documents, addresses, categories, audit };
+    return { profile, application, documents, addresses, categories: cats, audit };
   }));
 });
 
+// ---------------------------------------------------------------------------
+// Passwords must be chosen by the invited Admin, never supplied by Super Admin.
+// ---------------------------------------------------------------------------
 adminRoutes.post("/review/provision", async (c) => {
   superAdmin(c.get("actor"));
+  throw new DomainError("Use Admin invitation for password setup", 422);
+});
+
+// ---------------------------------------------------------------------------
+// Invitation flow: Super Admin sends a secure invitation email.
+// The Admin activates their account via GET/POST /admin/activate (unauthenticated).
+// ---------------------------------------------------------------------------
+adminRoutes.post("/review/invite", async (c) => {
+  superAdmin(c.get("actor"));
+  if (!c.env.RESEND_API_KEY || !c.env.RESEND_FROM_EMAIL) throw new DomainError("Admin invitation delivery is not configured", 409);
+  const setupPageUrl = requireSetupUrl(c.env.ADMIN_SETUP_URL);
   const v = await body(c);
-  const result = await withDb(c.env.HYPERDRIVE.connectionString, (db) => provisionCredentialUser(db, {
-    email: requiredText(v.email, "email", 320), name: requiredText(v.name, "name"), password: typeof v.password === "string" ? v.password : "",
-  }, "ADMIN", c.get("actor").userId));
-  return c.json(result, 201);
+  const email = requiredText(v.email, "email", 320);
+  const name = requiredText(v.name, "name");
+  const result = await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
+    createInvitation(db, { email, name, invitedByUserId: c.get("actor").userId })
+  );
+  const emailResult = await sendInvitationEmail({
+    toEmail: email,
+    toName: name,
+    rawToken: result.rawToken,
+    expiresAt: result.expiresAt,
+    setupPageUrl,
+    fromEmail: c.env.RESEND_FROM_EMAIL ?? "",
+    resendApiKey: c.env.RESEND_API_KEY ?? "",
+  });
+  return c.json({
+    adminId: result.adminId,
+    expiresAt: result.expiresAt,
+    emailDelivered: emailResult.delivered,
+    emailNote: emailResult.delivered ? undefined : (emailResult as { reason?: string }).reason,
+  }, 201);
+});
+
+adminRoutes.post("/review/reinvite", async (c) => {
+  superAdmin(c.get("actor"));
+  if (!c.env.RESEND_API_KEY || !c.env.RESEND_FROM_EMAIL) throw new DomainError("Admin invitation delivery is not configured", 409);
+  const setupPageUrl = requireSetupUrl(c.env.ADMIN_SETUP_URL);
+  const v = await body(c);
+  const email = requiredText(v.email, "email", 320);
+  const { db: innerDb, client: innerClient } = createDb(c.env.HYPERDRIVE.connectionString);
+  let invitedName: string | undefined;
+  try {
+    const { users } = await import("../db/schema/auth");
+    const [u] = await innerDb.select({ name: users.name }).from(users).where(eq(users.email, email.toLowerCase())).limit(1);
+    invitedName = u?.name;
+  } finally {
+    await innerClient.end({ timeout: 1 });
+  }
+  const result = await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
+    reissueInvitation(db, { email, invitedByUserId: c.get("actor").userId })
+  );
+  const emailResult = await sendInvitationEmail({
+    toEmail: email,
+    toName: invitedName ?? email,
+    rawToken: result.rawToken,
+    expiresAt: result.expiresAt,
+    setupPageUrl,
+    fromEmail: c.env.RESEND_FROM_EMAIL ?? "",
+    resendApiKey: c.env.RESEND_API_KEY ?? "",
+  });
+  return c.json({
+    adminId: result.adminId,
+    expiresAt: result.expiresAt,
+    emailDelivered: emailResult.delivered,
+    emailNote: emailResult.delivered ? undefined : (emailResult as { reason?: string }).reason,
+  });
 });
 
 adminRoutes.get("/review/:adminId/documents/:documentId", async (c) => {
@@ -179,6 +300,29 @@ adminRoutes.get("/categories", async (c) => {
   return c.json({ categories: await withDb(c.env.HYPERDRIVE.connectionString, async (db) => getAdminCategoryConfig(db, await getAdminId(db, c.get("actor").userId))) });
 });
 
+adminRoutes.get("/summary", async (c) => {
+  const actor = c.get("actor");
+  if (!actor.roles.includes("ADMIN") || !actor.adminApproved || !actor.permissions.includes("analytics.view") || !actor.permissions.includes("earnings.view")) throw new DomainError("Forbidden", 403);
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => getAdminSummary(db, await getAdminId(db, actor.userId))));
+});
+
+adminRoutes.get("/products", async (c) => {
+  const actor = c.get("actor");
+  if (!actor.roles.includes("ADMIN") || !actor.adminApproved || !actor.permissions.includes("products.view")) throw new DomainError("Forbidden", 403);
+  const number = (key: string, fallback: number) => {
+    const value = c.req.query(key);
+    if (value === undefined) return fallback;
+    const parsed = Number(value);
+    if (!Number.isSafeInteger(parsed) || parsed < (key === "limit" ? 1 : 0)) throw new DomainError(`Invalid ${key}`, 422);
+    return parsed;
+  };
+  const status = c.req.query("status");
+  if (status && !["DRAFT", "PUBLISHED", "ARCHIVED"].includes(status)) throw new DomainError("Invalid status", 422);
+  const limit = Math.min(50, number("limit", 20));
+  const offset = number("offset", 0);
+  return c.json({ products: await withDb(c.env.HYPERDRIVE.connectionString, async (db) => listAdminProducts(db, await getAdminId(db, actor.userId), { status, limit, offset })), limit, offset });
+});
+
 adminRoutes.post("/subcategories", async (c) => {
   const actor = c.get("actor");
   if (!actor.roles.includes("ADMIN") || !actor.adminApproved || !actor.permissions.includes("products.create")) throw new DomainError("Forbidden", 403);
@@ -191,6 +335,34 @@ adminRoutes.post("/products", async (c) => {
   if (!actor.roles.includes("ADMIN") || !actor.adminApproved || !actor.permissions.includes("products.create")) throw new DomainError("Forbidden", 403);
   const v = await body(c);
   return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => createProduct(db, await getAdminId(db, actor.userId), v)));
+});
+
+adminRoutes.patch("/products/:productId", async (c) => {
+  const actor = c.get("actor");
+  if (!actor.roles.includes("ADMIN") || !actor.adminApproved || !actor.permissions.includes("products.update")) throw new DomainError("Forbidden", 403);
+  const v = await body(c);
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => updateProduct(db, await getAdminId(db, actor.userId), c.req.param("productId"), v)));
+});
+
+adminRoutes.post("/products/:productId/variants", async (c) => {
+  const actor = c.get("actor");
+  if (!actor.roles.includes("ADMIN") || !actor.adminApproved || !actor.permissions.includes("products.update")) throw new DomainError("Forbidden", 403);
+  const v = await body(c);
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => createVariant(db, await getAdminId(db, actor.userId), c.req.param("productId"), v)), 201);
+});
+
+adminRoutes.post("/products/:productId/images", async (c) => {
+  const actor = c.get("actor");
+  if (!actor.roles.includes("ADMIN") || !actor.adminApproved || !actor.permissions.includes("products.update")) throw new DomainError("Forbidden", 403);
+  const v = await body(c);
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => saveProductImageMetadata(db, await getAdminId(db, actor.userId), c.req.param("productId"), v)), 201);
+});
+
+adminRoutes.put("/products/:productId/inventory", async (c) => {
+  const actor = c.get("actor");
+  if (!actor.roles.includes("ADMIN") || !actor.adminApproved || !actor.permissions.includes("inventory.update")) throw new DomainError("Forbidden", 403);
+  const v = await body(c);
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => setProductInventory(db, await getAdminId(db, actor.userId), c.req.param("productId"), Number(v.quantity), typeof v.variantId === "string" ? v.variantId : undefined)));
 });
 
 adminRoutes.post("/catalog/categories", async (c) => {
@@ -227,6 +399,29 @@ adminRoutes.patch("/catalog/subcategories/:subcategoryId/status", async (c) => {
   }));
 });
 
+adminRoutes.patch("/catalog/products/:productId/status", async (c) => {
+  superAdmin(c.get("actor"));
+  const v = await body(c);
+  if (v.status !== "PUBLISHED" && v.status !== "DRAFT" && v.status !== "ARCHIVED") throw new DomainError("Invalid status", 422);
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
+    const [result] = await db.update(products).set({ status: v.status as string, updatedAt: new Date() }).where(eq(products.id, c.req.param("productId"))).returning();
+    if (!result) throw new DomainError("Product unavailable", 404);
+    return result;
+  }));
+});
+
+adminRoutes.patch("/catalog/products/:productId/featured", async (c) => {
+  superAdmin(c.get("actor"));
+  const v = await body(c);
+  if (typeof v.featured !== "boolean") throw new DomainError("featured must be a boolean", 422);
+  const featured = v.featured as boolean;
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
+    const [result] = await db.update(products).set({ featured, updatedAt: new Date() }).where(eq(products.id, c.req.param("productId"))).returning({ id: products.id, featured: products.featured });
+    if (!result) throw new DomainError("Product unavailable", 404);
+    return result;
+  }));
+});
+
 adminRoutes.put("/catalog/fields", async (c) => {
   superAdmin(c.get("actor"));
   const v = await body(c);
@@ -238,8 +433,8 @@ adminRoutes.put("/shipping/providers/shiprocket", async (c) => {
   const v = await body(c);
   if (typeof v.enabled !== "boolean") throw new DomainError("enabled must be a boolean", 422);
   if (v.enabled) {
-    const env = c.env as typeof c.env & { SHIPROCKET_API_USER_EMAIL?: string; SHIPROCKET_API_USER_PASSWORD?: string };
-    if (!env.SHIPROCKET_API_USER_EMAIL || !env.SHIPROCKET_API_USER_PASSWORD) throw new DomainError("Shiprocket API user credentials are required", 422);
+    const env = c.env as typeof c.env & { SHIPROCKET_API_EMAIL?: string; SHIPROCKET_API_PASSWORD?: string };
+    if (!env.SHIPROCKET_API_EMAIL || !env.SHIPROCKET_API_PASSWORD) throw new DomainError("Shiprocket API user credentials are required", 422);
   }
   return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
     const [result] = await db.update(shippingProviderConfigs).set({ enabled: v.enabled as boolean, updatedAt: new Date() }).where(eq(shippingProviderConfigs.providerKey, "shiprocket")).returning({ providerKey: shippingProviderConfigs.providerKey, enabled: shippingProviderConfigs.enabled });
@@ -264,18 +459,18 @@ adminRoutes.put("/shipping/pickup-locations", async (c) => {
 
 adminRoutes.get("/shipping/provider-pickups", async (c) => {
   superAdmin(c.get("actor"));
-  const env = c.env as typeof c.env & { SHIPROCKET_API_USER_EMAIL?: string; SHIPROCKET_API_USER_PASSWORD?: string };
-  if (!env.SHIPROCKET_API_USER_EMAIL || !env.SHIPROCKET_API_USER_PASSWORD) throw new DomainError("Shiprocket API user credentials are required", 409);
-  return c.json({ locations: await new ShiprocketAdapter(env.SHIPROCKET_API_USER_EMAIL, env.SHIPROCKET_API_USER_PASSWORD).listPickupLocations() });
+  const env = c.env as typeof c.env & { SHIPROCKET_API_EMAIL?: string; SHIPROCKET_API_PASSWORD?: string; SHIPROCKET_API_BASE_URL?: string };
+  if (!env.SHIPROCKET_API_EMAIL || !env.SHIPROCKET_API_PASSWORD) throw new DomainError("Shiprocket API user credentials are required", 409);
+  return c.json({ locations: await getShiprocketAdapter(env.SHIPROCKET_API_EMAIL, env.SHIPROCKET_API_PASSWORD, env.SHIPROCKET_API_BASE_URL).listPickupLocations() });
 });
 
 adminRoutes.get("/shipping/serviceability", async (c) => {
   superAdmin(c.get("actor"));
-  const env = c.env as typeof c.env & { SHIPROCKET_API_USER_EMAIL?: string; SHIPROCKET_API_USER_PASSWORD?: string };
-  if (!env.SHIPROCKET_API_USER_EMAIL || !env.SHIPROCKET_API_USER_PASSWORD) throw new DomainError("Shiprocket API user credentials are required", 409);
+  const env = c.env as typeof c.env & { SHIPROCKET_API_EMAIL?: string; SHIPROCKET_API_PASSWORD?: string; SHIPROCKET_API_BASE_URL?: string };
+  if (!env.SHIPROCKET_API_EMAIL || !env.SHIPROCKET_API_PASSWORD) throw new DomainError("Shiprocket API user credentials are required", 409);
   const pickup = c.req.query("pickupPostcode") ?? "";
   const delivery = c.req.query("deliveryPostcode") ?? "";
   const weight = Number(c.req.query("weightKg"));
   if (!/^\d{6}$/.test(pickup) || !/^\d{6}$/.test(delivery) || !Number.isFinite(weight) || weight <= 0) throw new DomainError("Valid Indian pincodes and weight are required", 422);
-  return c.json({ serviceability: await new ShiprocketAdapter(env.SHIPROCKET_API_USER_EMAIL, env.SHIPROCKET_API_USER_PASSWORD).getServiceability(pickup, delivery, weight) });
+  return c.json({ serviceability: await getShiprocketAdapter(env.SHIPROCKET_API_EMAIL, env.SHIPROCKET_API_PASSWORD, env.SHIPROCKET_API_BASE_URL).getServiceability(pickup, delivery, weight) });
 });

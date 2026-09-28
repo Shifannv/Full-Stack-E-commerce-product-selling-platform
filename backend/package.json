@@ -8,9 +8,17 @@
     "seed:rbac": "tsx scripts/seed-rbac.ts",
     "seed:shipping": "tsx scripts/seed-shipping.ts",
     "verify:integrity": "tsx scripts/verify-integrity.ts",
+    "verify:workflows": "tsx scripts/verify-workflows.ts",
+    "verify:readiness": "tsx scripts/verify-readiness.ts",
+    "verify:auth-e2e": "tsx scripts/verify-auth-e2e.ts",
+    "verify:invitations": "tsx scripts/verify-invitations.ts",
+    "verify:deployed": "tsx scripts/verify-deployed.ts",
+    "verify:checkout-concurrency": "tsx scripts/verify-checkout-concurrency.ts",
+    "verify:cashfree-sandbox": "tsx scripts/verify-cashfree-sandbox.ts",
+    "verify:shiprocket-auth": "tsx scripts/verify-shiprocket-auth.ts",
     "bootstrap:super-admin": "tsx scripts/bootstrap-super-admin.ts",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test src/services/shipping/status.test.ts src/services/shipping/providers/shiprocket.adapter.test.ts src/services/returns/return.test.ts"
+    "test": "node --import tsx --test src/lib/auth/auth.test.ts src/middleware/authorization.test.ts src/routes/customer.test.ts src/routes/shipping.test.ts src/services/admin/finance.test.ts src/services/admin/invitation.test.ts src/services/customer/order.test.ts src/services/customer/review.test.ts src/services/cashfree-payment.adapter.test.ts src/services/shipping/status.test.ts src/services/shipping/shipping.service.test.ts src/services/shipping/providers/shiprocket-auth.service.test.ts src/services/shipping/providers/shiprocket.adapter.test.ts src/services/returns/return.test.ts"
   },
   "keywords": [],
   "author": "",

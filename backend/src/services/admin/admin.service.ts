@@ -19,7 +19,7 @@ export type AddressInput = {
 };
 
 export class DomainError extends Error {
-  constructor(message: string, public status: 400 | 403 | 404 | 409 | 422 = 400) { super(message); }
+  constructor(message: string, public status: 400 | 401 | 403 | 404 | 409 | 413 | 415 | 422 | 502 | 503 = 400) { super(message); }
 }
 
 export function requiredText(value: unknown, name: string, max = 200): string {

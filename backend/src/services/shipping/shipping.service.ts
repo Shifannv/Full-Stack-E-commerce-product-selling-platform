@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import type { createDb } from "../../db";
 import { adminAddresses } from "../../db/schema/admin";
 import { users } from "../../db/schema/auth";
@@ -47,6 +47,9 @@ export async function createForwardShipment(db: Db, provider: ShippingProvider, 
   if (pkg.weightKg < minimumWeight || pkg.lengthCm < Math.max(...items.map((item) => Number(item.lengthCmSnapshot))) || pkg.breadthCm < Math.max(...items.map((item) => Number(item.breadthCmSnapshot))) || pkg.heightCm < Math.max(...items.map((item) => Number(item.heightCmSnapshot)))) throw new DomainError("Package is smaller than the order item measurements", 422);
   const [customer] = await db.select({ email: users.email }).from(users).where(eq(users.id, order.customerId)).limit(1);
   if (!customer) throw new DomainError("Customer unavailable", 404);
+  if (!/^\d{6}$/.test(origin.postalCode) || !/^\d{6}$/.test(order.shippingAddressSnapshot.postalCode)) throw new DomainError("Valid pickup and delivery pincodes are required", 422);
+  const serviceability = await provider.getServiceability(origin.postalCode, order.shippingAddressSnapshot.postalCode, pkg.weightKg);
+  if (!serviceability.available) throw new DomainError("No courier is available for this route and package", 422);
   const [shipment] = await db.transaction(async (tx) => {
     const [reserved] = await tx.insert(shipments).values({ orderId, adminId, providerKey: provider.key, originAddressSnapshot: snapshot(origin), destinationAddressSnapshot: order.shippingAddressSnapshot }).returning();
     await tx.insert(shipmentItems).values(items.map((item) => ({ shipmentId: reserved.id, orderItemId: item.id, orderId, adminId })));
@@ -139,6 +142,17 @@ export async function ingestShiprocketWebhook(db: Db, payload: unknown): Promise
           deliveredAt: status === "DELIVERED" && !shipment.deliveredAt ? latest.eventTime : shipment.deliveredAt,
           updatedAt: new Date(),
         }).where(eq(shipments.id, shipment.id));
+        if (status === "DELIVERED") {
+          const items = await tx.select({ id: orderItems.id }).from(orderItems).where(eq(orderItems.orderId, shipment.orderId));
+          const deliveredItems = await tx.select({ id: shipmentItems.orderItemId, deliveredAt: shipments.deliveredAt }).from(shipmentItems)
+            .innerJoin(shipments, eq(shipmentItems.shipmentId, shipments.id))
+            .where(and(eq(shipmentItems.orderId, shipment.orderId), eq(shipments.status, "DELIVERED")));
+          if (items.length && items.every((item) => deliveredItems.some((delivered) => delivered.id === item.id && delivered.deliveredAt))) {
+            const deliveredAt = new Date(Math.max(...deliveredItems.map((item) => item.deliveredAt!.getTime())));
+            await tx.update(orders).set({ deliveredAt, status: "DELIVERED", updatedAt: new Date() })
+              .where(and(eq(orders.id, shipment.orderId), isNull(orders.deliveredAt)));
+          }
+        }
       }
     }
     return { accepted, duplicates: events.length - accepted };

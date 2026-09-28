@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 import type { createDb } from "../../db";
 import { adminAddresses } from "../../db/schema/admin";
 import { orderItems, orders, payments } from "../../db/schema/orders";
+import { categories, products } from "../../db/schema/catalog";
 import { refunds, returnInspections, returnItems, returns } from "../../db/schema/returns";
 import { shipmentItems, shipments } from "../../db/schema/shipping";
 import { admins } from "../../db/schema/rbac";
@@ -12,25 +13,33 @@ import { CashfreeRefundAdapter } from "./cashfree-refund.adapter";
 type Db = ReturnType<typeof createDb>["db"];
 
 export function returnWindowDays(raw: string | undefined): number {
-  const days = Number(raw);
-  if (!raw || !Number.isInteger(days) || days < 1 || days > 365) throw new DomainError("Return policy window is not configured", 409);
-  return days;
+  if (raw !== "5") throw new DomainError("The 5-day return policy is not configured", 409);
+  return 5;
+}
+
+export function withinReturnWindow(deliveredAt: Date | null, now: Date, windowDays: number): boolean {
+  return deliveredAt !== null && Number.isInteger(windowDays) && windowDays === 5
+    && now.getTime() >= deliveredAt.getTime() && now.getTime() <= deliveredAt.getTime() + 5 * 86400000;
 }
 
 export async function requestReturn(db: Db, customerId: string, orderItemId: string, quantity: number, reason: string, notes: string | null, windowDays: number) {
   if (!Number.isInteger(quantity) || quantity < 1) throw new DomainError("Invalid return quantity", 422);
   const [item] = await db.select().from(orderItems).where(eq(orderItems.id, orderItemId)).limit(1);
   if (!item || quantity > item.quantity) throw new DomainError("Order item unavailable", 404);
-  const [order] = await db.select({ customerId: orders.customerId, paymentStatus: orders.paymentStatus }).from(orders).where(eq(orders.id, item.orderId)).limit(1);
+  const [order] = await db.select({ customerId: orders.customerId, paymentStatus: orders.paymentStatus, deliveredAt: orders.deliveredAt }).from(orders).where(eq(orders.id, item.orderId)).limit(1);
   if (order?.customerId !== customerId) throw new DomainError("Order item unavailable", 404);
   if (order.paymentStatus !== "PAID") throw new DomainError("Paid order required", 422);
+  const [product] = await db.select({ returnEnabled: products.returnEnabled, categorySlug: categories.slug })
+    .from(products).innerJoin(categories, eq(products.categoryId, categories.id)).where(eq(products.id, item.productId)).limit(1);
+  if (!product?.returnEnabled || product.categorySlug !== "dress") throw new DomainError("Product is not returnable", 422);
   const [existing] = await db.select({ id: returnItems.id }).from(returnItems).where(eq(returnItems.orderItemId, orderItemId)).limit(1);
   if (existing) throw new DomainError("Order item already has a return", 409);
   const [delivery] = await db.select({ deliveredAt: shipments.deliveredAt }).from(shipmentItems)
     .innerJoin(shipments, eq(shipmentItems.shipmentId, shipments.id))
     .where(and(eq(shipmentItems.orderItemId, orderItemId), eq(shipments.status, "DELIVERED"))).limit(1);
   if (!delivery?.deliveredAt) throw new DomainError("Delivered shipment required", 422);
-  if (Date.now() > delivery.deliveredAt.getTime() + windowDays * 86400000) throw new DomainError("Return window has closed", 422);
+  if (!order.deliveredAt) throw new DomainError("Delivered order required", 422);
+  if (!withinReturnWindow(order.deliveredAt, new Date(), windowDays)) throw new DomainError("Return window has closed", 422);
   return db.transaction(async (tx) => {
     const [result] = await tx.insert(returns).values({ orderId: item.orderId, customerId, adminId: item.adminId, reason: requiredText(reason, "reason", 500), customerNotes: notes?.slice(0, 2000) ?? null }).returning();
     await tx.insert(returnItems).values({ returnId: result.id, orderItemId, orderId: item.orderId, adminId: item.adminId, quantity });

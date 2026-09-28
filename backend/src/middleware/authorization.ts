@@ -16,6 +16,12 @@ export type AuthorizedEnv = {
   Variables: { actor: Actor };
 };
 
+export function hasPermission(actor: Actor, key: string): boolean {
+  if (actor.roles.includes("SUPER_ADMIN")) return true;
+  if (actor.roles.includes("ADMIN") && !actor.adminApproved) return false;
+  return actor.permissions.includes(key);
+}
+
 export const requireAuth = createMiddleware<AuthorizedEnv>(async (c, next) => {
   let client: ReturnType<typeof createAuth>["client"] | undefined;
   try {
@@ -66,9 +72,6 @@ export const requireAuth = createMiddleware<AuthorizedEnv>(async (c, next) => {
 export const requirePermission = (key: string) => createMiddleware<AuthorizedEnv>(async (c, next) => {
   const actor = c.get("actor");
   if (!actor) return c.json({ error: "Unauthorized" }, 401);
-  if (actor.roles.includes("SUPER_ADMIN")) return next();
-  if (!actor.permissions.includes(key) || (actor.roles.includes("ADMIN") && !actor.adminApproved)) {
-    return c.json({ error: "Forbidden" }, 403);
-  }
+  if (!hasPermission(actor, key)) return c.json({ error: "Forbidden" }, 403);
   await next();
 });

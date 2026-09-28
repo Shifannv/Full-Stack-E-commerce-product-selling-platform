@@ -1,0 +1,2 @@
+ALTER TABLE "products" ADD COLUMN "featured" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+CREATE INDEX "products_featured_idx" ON "products" USING btree ("id") WHERE "products"."featured" = true;

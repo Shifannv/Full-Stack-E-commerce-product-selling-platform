@@ -19,6 +19,7 @@ export type CreateShipmentInput = {
 };
 export type ProviderShipment = { providerOrderId: string; providerShipmentId: string };
 export type ProviderAwb = { awbNumber: string; carrierName?: string };
+export type ProviderServiceability = { available: boolean; courierCount: number };
 
 export interface ShippingProvider {
   readonly key: string;
@@ -26,6 +27,6 @@ export interface ShippingProvider {
   assignAwb(providerShipmentId: string): Promise<ProviderAwb>;
   requestPickup(providerShipmentId: string): Promise<void>;
   getTracking(awbNumber: string): Promise<unknown>;
-  getServiceability(pickupPostcode: string, deliveryPostcode: string, weightKg: number): Promise<unknown>;
+  getServiceability(pickupPostcode: string, deliveryPostcode: string, weightKg: number): Promise<ProviderServiceability>;
   listPickupLocations(): Promise<Array<{ reference: string; name: string; postalCode: string; status: string }>>;
 }

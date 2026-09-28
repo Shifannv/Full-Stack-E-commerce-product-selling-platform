@@ -14,8 +14,13 @@ async function main() {
     const [tables] = await client`select count(*)::integer as count from information_schema.tables where table_schema = 'public' and table_type = 'BASE TABLE'`;
     const [migrations] = await client`select count(*)::integer as count from drizzle.__drizzle_migrations`;
     const [provider] = await client`select enabled from shipping_provider_configs where provider_key = 'shiprocket'`;
-    assert.ok(tables.count >= 31);
-    assert.equal(migrations.count, 4);
+    assert.ok(tables.count >= 44);
+    assert.equal(migrations.count, 9);
+    const [featuredColumn] = await client`select is_nullable, column_default from information_schema.columns where table_schema = 'public' and table_name = 'products' and column_name = 'featured'`;
+    assert.equal(featuredColumn?.is_nullable, "NO");
+    assert.equal(featuredColumn?.column_default, "false");
+    // Published products may now be deliberately curated by the Super Admin.
+    // The NOT NULL/default check above protects the original migration contract.
     assert.equal(provider.enabled, false);
     await assert.rejects(client.begin(async (tx) => {
       const userId = `integrity-${randomUUID()}`;
@@ -47,7 +52,8 @@ async function main() {
         const [adminB] = await tx`insert into admins (user_id, status) values (${otherUserId}, 'ACTIVE') returning id`;
         const [category] = await tx`insert into categories (name, slug, status) values ('Fixture', ${`fixture-${randomUUID()}`}, 'PUBLISHED') returning id`;
         const [sub] = await tx`insert into subcategories (category_id, name, slug, status) values (${category.id}, 'Fixture Sub', 'fixture-sub', 'PUBLISHED') returning id`;
-        const [productA] = await tx`insert into products (category_id, subcategory_id, name, slug, price, created_by_admin_id) values (${category.id}, ${sub.id}, 'A', ${`fixture-pa-${randomUUID()}`}, 100, ${adminA.id}) returning id`;
+        const [productA] = await tx`insert into products (category_id, subcategory_id, name, slug, price, created_by_admin_id) values (${category.id}, ${sub.id}, 'A', ${`fixture-pa-${randomUUID()}`}, 100, ${adminA.id}) returning id, featured`;
+        assert.equal(productA.featured, false);
         const [productB] = await tx`insert into products (category_id, subcategory_id, name, slug, price, created_by_admin_id) values (${category.id}, ${sub.id}, 'B', ${`fixture-pb-${randomUUID()}`}, 200, ${adminB.id}) returning id`;
         const [order] = await tx`insert into orders (order_number, customer_id, subtotal, total_amount, shipping_address_snapshot) values (${`fixture-${randomUUID()}`}, ${fixtureUserId}, 300, 300, ${JSON.stringify(address)}::jsonb) returning id`;
         const [itemA] = await tx`insert into order_items (order_id,admin_id,product_id,product_name_snapshot,unit_price,quantity,subtotal,total_amount) values (${order.id},${adminA.id},${productA.id},'A',100,1,100,100) returning id`;

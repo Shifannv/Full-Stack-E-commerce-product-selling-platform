@@ -1,44 +1,34 @@
-import type { CreateShipmentInput, ProviderAwb, ProviderShipment, ShippingProvider } from "../shipping-provider";
+import type { CreateShipmentInput, ProviderAwb, ProviderServiceability, ProviderShipment, ShippingProvider } from "../shipping-provider";
+import { ShiprocketAuthService, SHIPROCKET_API_BASE_URL, shiprocketBaseUrl } from "./shiprocket-auth.service";
 
-const BASE = "https://apiv2.shiprocket.in/v1/external";
 type Json = Record<string, unknown>;
 function object(value: unknown): Json { return value && typeof value === "object" && !Array.isArray(value) ? value as Json : {}; }
 function reference(value: unknown): string | undefined { return typeof value === "string" || typeof value === "number" ? String(value) : undefined; }
+function numericShipmentId(value: string): number {
+  const id = Number(value);
+  if (!/^\d+$/.test(value) || !Number.isSafeInteger(id) || id <= 0) throw new Error("Invalid Shiprocket shipment reference");
+  return id;
+}
 
 export class ShiprocketAdapter implements ShippingProvider {
   readonly key = "shiprocket";
-  private token?: string;
-  private tokenPromise?: Promise<string>;
+  private readonly auth: ShiprocketAuthService;
+  private readonly baseUrl: string;
 
-  constructor(private readonly email: string, private readonly password: string, private readonly fetcher: typeof fetch = fetch) {
-    if (!email || !password) throw new Error("Shiprocket API user credentials are required");
-  }
-
-  private async authenticate(): Promise<string> {
-    if (this.token) return this.token;
-    if (!this.tokenPromise) this.tokenPromise = (async () => {
-      const response = await this.fetcher(`${BASE}/auth/login`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: this.email, password: this.password }),
-      });
-      if (!response.ok) throw new Error(`Shiprocket authentication failed (${response.status})`);
-      const token = object(await response.json()).token;
-      if (typeof token !== "string" || !token) throw new Error("Shiprocket authentication response is invalid");
-      this.token = token;
-      return token;
-    })().finally(() => { this.tokenPromise = undefined; });
-    return this.tokenPromise;
+  constructor(email: string, password: string, private readonly fetcher: typeof fetch = fetch, baseUrl = SHIPROCKET_API_BASE_URL, auth?: ShiprocketAuthService) {
+    this.baseUrl = shiprocketBaseUrl(baseUrl);
+    this.auth = auth ?? new ShiprocketAuthService(email, password, fetcher, this.baseUrl);
   }
 
   private async request(path: string, method = "GET", body?: Json): Promise<Json> {
     for (let attempt = 0; attempt < 2; attempt++) {
-      const token = await this.authenticate();
-      const response = await this.fetcher(`${BASE}${path}`, {
+      const token = await this.auth.getToken();
+      const response = await this.fetcher(`${this.baseUrl}${path}`, {
         method,
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: body === undefined ? undefined : JSON.stringify(body),
       });
-      if (response.status === 401 && attempt === 0) { this.token = undefined; continue; }
+      if (response.status === 401 && attempt === 0) { this.auth.invalidateToken(token); continue; }
       if (!response.ok) throw new Error(`Shiprocket API request failed (${response.status})`);
       return object(await response.json());
     }
@@ -76,7 +66,7 @@ export class ShiprocketAdapter implements ShippingProvider {
   }
 
   async assignAwb(providerShipmentId: string): Promise<ProviderAwb> {
-    const response = await this.request("/courier/assign/awb", "POST", { shipment_id: Number(providerShipmentId) });
+    const response = await this.request("/courier/assign/awb", "POST", { shipment_id: numericShipmentId(providerShipmentId) });
     const data = object(response.response);
     const awb = object(data.data);
     const awbNumber = reference(awb.awb_code ?? data.awb_code ?? response.awb_code);
@@ -85,16 +75,21 @@ export class ShiprocketAdapter implements ShippingProvider {
   }
 
   async requestPickup(providerShipmentId: string): Promise<void> {
-    await this.request("/courier/generate/pickup", "POST", { shipment_id: [Number(providerShipmentId)] });
+    const response = await this.request("/courier/generate/pickup", "POST", { shipment_id: [numericShipmentId(providerShipmentId)] });
+    if (response.status === 0 || response.status === false || response.pickup_status === 0 || response.pickup_status === false) throw new Error("Shiprocket pickup request was rejected");
   }
 
   async getTracking(awbNumber: string): Promise<unknown> {
     return this.request(`/courier/track/awb/${encodeURIComponent(awbNumber)}`);
   }
 
-  async getServiceability(pickupPostcode: string, deliveryPostcode: string, weightKg: number): Promise<unknown> {
+  async getServiceability(pickupPostcode: string, deliveryPostcode: string, weightKg: number): Promise<ProviderServiceability> {
     const query = new URLSearchParams({ pickup_postcode: pickupPostcode, delivery_postcode: deliveryPostcode, cod: "0", weight: String(weightKg) });
-    return this.request(`/courier/serviceability/?${query}`);
+    const response = await this.request(`/courier/serviceability/?${query}`);
+    const companies = object(response.data).available_courier_companies;
+    if (!Array.isArray(companies) || companies.some((entry) => !reference(object(entry).courier_company_id))) throw new Error("Shiprocket serviceability response is invalid");
+    const courierCount = companies.filter((entry) => object(entry).blocked !== 1).length;
+    return { available: courierCount > 0, courierCount };
   }
 
   async listPickupLocations(): Promise<Array<{ reference: string; name: string; postalCode: string; status: string }>> {
@@ -109,4 +104,14 @@ export class ShiprocketAdapter implements ShippingProvider {
       return { reference: referenceValue, name, postalCode: reference(item.pin_code) ?? "", status: reference(item.status) ?? "" };
     });
   }
+}
+
+let shared: { email: string; password: string; baseUrl: string; adapter: ShiprocketAdapter } | undefined;
+
+export function getShiprocketAdapter(email: string, password: string, baseUrl = SHIPROCKET_API_BASE_URL): ShiprocketAdapter {
+  const validatedUrl = shiprocketBaseUrl(baseUrl);
+  if (!shared || shared.email !== email || shared.password !== password || shared.baseUrl !== validatedUrl) {
+    shared = { email, password, baseUrl: validatedUrl, adapter: new ShiprocketAdapter(email, password, fetch, validatedUrl) };
+  }
+  return shared.adapter;
 }

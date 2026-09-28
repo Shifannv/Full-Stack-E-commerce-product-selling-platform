@@ -4,11 +4,21 @@
 
 **Rule:** Read this document before planning, changing architecture, changing schema, creating routes, or writing feature code. Do not invent architecture that conflicts with this document. This document intentionally combines project decisions, workflows, schema, routes, UI responsibilities, security, caching, SEO, and implementation order so an AI does not need to load many duplicated files.
 
-**Current baseline:** 2026-09-27
+**Current baseline:** 2026-09-28, Phase 11b-1 partial catalog API and checkout quote checkpoint. Earlier phase-gate history remains below.
 
-**Implementation status:** The Aiven/Hyperdrive health query and Drizzle migrations `0000`–`0003` are verified. Backend schema and routes now cover Admin onboarding, private KYC evidence, operational addresses, selling-category scope, draft product creation, forward shipments/tracking, and manual returns/QC/refund authorization. Shiprocket provider metadata is seeded **disabled**. Shiprocket account/API credentials, live provider calls, real payment checkout/webhooks, privileged account provisioning, and the customer/Admin UI remain outstanding. A route or table described below is not evidence that its full end-to-end business flow is live.
+**Phase 11b-1 update:** Product cards now receive image key, availability, published rating/count, and creation time from the public list response without per-card detail reads. Server-backed sort and in-stock filters are available. Customer checkout review uses the new read-only quote but does not create an order or payment. The configured database has no Admin/Super Admin/customer user and no catalog data, preventing authorized API fixture creation and dynamic static-page activation. Public R2 media and Google browser OAuth remain unverified. See the detailed checkpoint near the end of this document and `docs/FRONTEND_API_MAPPING.md`. **Phase 11b remains open; deployment is not safe.**
+
+**Phase 11b partial checkpoint:** The customer home now fetches real public categories, featured products (`featured=true`), and newest products at static build time. Search and backend-supported price/category/subcategory filtering use URL queries and paginated public API reads. Fixed customer routes implement Google session UI, wishlist, cart, account, addresses, checkout review, orders, and inline normalized tracking. The local Worker returned 200 with empty public categories/products and 401 for protected customer APIs; no authenticated customer or Google browser flow was verified. Static export cannot activate category/product `[slug]` routes while the published catalog is empty, so their source remains `page.pending.tsx`. Private `[id]` paths remain unresolved under static export; order details/tracking are available only as panels on `/orders`. Cashfree is parked, and checkout does not create an order or payment. The R2 public base URL is unconfigured, so media uses missing-image states. The deployed Worker has not received Phase 11e-pre updates. **Phase 11b is not complete and storefront deployment is not safe.** See `docs/FRONTEND_API_MAPPING.md`.
+
+**Phase 11a frontend:** `frontend/` is now an isolated npm Next.js 16.3.6 App Router package with TypeScript, Tailwind CSS 4, ESLint, source-owned shadcn/ui primitives, warm Ownline design tokens, customer and operator layout shells, data-driven catalog/state components, centralized API and R2 public URL helpers, and public environment examples. `/`, `/search`, `/wishlist`, `/cart`, `/orders`, `/account`, `/admin`, and `/super-admin` are static foundation pages; secondary customer pages are explicit placeholders with no business data. `npm install`, TypeScript, lint, production build, and local HTTP smoke checks passed. No business pages, real data, authentication flow, or deployment were added. The current Cloudflare Pages static export cannot directly emit unpredictable private `[id]` routes; later phases must settle their routing/deployment strategy before implementing them. See `docs/FRONTEND_DESIGN_SYSTEM.md`. **Exact next task: Phase 11b Customer Storefront.**
+
+**Phase 11e-pre backend:** Additive migration `0008_products_featured_flag.sql` adds `products.featured boolean NOT NULL DEFAULT false` and a partial index. Existing rows remain false; there is no `trending` field. Public `GET /api/products?featured=true` lists only featured published products in published categories/subcategories. Default public product order by `created_at DESC` supplies New Arrivals; Trending is deferred pending a real rule. Admin `GET /api/admin/summary` and `GET /api/admin/products` require an approved Admin and existing permissions; the product list and count respect ownership, active category assignment, and published category. Super Admin `GET /api/super-admin/summary` and `GET /api/super-admin/admins` require the Super Admin role. Summary queries use database aggregates; the Admin list excludes private KYC document keys and internal financial detail. The Featured flag has no management UI/API in this phase and remains false until a deliberate later curation flow or authorized database update.
+
+**Phase 11e-pre deployment:** Backend code is implemented locally and migration 0008 is applied to Aiven. The Worker has not been redeployed for this phase; the new endpoints are not LIVE VERIFIED. Next implementation task: **Phase 11a Next.js initialization** in the isolated `frontend/` project, after reviewing the backend verification checkpoint.
 
 **Shipping provider baseline:** Shiprocket is the selected V1 shipping/fulfillment integration. The application remains provider-agnostic through a shipping-provider adapter boundary so Delhivery, DTDC, or another provider can be added later without rewriting order logic.
+
+**Return policy baseline (finalized):** Return requests are eligible through **`orders.delivered_at + 5 × 24 hours`** for products that are explicitly return-enabled. The order timestamp is set after all order items have delivered shipments. In V1, **Dress** is the supported returnable main category; all other main categories are non-returnable by default. Admin can enable/disable returns per Dress product. Customer returns are manual and customer-paid; the seller return address is disclosed only after Admin approval. Seller receipt and QC are required before refund authorization. No customer AWB/tracking/proof upload and no live return-courier tracking are required in V1. Refunds are server-calculated and use only explicitly configured policy deductions; customer-paid return courier cost must not be deducted again.
 
 ---
 
@@ -109,10 +119,6 @@ Backend = BUSINESS AUTHORITY
 ### UI source rule
 Use the official shadcn/ui component/block source first for applicable UI. shadcn puts component source into the project, so the project owns/customizes that code. [Official shadcn docs](https://ui.shadcn.com/docs)
 
-### Packages actually used by the backend
-
-`backend/package.json` owns the Worker runtime packages `hono`, `postgres`, `drizzle-orm`, `better-auth`, and `@better-auth/drizzle-adapter`. Its development tools are `typescript`, `tsx`, `drizzle-kit`, `wrangler`, `dotenv`, `auth`, and `@types/node`. No Shiprocket SDK, second ORM, or new validation library was installed for this work. The root `package.json` still contains older project dependencies and is not the Worker package manifest.
-
 ---
 
 ## 3. RUNTIME ARCHITECTURE
@@ -161,15 +167,11 @@ ecommerce/
 |   |   +-- admin/
 |   |   +-- constants/
 |   |   +-- db/
-|   |   |   +-- schema/ (auth, RBAC, Admin, catalog, orders, shipping, returns)
 |   |   +-- lib/
 |   |   +-- middleware/
 |   |   +-- modules/
 |   |   +-- routes/
 |   |   +-- services/
-|   |   |   +-- admin/
-|   |   |   +-- returns/
-|   |   |   +-- shipping/
 |   |   +-- super-admin/
 |   |   +-- types/
 |   |   +-- utils/
@@ -178,7 +180,6 @@ ecommerce/
 |   +-- .dev.vars
 |   +-- .env
 |   +-- .env.example
-|   +-- scripts/ (local dev, seeds, rollback-only integrity verification)
 |   +-- drizzle.config.ts
 |   +-- package.json
 |   +-- package-lock.json
@@ -204,6 +205,7 @@ ecommerce/
     +-- .env.local
     +-- middleware.ts
     +-- next.config.ts
+    +-- package.json
     +-- tsconfig.json
 ```
 
@@ -278,14 +280,17 @@ SHIPPING_PROVIDER=shiprocket
 SHIPROCKET_API_USER_EMAIL=
 SHIPROCKET_API_USER_PASSWORD=
 SHIPROCKET_WEBHOOK_TOKEN=
-RETURN_WINDOW_DAYS=
 ```
 
 Production should use Cloudflare Worker secrets/secret bindings for these private values. Do not add credentials for Delhivery/DTDC unless and until that provider is actually selected.
 
-`RETURN_WINDOW_DAYS` is required before the customer return-request route can accept requests. Set it to the window published in the store's return policy; the code does not invent a default policy. The local `.dev.vars` contains blank placeholders, and the Worker currently has no verified Shiprocket API-user credentials.
+Return policy configuration is business configuration, not a guessed hardcode:
 
-Admin KYC evidence uses the separate private R2 bucket `ecommerce-admin-kyc-private` through the Worker-only `KYC_BUCKET` binding. The existing `shop-product-images` bucket remains for product media. PostgreSQL stores private object keys and metadata, and only authenticated Super Admin review can download the evidence.
+```env
+RETURN_WINDOW_DAYS=5
+```
+
+`RETURN_WINDOW_DAYS` is measured from `orders.delivered_at`. The current finalized V1 value is 5 days. Do not use the carrier's 5-7 day delivery estimate as the return window; those are separate concepts.
 
 The Shiprocket webhook endpoint should be a neutral path such as `/webhooks/shipping/events`; the provider's current webhook guidance says not to include keywords such as `shiprocket`, `kartrocket`, `sr`, or `kr` in the webhook URL.
 
@@ -300,7 +305,6 @@ Already selected/created:
 - Aiven PostgreSQL
 - Cloudflare account + Wrangler authentication
 - R2 bucket `shop-product-images`
-- Private R2 bucket `ecommerce-admin-kyc-private` for Admin evidence
 - Upstash Redis
 - Google OAuth credentials
 - Better Auth
@@ -358,7 +362,7 @@ Actual courier partner selected through Shiprocket
 
 **Create the provider account now** because account onboarding, KYC, company information, pickup-address verification, and API-user access are external dependencies that can take time.
 
-The database foundation and a guarded backend shipment path are now in place. The provider configuration is seeded disabled. Keep production shipment creation disabled until the Shiprocket account, API user, pickup-location mapping, verified payment flow, and controlled provider tests are complete.
+**Do not integrate shipment creation into the production ecommerce flow yet** while the core database/Drizzle foundation is still being verified. Complete the external onboarding now, then connect the API when the backend reaches the Shipping + Tracking phase.
 
 Recommended sequence:
 
@@ -1536,7 +1540,7 @@ Customer opens delivered order
         v
 Customer requests return
         v
-Backend validates return eligibility + return window + reason
+Backend validates: delivered_at + 5-day return window + return_enabled + eligible reason
         v
 Admin reviews request
         v
@@ -1560,6 +1564,19 @@ Cashfree refund initiated
         v
 REFUNDED / COMPLETED
 ```
+
+### Finalized V1 return eligibility
+
+- Return eligibility starts from `orders.delivered_at`.
+- The current V1 return window is **5 calendar days** after delivery.
+- The carrier's expected delivery duration (for example, 5-7 days) is separate from the return window.
+- The customer can request a return only when the product is explicitly marked `return_enabled = true`.
+- In V1, **Dress** is the supported returnable main category. All other main categories are non-returnable by default.
+- Admin can decide per Dress product whether returns are enabled.
+- Normal condition expectations may include unused/unworn condition, no avoidable damage, genuineness, and required tags/packaging where applicable.
+- A verified wrong-item/seller-fulfillment error is a return reason handled as a seller-side exception according to the published policy.
+- Any refund deduction must be explicitly defined by policy; do not invent or silently introduce a deduction.
+- Because the customer pays the return courier directly, the same courier cost must not be deducted again from the refund.
 
 ### Return address visibility
 
@@ -1587,13 +1604,13 @@ Suggested return states:
 REQUESTED
 APPROVED
 CUSTOMER_SHIPPING
-IN_TRANSIT
 RECEIVED
 QC_PENDING
 QC_APPROVED
 QC_REJECTED
 REFUND_PENDING
 REFUNDED
+RETURN_ISSUE
 REJECTED
 CANCELLED
 ```
@@ -1673,6 +1690,8 @@ Do not promise a carrier-specific live return location or exact return delivery 
 
 
 ## 18B. FORWARD SHIPMENT + LIVE CUSTOMER TRACKING
+
+The forward-delivery live tracking requirement is separate from manual customer returns. Customer/Admin tracking applies to forward shipments handled through the selected shipping provider. Manual V1 returns remain platform-managed status + seller receipt/QC/refund workflow.
 
 Customer order tracking is now a first-class backend feature. The system should show the delivery state and carrier data returned by the selected shipping provider.
 
@@ -2262,7 +2281,9 @@ admin_id           FK -> admins.id
 status
 legal_name         nullable
 business_type      nullable
-contact_phone      nullable
+id_details         JSONB / tokenized-or-protected structure where appropriate
+address_proof_ref  nullable
+kyc_evidence_ref   nullable
 submitted_at       nullable
 reviewed_by_user_id nullable FK -> users.id
 reviewed_at        nullable
@@ -2271,13 +2292,7 @@ created_at
 updated_at
 ```
 
-The implemented submission table stores only these profile/review fields. It does not yet collect government ID numbers or bank details; exact legally required fields need a business decision and protected handling before settlement goes live. Private evidence is required for submission and approval. Never expose KYC documents through customer/public endpoints.
-
-#### `admin_kyc_documents`
-Stores document type and an opaque key in `ecommerce-admin-kyc-private`. The Worker validates PDF/JPEG/PNG signatures and size before uploading. Authorized Super Admin review streams the private object without a public URL.
-
-#### `admin_audit_events`
-Records actor, action, changed field names, reason, and time for KYC corrections, address changes, and category assignments. It does not copy old/new KYC values into the audit record.
+Keep actual sensitive document files in an appropriate private storage path and store protected references/metadata in PostgreSQL. Never expose KYC documents through customer/public endpoints.
 
 #### `admin_category_assignments`
 Defines which main selling categories an approved Admin can manage. This is business-data scope, not an RBAC role.
@@ -2343,8 +2358,6 @@ product_form_config JSONB nullable
 created_at
 updated_at
 ```
-
-The implemented category UI configuration uses `category_product_fields` rows (`key`, `label`, `input_type`, `required`, optional select choices, sort order) rather than a `product_form_config` JSONB column. The backend validates draft product attributes against these rows, enforces assigned main categories, and checks the subcategory's parent category. Product publishing, media, variants, and inventory are still future catalog work.
 
 #### `subcategories`
 ```text
@@ -2759,8 +2772,6 @@ Rules:
 #### `shipments`
 One order can produce multiple shipments when order items belong to different Admins or are fulfilled separately.
 
-Implemented `shipment_items` links each order item to one forward shipment and uses composite foreign keys to keep shipment/order/Admin ownership consistent. A provider request first reserves these items in PostgreSQL. An uncertain provider response leaves the reservation for operator reconciliation, so a retry cannot silently create a second shipment.
-
 ```text
 id                 PK
 order_id           FK -> orders.id
@@ -2778,8 +2789,6 @@ picked_up_at       nullable
 out_for_delivery_at nullable
 delivered_at       nullable
 last_synced_at     nullable
-last_event_at      nullable
-pickup_requested_at nullable
 created_at
 updated_at
 ```
@@ -2797,14 +2806,10 @@ raw_payload        JSONB nullable
 created_at
 ```
 
-The implemented table also has `event_key`, unique per shipment, to deduplicate repeated webhook deliveries. The public `POST /webhooks/shipping/events` validates Shiprocket's `x-api-key` token. When that secret is blank, the route returns `503`. Provider event times and locations come from the payload; the application does not synthesize delivery times. Customer and Admin read the same persisted tracking service with ownership checks.
-
 Store enough provider event data for the customer timeline, troubleshooting, and reconciliation. Avoid storing secrets.
 
 #### `shipping_provider_configs`
 Stores non-secret provider configuration/metadata only. Provider secrets remain Worker secrets.
-
-The `shiprocket` row is seeded disabled. A Super Admin may enable it only after the API-user credentials are available. No live Shiprocket call has been verified yet.
 
 ```text
 id                 PK
@@ -2837,8 +2842,6 @@ UNIQUE(provider_key, admin_address_id)
 ### Returns / Return Quality Check
 
 #### `returns`
-
-The implemented V1 uses one return per order item, a policy-configured request window, manual customer-paid shipping, a seller return-address snapshot after approval, explicit seller receipt, and a recorded QC inspection. Customers do not submit AWB, courier screenshot, or tracking proof. A refund is authorized only after receipt and approved QC, uses historical order-item totals, reserves the amount against a verified paid Cashfree payment, and applies zero platform courier deduction. Cashfree submission uses a stable merchant refund ID/idempotency key; success is recorded only from the provider result. Real Cashfree refund submission remains unverified without a completed payment flow.
 ```text
 id                 PK
 order_id           FK -> orders.id
@@ -3388,16 +3391,15 @@ Old order data is never changed.
 
 ## 31. API ORGANIZATION
 
-Current route files:
-
 ```text
 backend/src/routes/
-+-- admin.ts
-+-- shipping.ts
-+-- returns.ts
++-- auth/
++-- customer/
++-- admin/
++-- super-admin/
++-- webhooks/
+    +-- cashfree/
 ```
-
-`backend/src/index.ts` keeps the existing Better Auth and health endpoints. Current Admin routes cover onboarding/KYC upload and review, operational addresses, category assignments/configuration, draft product creation, and provider pickup mappings. Shipping routes cover Admin fulfillment actions, customer/Admin forward tracking, and `POST /webhooks/shipping/events`. Return routes cover customer request/status, Admin decision/receipt/QC, and Super Admin refund authorization/submission. No Cashfree payment webhook, order checkout, or frontend API integration exists yet.
 
 Typical API pipeline:
 
@@ -3410,7 +3412,7 @@ Authentication
  v
 Authorization / RBAC
  v
- Request validation
+Zod validation
  v
 Business module/service
  v
@@ -3598,7 +3600,7 @@ Policies should reflect the real store's:
 - refund calculation, deductions, and refund-cycle expectations
 - shipment tracking, estimated delivery dates/windows, and carrier exceptions
 
-### Policy requirements for the new return/shipping workflow
+### Policy requirements for the finalized return/shipping workflow
 
 #### Shipping Policy
 Document:
@@ -3611,17 +3613,23 @@ Document:
 
 #### Return / Refund Policy
 Document:
-- eligible return window
-- eligible and excluded return reasons/items
-- cancellation rules before shipment
-- return-request approval requirement
-- the fact that the seller return address is shown only after approval
-- customer responsibility for manually shipping the return and paying that courier charge under the V1 workflow
-- manual return courier responsibility and the fact that V1 does not require customer tracking/AWB/proof submission
-- seller receipt and product-quality/condition inspection before refund authorization
-- QC rejection consequences
-- exactly which deductions can reduce a refund
-- no duplicate deduction when the customer has already paid return courier charges directly
+- return eligibility starts from delivered date (`delivered_at`)
+- current V1 return window: 5 calendar days from delivery
+- carrier delivery estimate (for example 5-7 days) is separate and does not extend the return window unless the business policy is explicitly changed
+- Dress is the supported returnable main category in V1
+- all other main categories are non-returnable by default
+- Admin can enable/disable return per Dress product
+- eligible product condition requirements and seller-error/wrong-item exception handling
+- return-request approval by Admin
+- seller return address shown only after approval
+- customer manually ships the return and pays the courier directly
+- no customer AWB/tracking/proof submission in V1
+- no customer-facing live return-courier tracking in V1
+- seller receipt and QC/inspection before refund authorization
+- QC checks product condition/genuineness and applicable tags/packaging
+- QC rejection consequences and return-issue handling
+- exactly which deductions, if any, can reduce a refund
+- no duplicate deduction of a courier cost already paid directly by the customer
 - refund processing cycle and asynchronous provider status
 
 #### Terms and Conditions
@@ -4170,7 +4178,7 @@ This is intentionally the single compact context file for AI coding agents.
 
 ## 48. BACKEND IMPLEMENTATION RECONCILIATION - 2026-09-27
 
-This section records the implemented baseline and the remaining dependencies. It does not replace the business decisions above.
+This section records the implementation requirements that must be reconciled against the actual repository. It does not replace the business decisions above.
 
 ### Current verified infrastructure baseline
 
@@ -4182,32 +4190,42 @@ The latest backend verification has established the following as the current bas
 - Worker `/health`: PASS.
 - Worker `/health/db`: PASS after restart and real database query.
 - Drizzle configuration/checks: PASS.
-- Identity/RBAC and additive Admin/catalog/order/shipping/return migrations `0000`–`0003`: applied; 31 application tables verified.
+- Migrations through `0007`: applied; do not reset or delete applied migrations. Migration `0007` adds `products.return_enabled` (default false) and `orders.delivered_at` (nullable).
+- Aiven database integrity/rollback verification: PASS.
 - TypeScript checks: PASS.
-- Better Auth is mounted in the Worker.
-- `shiprocket` provider metadata: seeded with `enabled = false`.
-- Private Admin KYC evidence bucket: `ecommerce-admin-kyc-private` created and Worker binding configured.
-- Local Worker `/api/auth/get-session`: `200 null` when logged out; Admin onboarding, tracking, and return routes: `401` when unauthenticated.
-- Eight focused status/adapter/return/refund tests and rollback-only PostgreSQL integrity checks: PASS. These include return-address disclosure and ownership. Integrity checks covered one active Admin address per type, the product/subcategory category FK, two Admin shipments for one order, duplicate event-key rejection, and an unchanged shipment address snapshot after an address edit; fixture rows were rolled back.
+- Latest unit/integration checks: 34/34 PASS.
+- Public Worker health/API restrictions have been live-verified.
+- Manual Shiprocket API authentication: PASS.
+- Shiprocket dashboard webhook verification: DEFERRED/BLOCKED; public webhook route and local/mocked webhook implementation are working.
 
-Real Admin/Super Admin login, Google OAuth, complete checkout/payment, browser UI, live Shiprocket API/webhook calls, and Cashfree refund submission remain unverified. Keep shipping disabled until the central Shiprocket account, API user, pickup locations, Worker secrets, verified payment flow, and controlled provider tests are complete. The return request route requires `RETURN_WINDOW_DAYS` to match the published policy.
+Latest implementation areas include Better Auth/RBAC foundations, Admin KYC/onboarding and category scope, catalog/order/checkout/review/return/QC/refund/finance logic, and provider-neutral shipping with `ShiprocketAdapter`. Remaining provider/browser-dependent work must be explicitly marked implemented/tested/live-verified rather than inferred from unit tests.
 
 ### Backend structure additions
 
-The focused files now present under the existing top-level structure are:
+Keep the existing top-level structure. Add focused subdirectories only when the implementation requires them:
 
 ```text
 backend/src/
-├── db/schema/ (auth, RBAC, Admin, catalog, orders, shipping, returns)
-├── middleware/authorization.ts
-├── routes/ (admin.ts, shipping.ts, returns.ts)
-└── services/
-    ├── admin/ (onboarding and catalog services)
-    ├── shipping/ (service, provider interface, status mapping, Shiprocket adapter)
-    └── returns/ (return service and Cashfree refund adapter)
+├── admin/
+├── constants/
+├── db/
+├── lib/
+├── middleware/
+├── modules/
+├── routes/
+├── services/
+│   └── shipping/
+│       ├── shipping.service.ts
+│       ├── shipping-provider.ts
+│       └── providers/
+│           └── shiprocket.adapter.ts
+├── super-admin/
+├── types/
+├── utils/
+└── validators/
 ```
 
-Other existing source directories remain in place. Do not create duplicate service or provider folders if equivalent files already exist.
+The exact filenames may follow the repository's current naming convention. Do not create duplicate service or provider folders if equivalent files already exist.
 
 Recommended logical backend boundaries:
 
@@ -4239,7 +4257,7 @@ Hono
 Drizzle ORM
 PostgreSQL driver
 Better Auth
-explicit request validation in the current routes
+existing validation/cache utilities
 Cloudflare Worker fetch()
 ```
 
@@ -4508,3 +4526,153 @@ Update only what has really been implemented or officially decided:
 Do not document aspirational code as complete.
 Do not add temporary debugging history.
 Do not maintain conflicting old architecture statements.
+
+
+---
+
+## 49. CURRENT VERIFICATION CHECKPOINT - 2026-09-27
+
+This is the latest backend verification state and supersedes older status notes when they conflict.
+
+### Verified
+
+```text
+Aiven PostgreSQL                 PASS
+Cloudflare Hyperdrive            PASS
+Worker deployment                PASS
+Worker /health                   PASS
+Worker /health/db                PASS
+TypeScript                       PASS
+Drizzle validation               PASS
+Database integrity               PASS
+Rollback workflow                PASS
+Unit/integration tests           34/34 PASS
+AUTH restrictions                LIVE VERIFIED
+RBAC                             LIVE VERIFIED (exercised restrictions)
+CATEGORY SCOPE                   LIVE VERIFIED
+CATALOG                          LIVE VERIFIED (representative APIs)
+CHECKOUT                         TESTED
+ORDERS                           TESTED
+REVIEWS                          LIVE VERIFIED (moderation restrictions)
+RETURNS                          TESTED
+QC                               TESTED
+FINANCE                          TESTED
+Public webhook endpoint          LIVE VERIFIED for rejection/validation
+Manual Shiprocket authentication PASS
+```
+
+### Not yet live verified / deferred
+
+```text
+Google OAuth browser flow              NOT VERIFIED
+Real Admin/Super Admin full login flow NOT VERIFIED where browser flow is required
+Admin invitation email delivery        NOT VERIFIED
+Cashfree sandbox credentials/provider  BLOCKED: local secret has a production marker while the endpoint is sandbox; HTTP 401 authentication_error; Worker ID/secret names present but environment binding absent
+Cashfree real refund provider flow     NOT VERIFIED (requires accepted sandbox credentials and a paid sandbox order)
+External payout transfer               NOT VERIFIED
+Shiprocket Worker live API auth        NOT VERIFIED
+Real Shiprocket shipment/AWB/pickup    NOT VERIFIED
+Shiprocket live tracking               NOT VERIFIED
+Shiprocket dashboard webhook verify    DEFERRED/BLOCKED
+Frontend browser integration            NOT VERIFIED
+```
+
+### Finalized V1 return policy
+
+```text
+RETURN_WINDOW_DAYS = 5
+
+Measured from: orders.delivered_at
+Return request window: 5 calendar days after delivery
+Supported return category in V1: Dress
+Other main categories: non-returnable by default
+Seller/Admin control: per-Dress-product return_enabled toggle
+Approval: Admin
+Return address disclosure: only after Admin approval
+Return shipping: customer manually returns product and pays courier directly
+Customer AWB/proof upload: not required
+Customer live return-courier tracking: not required in V1
+Seller receipt: required
+QC: required before refund authorization
+Refund authority: after QC approval
+Refund deductions: only explicitly configured by policy; no silent deductions
+Duplicate return-courier deduction: prohibited
+
+Condition requirements should be enforced according to the published policy, including applicable unused/unworn, damage, genuineness, and packaging/tag requirements. A verified seller wrong-item/fulfillment error is treated as a seller-side return reason/exception according to policy.
+
+Carrier delivery estimate (for example 5-7 days) is separate from the return window and does not change the 5-day return period.
+```
+
+### Shipping architecture baseline
+
+```text
+Order
+  v
+ShippingService
+  v
+ShippingProvider
+  v
+ShiprocketAdapter            V1
+  |
+  +-- DelhiveryAdapter        future
+  +-- DtdcAdapter             future
+  +-- OtherAdapter            future
+```
+
+Customer and Admin share the same normalized forward-shipment tracking service. Manual customer returns do not require live return-courier tracking in V1.
+
+### Security and secret handling
+
+- Shiprocket API credentials remain backend-only.
+- Shiprocket Bearer tokens are not stored in frontend code or `NEXT_PUBLIC_*`.
+- `SHIPROCKET_WEBHOOK_TOKEN` is a separate backend-only secret used for the `x-api-key` webhook check.
+- Secrets are never written into `PROJECT_CONTEXT.md`.
+
+### Next implementation priorities
+
+1. Verify the five-day Dress return policy through a real authenticated customer and paid/delivered order; backend/Aiven tests and Worker configuration pass.
+2. Configure and verify Cashfree sandbox payment/refund provider flows.
+3. Verify real Google OAuth and Admin/Super Admin browser authentication.
+4. Verify Admin invitation email delivery.
+5. Continue frontend integration using existing backend contracts.
+6. Return to live Shiprocket shipment/AWB/tracking verification after provider access is ready.
+7. Complete full end-to-end customer/Admin/Super Admin browser testing.
+
+Do not treat the project as production-complete until the required external/provider flows and browser flows are verified.
+
+### Phase-gate checkpoint — 2026-09-28
+
+The Phase 0–12 gates in this checkpoint supersede the older numbered implementation outline above for status reporting; the older outline remains historical context.
+
+Current phase is **Phase 1 (Identity / Authentication / RBAC / Admin onboarding): OPEN/BLOCKED**. The credential, RBAC, KYC, and invitation-token paths are implemented; the Aiven invitation test verifies hashed token, expiry, reissue, password setup, one-time consumption, and activation. Existing deployed credential/RBAC evidence is preserved. Google browser consent and callback/session remain NOT VERIFIED; the operator reports the existing Google OAuth app needs External audience and a test user. Real Resend delivery remains NOT VERIFIED because the setup link targets localhost and no frontend setup page is connected. A read-only Resend domain-list request returned 401, so sender-domain verification could not be established; no email was sent. Phase 0 is CLOSED. Phases 2–8 contain tested backend work but do not meet all closure gates; Phase 5 remains BLOCKED by Cashfree sandbox authentication. Phase 9 and Phase 11–12 are DEFERRED; Phase 10 provider operation is BLOCKED/DEFERRED. The detailed per-phase status is in `BACKEND_VERIFICATION.md`.
+
+The local Cashfree secret carries a production marker while `CASHFREE_ENVIRONMENT=SANDBOX`. Do not retry or upload this pair. Obtain active Payment Gateway sandbox App ID and Secret Key, then run `npm run verify:cashfree-sandbox` before configuring Worker secrets. No payment or refund was performed in this phase-gate pass.
+
+### Cashfree sandbox credential checkpoint — 2026-09-27 (latest session)
+
+| Subsystem | Status | Evidence |
+|---|---|---|
+| Cashfree local env | PASS | `.dev.vars` has nonempty `CASHFREE_CLIENT_ID`, `CASHFREE_CLIENT_SECRET`, exact `CASHFREE_ENVIRONMENT=SANDBOX`. No leading/trailing whitespace. Values are not printed or exposed to frontend. |
+| Sandbox endpoint | PASS | Both `CashfreePaymentAdapter` and `CashfreeRefundAdapter` resolve `SANDBOX` → `https://sandbox.cashfree.com/pg`. Mocked tests confirm the URL. |
+| Sandbox create-order authentication | FAIL | `npm run verify:cashfree-sandbox` sent a real unpaid `POST /pg/orders` to `https://sandbox.cashfree.com/pg/orders`. Cashfree returned HTTP 401, code `request_failed`, type `authentication_error`. No session, payment, or charge was created. |
+| Sandbox create-order session | BLOCKED | Cannot verify — authentication fails. |
+| Sandbox payment | NOT VERIFIED | Requires a valid payment session first. No real paid transaction was attempted. |
+| Provider webhook signature | PASS | `verifyCashfreeWebhookSignature` uses HMAC-SHA-256 with constant-time byte comparison, base64 decoding, and timestamp format validation. Unit tests verify accept/reject/tamper scenarios. |
+| Webhook idempotency | PASS | `cashfreeWebhookEvents.eventKey` uses a unique database constraint with `onConflictDoNothing`. Duplicate webhooks return `{ accepted: 0, duplicates: 1 }`. Aiven workflow test confirms deduplication and amount-mismatch rejection. |
+| Refund adapter (mocked) | PASS | Unit tests verify sandbox URL (`/orders/{id}/refunds`), server-only credential headers, idempotency key equals merchant refund ID, and no credentials in result. |
+| Refund provider (live) | NOT VERIFIED | Requires a paid sandbox order and accepted credentials. No refund was attempted. |
+| Deployed Worker bindings | INCOMPLETE | `wrangler secret list` shows Cashfree ID and secret names but no `CASHFREE_ENVIRONMENT`; values cannot be read. Unsigned webhook returns 401 (fails closed). Payment-session route requires all three settings. |
+
+**Diagnosis**: The local `CASHFREE_CLIENT_SECRET` has an explicit production marker while the endpoint is sandbox. This strongly indicates an environment mismatch, but the provider has not confirmed it as the sole cause of HTTP 401. Replace both `CASHFREE_CLIENT_ID` and `CASHFREE_CLIENT_SECRET` in `.dev.vars` with active **Payment Gateway Sandbox** App ID and Secret Key from the Cashfree merchant dashboard. Do not upload the rejected pair to Cloudflare. After sandbox authentication passes, upload the working sandbox credentials as Worker secrets.
+
+### Phase 11b customer storefront checkpoint — 2026-09-28
+
+Frontend work now has API-backed home/search/price-filter pages and fixed customer routes for wishlist, cart, account, addresses, checkout review, and orders with inline details/tracking. The local Worker answered public catalog requests and returned 401 for unauthenticated customer requests. The connected database currently has no public categories or products, so category and product detail route sources remain prepared as `page.pending.tsx`: Next.js static export rejected `generateStaticParams()` with an empty slug list. No fake slugs or product records were created. Private order IDs remain on the fixed `/orders` page pending a routing/deployment decision. See `FRONTEND_API_MAPPING.md` for exact contracts and missing fields.
+
+Frontend typecheck, lint, local-Worker-backed static build, fixed-route HTTP smoke checks, and `git diff --check` pass. No authenticated browser flow, real product page, R2 image custom domain, checkout quote, Cashfree payment, or live frontend deployment was verified. Phase 11b remains **PARTIAL / NOT COMPLETE**; deployment is **NOT SAFE**. Next work: obtain at least one real published category/product and activate/build the SEO routes; decide private order URL handling; verify Google customer login and protected flows, then resolve the read-only checkout quote and payment gate before declaring Phase 11b complete.
+
+### Phase 11b-1 catalog and quote checkpoint — 2026-09-28
+
+Public product list/detail contracts now return existing-schema image, availability, published review summary, and created-at data; the list supports whitelisted newest/price sorting and in-stock filtering. The frontend no longer performs one detail fetch per card. A new authenticated read-only `GET /api/customer/checkout/quote` returns authoritative current cart lines, totals, and validation problems without order creation or stock reservation. The frontend review displays the quote but still stops before payment. Backend TypeScript and 53 tests, frontend TypeScript/lint/static build, Drizzle check, local API probes, and database integrity passed.
+
+`verify:readiness` found zero operator/customer users and zero catalog records in the configured Aiven database. No authorized Admin API session exists for a controlled fixture, so no fixture or published slugs were created and the static category/product routes remain pending. Read-only Wrangler checks confirm `shop-product-images` exists but has no custom domain; the Worker binds only private KYC R2 and has no product-image upload path. Category media has no schema field; a nullable object-key column is justified once the media contract exists, but no migration was made. Google OAuth and authenticated customer quote remain NOT VERIFIED. Private order details/tracking remain on fixed `/orders` under static export. Phase 11b stays **OPEN** and deployment **NOT SAFE**. Next task: provision an authorized test Admin/Super Admin account and real test catalog via existing APIs, configure public media, then activate and verify real static catalog pages and customer browser flows.

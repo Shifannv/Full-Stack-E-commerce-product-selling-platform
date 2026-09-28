@@ -1,13 +1,21 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getReturn, returnWindowDays } from "./return.service";
+import { getReturn, returnWindowDays, withinReturnWindow } from "./return.service";
 import { CashfreeRefundAdapter } from "./cashfree-refund.adapter";
 
 test("return requests need an explicit published policy window", () => {
   assert.throws(() => returnWindowDays(undefined), /not configured/);
   assert.throws(() => returnWindowDays("0"), /not configured/);
-  assert.throws(() => returnWindowDays("366"), /not configured/);
-  assert.equal(returnWindowDays("14"), 14);
+  assert.throws(() => returnWindowDays("14"), /not configured/);
+  assert.equal(returnWindowDays("5"), 5);
+});
+
+test("five-day eligibility uses the delivery instant and includes the deadline", () => {
+  const delivered = new Date("2026-09-20T10:30:00.000Z");
+  assert.equal(withinReturnWindow(null, delivered, 5), false);
+  assert.equal(withinReturnWindow(delivered, new Date("2026-09-25T10:30:00.000Z"), 5), true);
+  assert.equal(withinReturnWindow(delivered, new Date("2026-09-25T10:30:00.001Z"), 5), false);
+  assert.equal(withinReturnWindow(delivered, new Date("2026-09-20T10:29:59.999Z"), 5), false);
 });
 
 test("return status hides the seller address until approval and enforces ownership", async () => {
