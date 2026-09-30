@@ -34,7 +34,8 @@ test("Cashfree refund adapter stays in sandbox and uses server credentials and r
   let request: Request | undefined;
   const fetcher: typeof fetch = async (input, init) => {
     request = new Request(input, init);
-    return Response.json({ refund_status: "PENDING", cf_refund_id: "refund-provider-1" });
+    return Response.json({ refund_status: "PENDING", cf_refund_id: "refund-provider-1", refund_id: "merchant-refund-1",
+      order_id: "provider-order-1", refund_amount: 50, refund_currency: "INR", cf_payment_id: "payment-1" });
   };
   const adapter = new CashfreeRefundAdapter("client-id", "client-secret", "SANDBOX", fetcher);
   const result = await adapter.createRefund("provider-order-1", "merchant-refund-1", "50.00");
@@ -42,6 +43,7 @@ test("Cashfree refund adapter stays in sandbox and uses server credentials and r
   assert.equal(request?.headers.get("x-client-id"), "client-id");
   assert.equal(request?.headers.get("x-client-secret"), "client-secret");
   assert.equal(request?.headers.get("x-idempotency-key"), "merchant-refund-1");
-  assert.deepEqual(result, { status: "PENDING", providerReference: "refund-provider-1" });
+  assert.deepEqual(result, { status: "PENDING", refundId: "merchant-refund-1", orderId: "provider-order-1",
+    amount: 50, currency: "INR", providerPaymentId: "payment-1", providerReference: "refund-provider-1" });
   assert.equal(JSON.stringify(result).includes("client-secret"), false);
 });

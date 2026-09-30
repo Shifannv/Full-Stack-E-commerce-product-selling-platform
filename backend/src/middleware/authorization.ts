@@ -22,7 +22,7 @@ export function hasPermission(actor: Actor, key: string): boolean {
   return actor.permissions.includes(key);
 }
 
-export const requireAuth = createMiddleware<AuthorizedEnv>(async (c, next) => {
+function authenticate(archiveRecovery = false) { return createMiddleware<AuthorizedEnv>(async (c, next) => {
   let client: ReturnType<typeof createAuth>["client"] | undefined;
   try {
     const connection = createAuth(c.env);
@@ -30,9 +30,9 @@ export const requireAuth = createMiddleware<AuthorizedEnv>(async (c, next) => {
     const session = await connection.auth.api.getSession({ headers: c.req.raw.headers });
     if (!session) return c.json({ error: "Unauthorized" }, 401);
 
-    const [user] = await connection.db.select({ status: users.status }).from(users)
+    const [user] = await connection.db.select({ status: users.status, deletedAt: users.deletedAt }).from(users)
       .where(eq(users.id, session.user.id)).limit(1);
-    if (user?.status !== "ACTIVE") return c.json({ error: "Account unavailable" }, 403);
+    if (!user || ((user.status !== "ACTIVE" || user.deletedAt) && !(archiveRecovery && user.status === "SUSPENDED" && user.deletedAt))) return c.json({ error: "Account unavailable" }, 403);
 
     const grants = await connection.db.select({ role: roles.name, permission: permissions.key })
       .from(userRoles)
@@ -45,9 +45,9 @@ export const requireAuth = createMiddleware<AuthorizedEnv>(async (c, next) => {
 
     let adminApproved = false;
     if (roleNames.includes("ADMIN")) {
-      const [admin] = await connection.db.select({ status: admins.status }).from(admins)
+      const [admin] = await connection.db.select({ status: admins.status, deletedAt: admins.deletedAt }).from(admins)
         .where(eq(admins.userId, session.user.id)).limit(1);
-      adminApproved = admin?.status === "ACTIVE";
+      adminApproved = admin?.status === "ACTIVE" && !admin.deletedAt;
     }
 
     c.set("actor", {
@@ -67,7 +67,7 @@ export const requireAuth = createMiddleware<AuthorizedEnv>(async (c, next) => {
   }
 
   await next();
-});
+}); }
 
 export const requirePermission = (key: string) => createMiddleware<AuthorizedEnv>(async (c, next) => {
   const actor = c.get("actor");
@@ -75,3 +75,8 @@ export const requirePermission = (key: string) => createMiddleware<AuthorizedEnv
   if (!hasPermission(actor, key)) return c.json({ error: "Forbidden" }, 403);
   await next();
 });
+
+export const requireAuth = authenticate();
+// Only lifecycle recovery/status routes use this authenticated identity mode.
+// Their service also requires the caller's own, current archive and Admin role.
+export const requireArchiveRecoveryAuth = authenticate(true);

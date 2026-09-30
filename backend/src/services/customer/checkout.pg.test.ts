@@ -5,7 +5,7 @@ import { config } from "dotenv";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { createDb } from "../../db";
 import worker from "../../index";
-import { adminAddresses, adminCategoryAssignments } from "../../db/schema/admin";
+import { adminAddresses, adminAuditEvents, adminCategoryAssignments } from "../../db/schema/admin";
 import { users } from "../../db/schema/auth";
 import { categories, inventories, productAdmins, products, productVariants, subcategories } from "../../db/schema/catalog";
 import { cartItems, carts, customerAddresses } from "../../db/schema/customer";
@@ -109,6 +109,7 @@ async function createFixture() {
           await tx.delete(productAdmins).where(inArray(productAdmins.productId, [productId, ...extraProductIds]));
           await tx.delete(products).where(inArray(products.id, [productId, ...extraProductIds]));
           await tx.delete(adminCategoryAssignments).where(eq(adminCategoryAssignments.adminId, adminId));
+          await tx.delete(adminAuditEvents).where(eq(adminAuditEvents.adminId, adminId));
           await tx.delete(shippingProviderLocations).where(eq(shippingProviderLocations.adminId, adminId));
           await tx.delete(adminAddresses).where(eq(adminAddresses.adminId, adminId));
           await tx.delete(shippingProviderConfigs).where(eq(shippingProviderConfigs.providerKey, `refund-${adminId}`));
@@ -691,7 +692,10 @@ test("scheduler 1 finds a due order through the indexed batch query", { skip: !t
   assert.match(index.indexdef, /status.*CREATED/);
   assert.match(index.indexdef, /payment_status.*PENDING/);
   const { orderId } = await checkoutCart(c.db, c.customers[0], await intent(c));
-  await makeDue(c, orderId);
+  // This test intentionally limits the scheduler to one candidate. Other
+  // PostgreSQL tests run concurrently and may create due orders, so make this
+  // fixture unambiguously first in the scheduler's payment_expires_at order.
+  await makeDue(c, orderId, "-1 year");
   assert.deepEqual(await runDueOrderExpiryBatch(c.db, { batchSize: 1 }), { attempted: 1, expired: 1, failed: 0 });
   assert.equal((await lifecycleState(c, orderId)).order.status, "EXPIRED");
   await assertInventoryInvariant(c);
@@ -1093,10 +1097,307 @@ function financeLatch() {
   return { promise, resolve };
 }
 
-function refundResponse(status: "SUCCESS" | "PENDING" = "SUCCESS") {
-  return new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async () =>
-    new Response(JSON.stringify({ refund_status: status, cf_refund_id: "fixture-refund" }), { status: 200 }));
+async function fixtureRefundPayload(c: Awaited<ReturnType<typeof createFixture>>, returnId: string,
+  status: "SUCCESS" | "PENDING" | "CANCELLED" | "REJECTED" = "SUCCESS", reference = "fixture-refund") {
+  const [record] = await c.db.select().from(refunds).where(eq(refunds.returnId, returnId));
+  const [payment] = await c.db.select().from(payments).where(eq(payments.id, record.paymentId));
+  return { refund_status: status, cf_refund_id: reference, refund_id: record.id, order_id: payment.providerOrderId,
+    refund_amount: Number(record.amount), refund_currency: record.currency, cf_payment_id: payment.providerPaymentId };
 }
+
+function paymentSessionProvider(onCall?: (input: { orderId: string; amount: string; currency: string }) => Promise<void>) {
+  let calls = 0;
+  const provider = { createOrder: async (input: { orderId: string; amount: string; currency: string }) => {
+    calls++;
+    await onCall?.(input);
+    return { providerOrderId: input.orderId, providerReference: "fixture-order", paymentSessionId: "fixture-session" };
+  } } as never;
+  return { provider, get calls() { return calls; } };
+}
+
+const sessionFor = (db: ReturnType<typeof createDb>["db"], provider: never, orderId: string, customerId: string) =>
+  createPaymentSession(db, provider, orderId, customerId, "https://example.invalid/return", "https://example.invalid/webhook");
+
+test("payment session accepts only a live CREATED reserved pending order", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { orderId } = await checkoutCart(c.db, c.customers[0], await intent(c));
+  const stub = paymentSessionProvider();
+  assert.deepEqual(await sessionFor(c.db, stub.provider, orderId, c.customers[0]), { orderId, paymentSessionId: "fixture-session" });
+  assert.equal(stub.calls, 1);
+  const [payment] = await c.db.select().from(payments).where(eq(payments.orderId, orderId));
+  assert.equal(payment.providerOrderId, orderId); assert.equal(payment.status, "PENDING");
+  await assertInventoryInvariant(c);
+}));
+
+for (const caseName of ["EXPIRED", "CANCELLED", "RELEASED", "CONSUMED", "PAID", "DEADLINE", "EXACT_DEADLINE", "FAILED_PAYMENT", "REFUND_REQUIRED", "WRONG_PROVIDER_REFERENCE", "MISMATCHED_AMOUNT", "MISMATCHED_CURRENCY"] as const)
+  test(`payment session rejects ${caseName} before calling provider`, { skip: !testUrl }, async () => fixture(async (c) => {
+    const { orderId } = await checkoutCart(c.db, c.customers[0], await intent(c));
+    if (caseName === "EXPIRED") { await makeDue(c, orderId); await expireUnpaidOrder(c.db, orderId); }
+    else if (caseName === "CANCELLED") await cancelUnpaidOrder(c.db, orderId, c.customers[0]);
+    else if (caseName === "RELEASED" || caseName === "CONSUMED") await c.db.update(orders).set({ stockState: caseName }).where(eq(orders.id, orderId));
+    else if (caseName === "PAID") await applyVerifiedPayment(c.db, orderId, `session-paid-${randomUUID()}`);
+    else if (caseName === "DEADLINE") await c.db.update(orders).set({ paymentExpiresAt: sql`clock_timestamp() - interval '1 second'` }).where(eq(orders.id, orderId));
+    else if (caseName === "EXACT_DEADLINE") await c.db.update(orders).set({ paymentExpiresAt: sql`clock_timestamp()` }).where(eq(orders.id, orderId));
+    else if (caseName === "FAILED_PAYMENT") await c.db.update(payments).set({ status: "FAILED" }).where(eq(payments.orderId, orderId));
+    else if (caseName === "REFUND_REQUIRED") await c.db.update(payments).set({ resolutionStatus: "REFUND_REQUIRED" }).where(eq(payments.orderId, orderId));
+    else if (caseName === "WRONG_PROVIDER_REFERENCE") await c.db.update(payments).set({ providerOrderId: randomUUID() }).where(eq(payments.orderId, orderId));
+    else if (caseName === "MISMATCHED_AMOUNT") await c.db.update(payments).set({ amount: "1.00" }).where(eq(payments.orderId, orderId));
+    else await c.db.update(payments).set({ currency: "USD" }).where(eq(payments.orderId, orderId));
+    const stub = paymentSessionProvider();
+    await assert.rejects(sessionFor(c.db, stub.provider, orderId, c.customers[0]), /PAYMENT_SESSION_INELIGIBLE/);
+    assert.equal(stub.calls, 0);
+    const [order] = await c.db.select().from(orders).where(eq(orders.id, orderId));
+    assert.equal(order.status, caseName === "EXPIRED" ? "EXPIRED" : caseName === "CANCELLED" ? "CANCELLED" : caseName === "PAID" ? "CONFIRMED" : "CREATED");
+    const [stock] = await c.db.select().from(inventories).where(eq(inventories.productId, c.productId));
+    assert.ok(stock.availableQuantity >= 0 && stock.reservedQuantity >= 0);
+    if (!["RELEASED", "CONSUMED", "FAILED_PAYMENT", "REFUND_REQUIRED"].includes(caseName)) await assertInventoryInvariant(c);
+  }));
+
+test("payment session denies another customer's order before provider call", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { orderId } = await checkoutCart(c.db, c.customers[0], await intent(c));
+  const stub = paymentSessionProvider();
+  await assert.rejects(sessionFor(c.db, stub.provider, orderId, c.customers[1]), /Order unavailable/);
+  assert.equal(stub.calls, 0);
+  await assertInventoryInvariant(c);
+}));
+
+test("payment session waits for expiry's order lock and rejects without provider call", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { orderId } = await checkoutCart(c.db, c.customers[0], await intent(c));
+  await makeDue(c, orderId);
+  const stub = paymentSessionProvider();
+  const outcomes = await financeRace(c.db, (db) => expireUnpaidOrder(db, orderId),
+    (db) => sessionFor(db, stub.provider, orderId, c.customers[0]));
+  assert.equal(outcomes[0].status, "fulfilled"); assert.equal(outcomes[1].status, "rejected");
+  assert.equal(stub.calls, 0);
+  await assertInventoryInvariant(c);
+}));
+
+test("payment session holds order lock while provider responds; cancellation follows safely", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { orderId } = await checkoutCart(c.db, c.customers[0], await intent(c));
+  const stub = paymentSessionProvider();
+  const outcomes = await financeRace(c.db, (db) => sessionFor(db, stub.provider, orderId, c.customers[0]),
+    (db) => cancelUnpaidOrder(db, orderId, c.customers[0]));
+  assert.equal(outcomes[0].status, "fulfilled"); assert.equal(outcomes[1].status, "fulfilled");
+  assert.equal(stub.calls, 1);
+  const [order] = await c.db.select().from(orders).where(eq(orders.id, orderId));
+  assert.equal(order.status, "CANCELLED"); assert.equal(order.stockState, "RELEASED");
+  await assertInventoryInvariant(c);
+}));
+
+test("payment session rejects provider order identity mismatch without changing local reference", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { orderId } = await checkoutCart(c.db, c.customers[0], await intent(c));
+  const provider = { createOrder: async () => ({ providerOrderId: randomUUID(), providerReference: null, paymentSessionId: "wrong" }) } as never;
+  await assert.rejects(sessionFor(c.db, provider, orderId, c.customers[0]), /Payment provider order mismatch/);
+  const [payment] = await c.db.select().from(payments).where(eq(payments.orderId, orderId));
+  assert.equal(payment.providerOrderId, orderId); assert.equal(payment.status, "PENDING");
+  await assertInventoryInvariant(c);
+}));
+
+test("payment session refuses a zero-row conditional update", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { orderId } = await checkoutCart(c.db, c.customers[0], await intent(c));
+  const [payment] = await c.db.select().from(payments).where(eq(payments.orderId, orderId));
+  const name = `session_zero_${randomUUID().replaceAll("-", "")}`;
+  await c.db.execute(sql.raw(`create function ${name}_fn() returns trigger language plpgsql as $$ begin if new.id = '${payment.id}' then return null; end if; return new; end $$`));
+  await c.db.execute(sql.raw(`create trigger ${name}_tr before update on payments for each row execute function ${name}_fn()`));
+  const stub = paymentSessionProvider();
+  try { await assert.rejects(sessionFor(c.db, stub.provider, orderId, c.customers[0]), /PAYMENT_SESSION_STATE_CHANGED/); }
+  finally {
+    await c.db.execute(sql.raw(`drop trigger if exists ${name}_tr on payments`));
+    await c.db.execute(sql.raw(`drop function if exists ${name}_fn()`));
+  }
+  assert.equal(stub.calls, 1);
+  const [unchanged] = await c.db.select().from(payments).where(eq(payments.id, payment.id));
+  assert.equal(unchanged.status, "PENDING"); assert.equal(unchanged.providerOrderId, orderId);
+  await assertInventoryInvariant(c);
+}));
+
+function refundResponse(c: Awaited<ReturnType<typeof createFixture>>, returnId: string, status: "SUCCESS" | "PENDING" = "SUCCESS") {
+  return new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async () =>
+    Response.json(await fixtureRefundPayload(c, returnId, status)));
+}
+
+test("refund SUCCESS stays terminal and duplicate submission has no second provider effect", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { returnId, orderId } = await deliveredReturnFixture(c);
+  const refund = await authorizeRefund(c.db, returnId);
+  let calls = 0;
+  const provider = new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async () => {
+    calls++; return Response.json(await fixtureRefundPayload(c, returnId));
+  });
+  const first = await submitRefund(c.db, returnId, provider);
+  const second = await submitRefund(c.db, returnId, provider);
+  assert.equal(first.status, "SUCCESS"); assert.equal(second.status, "SUCCESS");
+  assert.equal(first.updatedAt.getTime(), second.updatedAt.getTime()); assert.equal(calls, 1);
+  assert.equal((await c.db.select().from(refunds).where(eq(refunds.orderId, orderId))).length, 1);
+  assert.equal(first.id, refund.id);
+  await assertInventoryInvariant(c);
+}));
+
+test("refund concurrent SUCCESS submissions leave one terminal outcome", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { returnId, orderId } = await deliveredReturnFixture(c);
+  await authorizeRefund(c.db, returnId);
+  await onIndependentConnections(async (a, b) => {
+    const [first, second] = await Promise.all([
+      submitRefund(a, returnId, refundResponse(c, returnId)),
+      submitRefund(b, returnId, refundResponse(c, returnId)),
+    ]);
+    assert.equal(first.status, "SUCCESS"); assert.equal(second.status, "SUCCESS");
+  });
+  assert.equal((await c.db.select().from(refunds).where(eq(refunds.orderId, orderId))).length, 1);
+  await assertInventoryInvariant(c);
+}));
+
+test("refund delayed PROCESSING cannot overwrite a terminal FAILED result", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { returnId } = await deliveredReturnFixture(c);
+  await authorizeRefund(c.db, returnId);
+  const entered = financeLatch(), release = financeLatch();
+  const delayed = new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async () => {
+    entered.resolve(); await release.promise;
+    return Response.json(await fixtureRefundPayload(c, returnId, "PENDING"));
+  });
+  await onIndependentConnections(async (a, b) => {
+    const pending = submitRefund(a, returnId, delayed);
+    try {
+      await entered.promise;
+      const failed = new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async () =>
+        Response.json(await fixtureRefundPayload(c, returnId, "REJECTED")));
+      assert.equal((await submitRefund(b, returnId, failed)).status, "FAILED");
+    } finally { release.resolve(); }
+    assert.equal((await pending).status, "FAILED");
+  });
+  const [saved] = await c.db.select().from(returns).where(eq(returns.id, returnId));
+  assert.equal(saved.status, "RETURN_ISSUE");
+  await assertInventoryInvariant(c);
+}));
+
+test("refund FAILED followed by delayed SUCCESS requires manual review", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { returnId } = await deliveredReturnFixture(c);
+  await authorizeRefund(c.db, returnId);
+  const entered = financeLatch(), release = financeLatch();
+  const delayedSuccess = new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async () => {
+    entered.resolve(); await release.promise;
+    return Response.json(await fixtureRefundPayload(c, returnId));
+  });
+  await onIndependentConnections(async (a, b) => {
+    const success = submitRefund(a, returnId, delayedSuccess);
+    success.catch(() => undefined);
+    try {
+      await entered.promise;
+      const failed = new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async () =>
+        Response.json(await fixtureRefundPayload(c, returnId, "CANCELLED")));
+      assert.equal((await submitRefund(b, returnId, failed)).status, "FAILED");
+    } finally { release.resolve(); }
+    await assert.rejects(success, /Failed refund needs manual review/);
+  });
+  const [saved] = await c.db.select().from(refunds).where(eq(refunds.returnId, returnId));
+  assert.equal(saved.status, "FAILED");
+  await assertInventoryInvariant(c);
+}));
+
+test("refund repeated PROCESSING lookup is idempotent and uses GET after POST", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { returnId } = await deliveredReturnFixture(c);
+  await authorizeRefund(c.db, returnId);
+  const methods: string[] = [];
+  const provider = new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async (_input, init) => {
+    methods.push(init?.method ?? "GET");
+    return Response.json(await fixtureRefundPayload(c, returnId, "PENDING"));
+  });
+  const first = await submitRefund(c.db, returnId, provider);
+  const second = await submitRefund(c.db, returnId, provider);
+  assert.equal(first.status, "PROCESSING"); assert.equal(second.status, "PROCESSING");
+  assert.equal(first.updatedAt.getTime(), second.updatedAt.getTime());
+  assert.deepEqual(methods, ["POST", "GET"]);
+  await assertInventoryInvariant(c);
+}));
+
+test("refund provider call holds no refund or return row lock", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { returnId } = await deliveredReturnFixture(c);
+  const authorized = await authorizeRefund(c.db, returnId);
+  const entered = financeLatch(), release = financeLatch();
+  const waitingProvider = new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async () => {
+    entered.resolve(); await release.promise;
+    return Response.json(await fixtureRefundPayload(c, returnId));
+  });
+  await onIndependentConnections(async (a, b) => {
+    const submitting = submitRefund(a, returnId, waitingProvider);
+    try {
+      await entered.promise;
+      await b.transaction(async (tx) => {
+        await tx.select().from(returns).where(eq(returns.id, returnId)).for("update", { noWait: true });
+        await tx.select().from(refunds).where(eq(refunds.id, authorized.id)).for("update", { noWait: true });
+      });
+    } finally { release.resolve(); }
+    assert.equal((await submitting).status, "SUCCESS");
+  });
+  await assertInventoryInvariant(c);
+}));
+
+test("refund conflicting provider reference is held for review", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { returnId } = await deliveredReturnFixture(c);
+  const authorized = await authorizeRefund(c.db, returnId);
+  assert.equal((await submitRefund(c.db, returnId, refundResponse(c, returnId, "PENDING"))).status, "PROCESSING");
+  const mismatch = new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async () =>
+    Response.json(await fixtureRefundPayload(c, returnId, "SUCCESS", "different-provider-refund")));
+  await assert.rejects(submitRefund(c.db, returnId, mismatch), /Refund provider reference conflict/);
+  const [saved] = await c.db.select().from(refunds).where(eq(refunds.id, authorized.id));
+  assert.equal(saved.status, "PROCESSING"); assert.equal(saved.providerReference, "fixture-refund");
+  await assertInventoryInvariant(c);
+}));
+
+for (const [name, override] of [
+  ["merchant refund identity", { refund_id: randomUUID() }],
+  ["provider order", { order_id: randomUUID() }],
+  ["amount", { refund_amount: 0.01 }],
+  ["currency", { refund_currency: "USD" }],
+  ["provider payment identity", { cf_payment_id: "unrelated-payment" }],
+  ["missing response identity", { refund_id: undefined }],
+] as const) test(`refund rejects ${name} mismatch and retains reconciliation state`, { skip: !testUrl }, async () => fixture(async (c) => {
+  const { returnId, orderId } = await deliveredReturnFixture(c);
+  const original = await authorizeRefund(c.db, returnId);
+  const provider = new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async () =>
+    Response.json({ ...await fixtureRefundPayload(c, returnId), ...override }));
+  await assert.rejects(submitRefund(c.db, returnId, provider));
+  const [saved] = await c.db.select().from(refunds).where(eq(refunds.id, original.id));
+  const [record] = await c.db.select().from(returns).where(eq(returns.id, returnId));
+  assert.equal(saved.status, "PROCESSING"); assert.equal(saved.returnId, returnId); assert.equal(saved.orderId, orderId);
+  assert.equal(saved.providerReference, null); assert.equal(record.status, "REFUND_PROCESSING");
+  assert.equal((await c.db.select().from(refunds).where(eq(refunds.orderId, orderId))).length, 1);
+  assert.equal((await submitRefund(c.db, returnId, refundResponse(c, returnId))).status, "SUCCESS");
+  await assertInventoryInvariant(c);
+}));
+
+test("refund timeout remains unknown and later GET can finalize", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { returnId, orderId } = await deliveredReturnFixture(c);
+  const authorized = await authorizeRefund(c.db, returnId);
+  const timeout = new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async () => { throw new Error("PROVIDER_TIMEOUT"); });
+  await assert.rejects(submitRefund(c.db, returnId, timeout), /PROVIDER_TIMEOUT/);
+  const [unknown] = await c.db.select().from(refunds).where(eq(refunds.id, authorized.id));
+  assert.equal(unknown.status, "PROCESSING"); assert.equal(unknown.providerReference, null);
+  let lookup = "";
+  const provider = new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async (input, init) => {
+    lookup = `${init?.method} ${String(input)}`;
+    return Response.json(await fixtureRefundPayload(c, returnId));
+  });
+  const result = await submitRefund(c.db, returnId, provider);
+  assert.equal(result.status, "SUCCESS"); assert.match(lookup, new RegExp(`/orders/${orderId}/refunds/${authorized.id}$`));
+  await assertInventoryInvariant(c);
+}));
+
+test("refund finalization rollback preserves pending state and retries by merchant refund ID", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { returnId } = await deliveredReturnFixture(c);
+  const authorized = await authorizeRefund(c.db, returnId);
+  const name = `refund_rollback_${randomUUID().replaceAll("-", "")}`;
+  await c.db.execute(sql.raw(`create function ${name}_fn() returns trigger language plpgsql as $$ begin if new.id = '${authorized.id}' and new.status = 'SUCCESS' then raise exception using errcode = 'P0001'; end if; return new; end $$`));
+  await c.db.execute(sql.raw(`create trigger ${name}_tr before update on refunds for each row execute function ${name}_fn()`));
+  try { await assert.rejects(submitRefund(c.db, returnId, refundResponse(c, returnId))); }
+  finally {
+    await c.db.execute(sql.raw(`drop trigger if exists ${name}_tr on refunds`));
+    await c.db.execute(sql.raw(`drop function if exists ${name}_fn()`));
+  }
+  const [pending] = await c.db.select().from(refunds).where(eq(refunds.id, authorized.id));
+  const [record] = await c.db.select().from(returns).where(eq(returns.id, returnId));
+  assert.equal(pending.status, "PENDING_PROVIDER"); assert.equal(record.status, "QC_APPROVED");
+  assert.equal((await submitRefund(c.db, returnId, refundResponse(c, returnId))).status, "SUCCESS");
+  await assertInventoryInvariant(c);
+}));
 
 async function partialRefundFinanceFixture(c: Awaited<ReturnType<typeof createFixture>>) {
   const [cart] = await c.db.select().from(carts).where(eq(carts.customerId, c.customers[0]));
@@ -1111,7 +1412,7 @@ async function partialRefundFinanceFixture(c: Awaited<ReturnType<typeof createFi
 test("finance successful refund adjustment is applied once from historical purchase", { skip: !testUrl }, async () => fixture(async (c) => {
   const { item, returnId } = await partialRefundFinanceFixture(c);
   await c.db.update(products).set({ price: "9000.00" }).where(eq(products.id, item.productId));
-  await submitRefund(c.db, returnId, refundResponse());
+  await submitRefund(c.db, returnId, refundResponse(c, returnId));
   await assert.rejects(createSettlement(c.db, item.id, 0, 0, "0.00"), /REFUND_ADJUSTMENT_REQUIRED/);
   const settlement = await createSettlement(c.db, item.id, 0, 0, "500.00");
   assert.equal(settlement.netPayable, "500.00"); assert.equal(settlement.refundAdjustmentAmount, "500.00");
@@ -1124,7 +1425,7 @@ for (const refundFirst of [true, false]) test(`finance concurrent refund/payout 
   const { item, orderId, returnId } = await partialRefundFinanceFixture(c);
   // Historical premature row: payout must revalidate, not trust AVAILABLE.
   await c.db.insert(adminSettlements).values({ adminId: c.adminId, orderId, orderItemId: item.id, grossAmount: "1000.00", commissionAmount: "0.00", gatewayFeeAmount: "0.00", refundAdjustmentAmount: "500.00", netPayable: "500.00" });
-  const complete = (db: ReturnType<typeof createDb>["db"]) => submitRefund(db, returnId, refundResponse());
+  const complete = (db: ReturnType<typeof createDb>["db"]) => submitRefund(db, returnId, refundResponse(c, returnId));
   const allocate = async (db: ReturnType<typeof createDb>["db"]) => {
     try { return await requestPayout(db, c.adminId); }
     catch (error) { assert.match(String(error), /No payable balance/); return null; }
@@ -1147,13 +1448,13 @@ test("finance delayed refund result cannot reopen an allocated successful refund
   const entered = financeLatch(), release = financeLatch();
   const provider = new CashfreeRefundAdapter("fixture", "fixture", "SANDBOX", async () => {
     entered.resolve(); await release.promise;
-    return new Response(JSON.stringify({ refund_status: "PENDING", cf_refund_id: "stale" }), { status: 200 });
+    return Response.json(await fixtureRefundPayload(c, returnId, "PENDING", "stale"));
   });
   await onIndependentConnections(async (a, b) => {
     const pending = submitRefund(a, returnId, provider);
     try {
       await entered.promise;
-      await submitRefund(b, returnId, refundResponse());
+      await submitRefund(b, returnId, refundResponse(c, returnId));
       await createSettlement(b, item.id, 0, 0, "500.00");
       await requestPayout(b, c.adminId);
     } finally { release.resolve(); }
@@ -1355,7 +1656,7 @@ test("finance return hold is item scoped even within the same order", { skip: !t
 
 test("finance payout quarantines an insufficient Refund Adjustment without double deduction", { skip: !testUrl }, async () => fixture(async (c) => {
   const { orderId, item, returnId } = await partialRefundFinanceFixture(c);
-  await submitRefund(c.db, returnId, refundResponse());
+  await submitRefund(c.db, returnId, refundResponse(c, returnId));
   const [row] = await c.db.insert(adminSettlements).values({ adminId: c.adminId, orderId, orderItemId: item.id, grossAmount: "1000.00", commissionAmount: "0.00", gatewayFeeAmount: "0.00", refundAdjustmentAmount: "0.00", netPayable: "1000.00" }).returning();
   await assert.rejects(requestPayout(c.db, c.adminId), /No payable balance/);
   await assert.rejects(requestPayout(c.db, c.adminId), /No payable balance/);

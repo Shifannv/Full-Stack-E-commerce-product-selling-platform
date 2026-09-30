@@ -36,7 +36,8 @@ test("refund request uses the same merchant refund ID as its idempotency key", a
   let requested: { url: string; headers: Headers; body: Record<string, unknown> } | undefined;
   const fetcher: typeof fetch = async (input, init) => {
     requested = { url: String(input), headers: new Headers(init?.headers), body: JSON.parse(String(init?.body)) };
-    return Response.json({ refund_status: "PENDING", cf_refund_id: "cf-test" });
+    return Response.json({ refund_status: "PENDING", cf_refund_id: "cf-test", refund_id: "2c32120e-524b-44db-b774-f1915017d9e6",
+      order_id: "paid-order", refund_amount: 120, refund_currency: "INR", cf_payment_id: "payment-1" });
   };
   const adapter = new CashfreeRefundAdapter("private-id", "private-secret", "SANDBOX", fetcher);
   const result = await adapter.createRefund("paid-order", "2c32120e-524b-44db-b774-f1915017d9e6", "120.00");

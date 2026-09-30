@@ -141,28 +141,58 @@ export async function submitRefund(db: Db, returnId: string, provider: CashfreeR
   if (!refund) throw new DomainError("Authorized refund unavailable", 404);
   if (refund.status === "SUCCESS") return refund;
   if (refund.status === "FAILED") throw new DomainError("Failed refund needs manual review", 409);
-  const [payment] = await db.select({ providerOrderId: payments.providerOrderId }).from(payments).where(eq(payments.id, refund.paymentId)).limit(1);
-  if (!payment?.providerOrderId) throw new DomainError("Provider payment reference unavailable", 422);
-  const result = refund.status === "PENDING_PROVIDER"
-    ? await provider.createRefund(payment.providerOrderId, refund.id, refund.amount)
-    : await provider.getRefund(payment.providerOrderId, refund.id);
-  const status = result.status === "SUCCESS" ? "SUCCESS" : ["CANCELLED", "REJECTED"].includes(result.status) ? "FAILED" : "PROCESSING";
-  const [updated] = await withTransitionRetry(db, async (tx) => {
-    // Result persistence participates in the finance lock protocol. No provider
-    // call is made while holding these locks, including on transaction retries.
-    await tx.select({ id: orders.id }).from(orders).where(eq(orders.id, refund.orderId)).for("update");
-    await tx.select({ id: payments.id }).from(payments).where(eq(payments.id, refund.paymentId)).for("update");
-    await tx.select({ id: returns.id }).from(returns).where(eq(returns.id, returnId)).for("update");
+  const [payment] = await db.select().from(payments).where(eq(payments.id, refund.paymentId)).limit(1);
+  const [record] = await db.select().from(returns).where(eq(returns.id, returnId)).limit(1);
+  if (!payment?.providerOrderId || payment.provider !== "CASHFREE" || payment.status !== "PAID" || !payment.providerPaymentId
+    || payment.orderId !== refund.orderId || payment.currency !== refund.currency
+    || !record || record.orderId !== refund.orderId || refund.reason !== "APPROVED_RETURN")
+    throw new DomainError("Refund provider association unavailable", 409);
+
+  const finalize = (status: "SUCCESS" | "FAILED" | "PROCESSING", providerReference: string | null) => withTransitionRetry(db, async (tx) => {
+    // Provider I/O stays outside this transaction. Every decision is checked
+    // again after locking order -> payment -> return -> refund.
+    const [lockedOrder] = await tx.select({ id: orders.id }).from(orders).where(eq(orders.id, refund.orderId)).for("update");
+    const [lockedPayment] = await tx.select().from(payments).where(eq(payments.id, refund.paymentId)).for("update");
+    const [lockedReturn] = await tx.select().from(returns).where(eq(returns.id, returnId)).for("update");
     const [current] = await tx.select().from(refunds).where(eq(refunds.id, refund.id)).for("update");
-    if (!current) throw new DomainError("Authorized refund unavailable", 404);
-    // A delayed response cannot reopen an obligation already used by finance.
-    if (current.status === "SUCCESS") return [current];
-    if (current.status === "FAILED") throw new DomainError("Failed refund needs manual review", 409);
-    const [saved] = await tx.update(refunds).set({ status, providerReference: result.providerReference, updatedAt: new Date() }).where(eq(refunds.id, refund.id)).returning();
+    if (!lockedOrder || !lockedPayment || !lockedReturn || !current || current.returnId !== returnId
+      || current.orderId !== lockedOrder.id || lockedReturn.orderId !== lockedOrder.id
+      || lockedPayment.orderId !== lockedOrder.id || lockedPayment.provider !== "CASHFREE"
+      || lockedPayment.providerOrderId !== payment.providerOrderId || lockedPayment.providerPaymentId !== payment.providerPaymentId
+      || lockedPayment.currency !== current.currency || lockedPayment.status !== "PAID"
+      || current.paymentId !== lockedPayment.id || current.reason !== "APPROVED_RETURN" || current.amount !== refund.amount)
+      throw new DomainError("Refund provider association changed", 409);
+    if (current.status === "SUCCESS") return current;
+    if (current.status === "FAILED") {
+      if (status === "SUCCESS") throw new DomainError("Failed refund needs manual review", 409);
+      return current;
+    }
+    if (current.providerReference && providerReference && current.providerReference !== providerReference)
+      throw new DomainError("Refund provider reference conflict", 409);
+    if (current.status === status && (!providerReference || current.providerReference === providerReference)) return current;
+    const [saved] = await tx.update(refunds).set({ status, providerReference: providerReference ?? current.providerReference, updatedAt: new Date() }).where(eq(refunds.id, current.id)).returning();
     await tx.update(returns).set({ status: status === "SUCCESS" ? "REFUNDED" : status === "FAILED" ? "RETURN_ISSUE" : "REFUND_PROCESSING", updatedAt: new Date() }).where(eq(returns.id, returnId));
-    return [saved];
+    return saved;
   });
-  return updated;
+
+  let result: Awaited<ReturnType<CashfreeRefundAdapter["createRefund"]>>;
+  try {
+    result = refund.status === "PENDING_PROVIDER"
+      ? await provider.createRefund(payment.providerOrderId, refund.id, refund.amount)
+      : await provider.getRefund(payment.providerOrderId, refund.id);
+    if (result.refundId !== refund.id || result.orderId !== payment.providerOrderId
+      || result.currency !== refund.currency || Math.round(result.amount * 100) !== paise(refund.amount)
+      || result.providerPaymentId !== payment.providerPaymentId
+      || (["SUCCESS", "CANCELLED", "REJECTED"].includes(result.status) && !result.providerReference))
+      throw new DomainError("Refund provider result mismatch", 502);
+  } catch (error) {
+    // A lost or unattributable response is UNKNOWN, not FAILED. The merchant
+    // refund ID and payment order ID remain available for a later GET lookup.
+    await finalize("PROCESSING", null);
+    throw error;
+  }
+  const status = result.status === "SUCCESS" ? "SUCCESS" : ["CANCELLED", "REJECTED"].includes(result.status) ? "FAILED" : "PROCESSING";
+  return finalize(status, result.providerReference);
 }
 
 export async function getReturn(db: Db, returnId: string, actor: Actor, view: "customer" | "admin") {

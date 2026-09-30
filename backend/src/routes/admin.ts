@@ -14,6 +14,8 @@ import { getShiprocketAdapter } from "../services/shipping/providers/shiprocket.
 import { activateAdminAccount, createInvitation, peekInvitation, reissueInvitation } from "../services/admin/invitation.service";
 import { sendInvitationEmail } from "../services/admin/invitation-email.service";
 import { invitationSetupUrl } from "../services/admin/invitation-url";
+import { lockAdmin } from "../services/admin/admin-lock";
+import { transitionAdminStatus } from "../services/admin/account-state.service";
 
 type AdminEnv = AuthorizedEnv & {
   Bindings: AuthorizedEnv["Bindings"] & {
@@ -140,8 +142,16 @@ adminRoutes.post("/onboarding/kyc/documents", async (c) => {
     const key = `admin/${adminId}/${crypto.randomUUID()}`;
     await c.env.KYC_BUCKET!.put(key, data, { httpMetadata: { contentType: file.type } });
     try {
-      const [saved] = await db.insert(adminKycDocuments).values({ submissionId: application.id, documentType, privateObjectKey: key }).returning({ id: adminKycDocuments.id, documentType: adminKycDocuments.documentType });
-      return saved;
+      return await db.transaction(async (tx) => {
+        const owner = await lockAdmin(tx, adminId);
+        if (!["DRAFT", "PENDING", "CHANGES_REQUIRED"].includes(owner.status)) throw new DomainError("Application cannot be edited in this state", 409);
+        const [current] = await tx.select({ id: adminKycSubmissions.id, status: adminKycSubmissions.status }).from(adminKycSubmissions)
+          .where(eq(adminKycSubmissions.adminId, adminId)).limit(1).for("update");
+        if (!current || current.id !== application.id || !["DRAFT", "CHANGES_REQUIRED"].includes(current.status)) throw new DomainError("Application cannot be edited in this state", 409);
+        const [saved] = await tx.insert(adminKycDocuments).values({ submissionId: current.id, documentType, privateObjectKey: key }).returning({ id: adminKycDocuments.id, documentType: adminKycDocuments.documentType });
+        await tx.insert(adminAuditEvents).values({ adminId, actorUserId: c.get("actor").userId, action: "KYC_DOCUMENT_SAVED", changedFields: ["documentType"] });
+        return saved;
+      });
     } catch (error) {
       await c.env.KYC_BUCKET!.delete(key).catch(() => undefined);
       throw error;
@@ -291,6 +301,15 @@ adminRoutes.post("/review/:adminId/decision", async (c) => {
   if (v.decision !== "CHANGES_REQUIRED" && v.decision !== "REJECTED" && v.decision !== "APPROVED") throw new DomainError("Invalid decision", 422);
   const notes = requiredText(v.notes, "notes", 1000);
   return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => reviewApplication(db, c.req.param("adminId"), c.get("actor").userId, v.decision as "CHANGES_REQUIRED" | "REJECTED" | "APPROVED", notes)));
+});
+
+adminRoutes.post("/review/:adminId/status", async (c) => {
+  superAdmin(c.get("actor"));
+  const v = await body(c);
+  if (v.action !== "SUSPEND" && v.action !== "RECOVER") throw new DomainError("Invalid Admin status action", 422);
+  const reason = requiredText(v.reason, "reason", 1000);
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
+    transitionAdminStatus(db, c.req.param("adminId"), c.get("actor").userId, v.action as "SUSPEND" | "RECOVER", reason)));
 });
 
 adminRoutes.put("/review/:adminId/categories/:categoryId", async (c) => {

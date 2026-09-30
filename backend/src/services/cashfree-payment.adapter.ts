@@ -18,6 +18,7 @@ export class CashfreePaymentAdapter {
   async createOrder(input: CashfreeOrderRequest): Promise<CashfreeOrderResponse> {
     const response = await this.fetcher(`${this.baseUrl}/orders`, {
       method: "POST",
+      signal: AbortSignal.timeout(15_000),
       headers: { "content-type": "application/json", "x-api-version": "2025-01-01", "x-client-id": this.clientId, "x-client-secret": this.clientSecret, "x-idempotency-key": input.orderId },
       body: JSON.stringify({
         order_id: input.orderId, order_amount: Number(input.amount), order_currency: input.currency,

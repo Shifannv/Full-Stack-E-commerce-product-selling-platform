@@ -8,9 +8,15 @@ import { canPurchaseProduct } from "./purchase-eligibility";
 
 type Db = ReturnType<typeof createDb>["db"];
 
+// Public visibility follows the sale owner, never the product_admins managers.
+const publicSellerEligible = sql`exists (select 1 from admins a join users u on u.id = a.user_id
+  join admin_category_assignments scope on scope.admin_id = a.id and scope.category_id = ${products.categoryId}
+  where a.id = ${products.createdByAdminId} and a.status = 'ACTIVE' and a.deleted_at is null
+  and u.status = 'ACTIVE' and u.deleted_at is null and scope.status = 'ACTIVE')`;
+
 export type CatalogSort = "newest" | "price-asc" | "price-desc";
 export async function listCatalog(db: Db, filters: { q?: string; category?: string; subcategory?: string; minPrice?: number; maxPrice?: number; featured?: boolean; available?: boolean; sort?: CatalogSort; limit: number; offset: number }) {
-  const conditions = [eq(products.status, "PUBLISHED"), eq(categories.status, "PUBLISHED"), eq(subcategories.status, "PUBLISHED")];
+  const conditions = [eq(products.status, "PUBLISHED"), eq(categories.status, "PUBLISHED"), eq(subcategories.status, "PUBLISHED"), publicSellerEligible];
   if (filters.q) conditions.push(or(ilike(products.name, `%${filters.q}%`), ilike(products.description, `%${filters.q}%`))!);
   if (filters.category) conditions.push(eq(categories.slug, filters.category));
   if (filters.subcategory) conditions.push(eq(subcategories.slug, filters.subcategory));
@@ -39,7 +45,7 @@ export async function listPublicCategories(db: Db) {
 
 export async function getPublicProduct(db: Db, slug: string) {
   const [product] = await db.select({ id: products.id, categoryId: products.categoryId, subcategoryId: products.subcategoryId, name: products.name, slug: products.slug, description: products.description, price: products.price, currency: products.currency, attributes: products.attributes, returnEnabled: products.returnEnabled, createdAt: products.createdAt })
-    .from(products).where(and(eq(products.slug, slug), eq(products.status, "PUBLISHED"))).limit(1);
+    .from(products).where(and(eq(products.slug, slug), eq(products.status, "PUBLISHED"), publicSellerEligible)).limit(1);
   if (!product) throw new DomainError("Product unavailable", 404);
   const [category] = await db.select({ status: categories.status }).from(categories).where(eq(categories.id, product.categoryId)).limit(1);
   const [subcategory] = await db.select({ status: subcategories.status }).from(subcategories).where(eq(subcategories.id, product.subcategoryId)).limit(1);
@@ -116,4 +122,4 @@ export async function setWishlist(db: Db, customerId: string, productId: string,
   return { productId, enabled };
 }
 
-export async function getWishlist(db: Db, customerId: string) { return db.select({ productId: products.id, name: products.name, slug: products.slug, price: products.price, currency: products.currency }).from(wishlistItems).innerJoin(products, eq(wishlistItems.productId, products.id)).where(and(eq(wishlistItems.customerId, customerId), eq(products.status, "PUBLISHED"))); }
+export async function getWishlist(db: Db, customerId: string) { return db.select({ productId: products.id, name: products.name, slug: products.slug, price: products.price, currency: products.currency }).from(wishlistItems).innerJoin(products, eq(wishlistItems.productId, products.id)).where(and(eq(wishlistItems.customerId, customerId), eq(products.status, "PUBLISHED"), publicSellerEligible)); }

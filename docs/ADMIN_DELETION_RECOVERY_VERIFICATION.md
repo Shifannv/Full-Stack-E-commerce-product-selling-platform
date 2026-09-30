@@ -1,0 +1,23 @@
+# Admin deletion and recovery verification — 2026-09-30
+
+## Result and scope
+
+**The new Admin deletion approval and archive recovery workflow is VERIFIED INTERNALLY for requests created by this implementation.** All 187 isolated PostgreSQL tests pass (152 commerce, 15 earlier Admin concurrency, 20 new lifecycle), with no failures or skips. All 67 backend regression tests, TypeScript, Drizzle validation and `git diff --check` pass. No live provider calls or deployment occurred. The shared Aiven database was not used or changed.
+
+Migration `0012_admin_account_lifecycle.sql` was generated and applied **only** to `CHECKOUT_TEST_DATABASE_URL`. It adds empty `admin_account_deletion_requests`, `admin_archives` and `admin_recovery_requests` tables, with foreign keys, status checks and unique indexes for open requests/archives. It does not alter or backfill existing customer, order, payment, refund, product, settlement or payout rows. A preexisting Admin with `deleted_at` but no matching archive cannot use this recovery workflow; such legacy data needs case review before a production rollout. The migration was not promoted to Aiven.
+
+## State flow and API
+
+The Admin uses authenticated `POST /api/admin/account/deletion-requests` to create one open `REQUESTED` request. `POST /api/admin/account/deletion-requests/:requestId/verify` checks the account credential and moves it to `PENDING`; a failed check leaves it unverified. A Super Admin uses `POST /api/admin/review/:adminId/deletion-requests/:requestId/decision` with `APPROVED` or `REJECTED` and a reason. An approval archives the account and completes the request in one transaction; a rejection keeps the account usable. Repeated matching decisions return the original result and a conflicting decision returns 409. The Admin and Super Admin can read their scoped lifecycle history through the corresponding `/account/lifecycle` and `/review/:adminId/lifecycle` routes.
+
+An archived Admin can sign in again with their retained credential solely to use the recovery route; ordinary protected APIs return 403. `POST /api/admin/account/recovery-requests` verifies that credential and creates one open recovery request. A Super Admin reviews it at `POST /api/admin/review/:adminId/recovery-requests/:requestId/decision`. Approval requires the current approved KYC submission ID and revision, operational addresses and private evidence, and an explicit list of currently published categories from the archive manifest whose assignment revision has not changed. Rejection leaves the account archived and permits a later request. Recovery restores account eligibility and only the reviewed category assignments. Product publication remains `ARCHIVED` until a separate publishing decision; credentials, sessions, invitations and RBAC grants are never recreated from the archive.
+
+## Archive and history
+
+An archive is a lifecycle manifest, not a copy of sensitive data. Approval marks Admin and user `SUSPENDED` with `deleted_at`, revokes active category assignments, archives sale-owned products, removes sessions and invitation tokens, and records the archive and actor-attributed audit events atomically. Normal Admin onboarding and catalog writes share the Admin → user → category assignment lock order with approval/recovery. Checkout already locks the Admin row before checking seller eligibility, so a checkout that crosses deletion observes a consistent before or after state. Public list/detail queries also require the sale owner, user and category scope to remain active, even if a product status is changed directly while archived.
+
+Orders, order items, purchase snapshots, payments, refunds, settlements, payout requests and links, KYC, addresses, credentials and prior audit rows remain in place. The tests assert retained order/payment and paid settlement/payout rows, unchanged sale ownership, hidden public products, rejected protected writes, winning audit events, duplicate and conflicting decisions, and rollback of both deletion and recovery. Independent connection tests include approve/reject, duplicate approvals, recovery/suspension, and database lock barriers for deletion versus product, inventory and category writes; they use no sleeps.
+
+## Boundaries
+
+Credential verification currently uses the existing invited Admin password. An account without a credential cannot pass deletion/recovery verification until a separate approved verification method exists. Recovery does not automatically republish archived products or reinstate a changed category, revoked role, missing credential, or stale KYC. Real production migration, provider behavior and deployed browser flows were not exercised.

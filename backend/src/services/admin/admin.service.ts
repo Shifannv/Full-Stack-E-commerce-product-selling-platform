@@ -3,6 +3,8 @@ import type { createDb } from "../../db";
 import { adminAddresses, adminAuditEvents, adminCategoryAssignments, adminKycDocuments, adminKycSubmissions } from "../../db/schema/admin";
 import { categories } from "../../db/schema/catalog";
 import { admins } from "../../db/schema/rbac";
+import { users } from "../../db/schema/auth";
+import { lockAdmin } from "./admin-lock";
 
 type Db = ReturnType<typeof createDb>["db"];
 export type AddressInput = {
@@ -46,15 +48,15 @@ export function parseAddress(value: unknown): AddressInput {
 }
 
 export async function getAdminId(db: Db, userId: string): Promise<string> {
-  const [admin] = await db.select({ id: admins.id }).from(admins).where(and(eq(admins.userId, userId), isNull(admins.deletedAt))).limit(1);
+  const [admin] = await db.select({ id: admins.id }).from(admins).innerJoin(users, eq(users.id, admins.userId))
+    .where(and(eq(admins.userId, userId), isNull(admins.deletedAt), isNull(users.deletedAt), eq(users.status, "ACTIVE"))).limit(1);
   if (!admin) throw new DomainError("Admin profile unavailable", 403);
   return admin.id;
 }
 
 export async function saveAddress(db: Db, adminId: string, actorUserId: string, input: AddressInput, superAdmin = false) {
   return db.transaction(async (tx) => {
-    const [owner] = await tx.select({ status: admins.status }).from(admins).where(eq(admins.id, adminId)).limit(1);
-    if (!owner) throw new DomainError("Admin unavailable", 404);
+    const owner = await lockAdmin(tx, adminId);
     if (!superAdmin && !["PENDING", "DRAFT", "CHANGES_REQUIRED"].includes(owner.status)) throw new DomainError("Address changes require review", 409);
     const [existing] = await tx.select({ id: adminAddresses.id }).from(adminAddresses)
       .where(and(eq(adminAddresses.adminId, adminId), eq(adminAddresses.addressType, input.addressType), eq(adminAddresses.isActive, true))).limit(1);
@@ -69,6 +71,8 @@ export async function saveAddress(db: Db, adminId: string, actorUserId: string, 
 
 export async function saveKyc(db: Db, adminId: string, actorUserId: string, input: { legalName: string; businessType: string; contactPhone: string }) {
   return db.transaction(async (tx) => {
+    const owner = await lockAdmin(tx, adminId);
+    if (!["PENDING", "DRAFT", "CHANGES_REQUIRED"].includes(owner.status)) throw new DomainError("Application cannot be edited in this state", 409);
     const [current] = await tx.select().from(adminKycSubmissions).where(eq(adminKycSubmissions.adminId, adminId)).limit(1);
     if (current && !["DRAFT", "CHANGES_REQUIRED"].includes(current.status)) throw new DomainError("Application cannot be edited in this state", 409);
     const data = { ...input, adminId, updatedAt: new Date() };
@@ -81,28 +85,35 @@ export async function saveKyc(db: Db, adminId: string, actorUserId: string, inpu
 }
 
 export async function requestCategory(db: Db, adminId: string, categoryId: string) {
-  const [owner] = await db.select({ status: admins.status }).from(admins).where(eq(admins.id, adminId)).limit(1);
-  if (!owner || !["PENDING", "DRAFT", "CHANGES_REQUIRED"].includes(owner.status)) throw new DomainError("Category requests are unavailable in this state", 409);
-  const [category] = await db.select({ id: categories.id }).from(categories).where(and(eq(categories.id, categoryId), eq(categories.status, "PUBLISHED"))).limit(1);
-  if (!category) throw new DomainError("Category unavailable", 404);
-  const [assignment] = await db.insert(adminCategoryAssignments).values({ adminId, categoryId, status: "REQUESTED" })
-    .onConflictDoUpdate({ target: [adminCategoryAssignments.adminId, adminCategoryAssignments.categoryId], set: { status: "REQUESTED", updatedAt: new Date() } }).returning();
-  return assignment;
+  return db.transaction(async (tx) => {
+    const owner = await lockAdmin(tx, adminId);
+    if (!["PENDING", "DRAFT", "CHANGES_REQUIRED"].includes(owner.status)) throw new DomainError("Category requests are unavailable in this state", 409);
+    const [category] = await tx.select({ id: categories.id }).from(categories).where(and(eq(categories.id, categoryId), eq(categories.status, "PUBLISHED"))).limit(1);
+    if (!category) throw new DomainError("Category unavailable", 404);
+    const [assignment] = await tx.insert(adminCategoryAssignments).values({ adminId, categoryId, status: "REQUESTED" })
+      .onConflictDoUpdate({ target: [adminCategoryAssignments.adminId, adminCategoryAssignments.categoryId], set: { status: "REQUESTED", updatedAt: new Date() } }).returning();
+    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: owner.userId, action: "CATEGORY_REQUESTED", changedFields: [categoryId, "status"] });
+    return assignment;
+  });
 }
 
 export async function setCategoryAssignment(db: Db, adminId: string, categoryId: string, reviewerId: string, active: boolean, reason: string) {
   return db.transaction(async (tx) => {
+    const owner = await lockAdmin(tx, adminId);
+    if (active && owner.status !== "ACTIVE") throw new DomainError("Admin approval required", 409);
     const [category] = await tx.select({ id: categories.id }).from(categories).where(eq(categories.id, categoryId)).limit(1);
     if (!category) throw new DomainError("Category unavailable", 404);
     const [assignment] = await tx.insert(adminCategoryAssignments).values({ adminId, categoryId, status: active ? "ACTIVE" : "REVOKED", assignedByUserId: reviewerId })
       .onConflictDoUpdate({ target: [adminCategoryAssignments.adminId, adminCategoryAssignments.categoryId], set: { status: active ? "ACTIVE" : "REVOKED", assignedByUserId: reviewerId, updatedAt: new Date() } }).returning();
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: reviewerId, action: active ? "CATEGORY_ASSIGNED" : "CATEGORY_REVOKED", changedFields: ["categoryId", "status"], reason });
+    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: reviewerId, action: active ? "CATEGORY_ASSIGNED" : "CATEGORY_REVOKED", changedFields: [categoryId, "status"], reason });
     return assignment;
   });
 }
 
 export async function submitApplication(db: Db, adminId: string, actorUserId: string) {
   return db.transaction(async (tx) => {
+    const owner = await lockAdmin(tx, adminId);
+    if (!["PENDING", "DRAFT", "CHANGES_REQUIRED"].includes(owner.status)) throw new DomainError("Application cannot be submitted in this state", 409);
     const [kyc] = await tx.select().from(adminKycSubmissions).where(eq(adminKycSubmissions.adminId, adminId)).limit(1);
     if (!kyc || !["DRAFT", "CHANGES_REQUIRED"].includes(kyc.status) || !kyc.legalName || !kyc.contactPhone || !kyc.businessType) throw new DomainError("Complete the seller profile before submission", 422);
     const addresses = await tx.select({ addressType: adminAddresses.addressType }).from(adminAddresses).where(and(eq(adminAddresses.adminId, adminId), eq(adminAddresses.isActive, true)));
@@ -120,6 +131,8 @@ export async function submitApplication(db: Db, adminId: string, actorUserId: st
 
 export async function reviewApplication(db: Db, adminId: string, reviewerId: string, decision: "CHANGES_REQUIRED" | "REJECTED" | "APPROVED", notes: string) {
   return db.transaction(async (tx) => {
+    const owner = await lockAdmin(tx, adminId);
+    if (owner.status !== "PENDING_SUPER_ADMIN_APPROVAL") throw new DomainError("Application is not pending review", 409);
     const [kyc] = await tx.select().from(adminKycSubmissions).where(eq(adminKycSubmissions.adminId, adminId)).limit(1);
     if (!kyc || kyc.status !== "PENDING_SUPER_ADMIN_APPROVAL") throw new DomainError("Application is not pending review", 409);
     if (decision === "APPROVED") {
@@ -133,7 +146,7 @@ export async function reviewApplication(db: Db, adminId: string, reviewerId: str
     }
     const [result] = await tx.update(adminKycSubmissions).set({ status: decision, reviewedByUserId: reviewerId, reviewedAt: new Date(), reviewNotes: notes, updatedAt: new Date() }).where(eq(adminKycSubmissions.id, kyc.id)).returning();
     await tx.update(admins).set({ status: decision === "APPROVED" ? "ACTIVE" : decision, updatedAt: new Date() }).where(eq(admins.id, adminId));
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: reviewerId, action: "APPLICATION_REVIEWED", changedFields: ["status", "reviewNotes"], reason: notes });
+    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: reviewerId, action: "APPLICATION_REVIEWED", changedFields: [decision, "status", "reviewNotes"], reason: notes });
     return result;
   });
 }
@@ -142,6 +155,8 @@ export async function correctApplication(db: Db, adminId: string, reviewerId: st
   const { reason, ...changes } = input;
   if (!Object.keys(changes).length) throw new DomainError("No changes supplied", 422);
   return db.transaction(async (tx) => {
+    const owner = await lockAdmin(tx, adminId);
+    if (owner.status !== "PENDING_SUPER_ADMIN_APPROVAL") throw new DomainError("Application is not pending review", 409);
     const [result] = await tx.update(adminKycSubmissions).set({ ...changes, updatedAt: new Date() }).where(eq(adminKycSubmissions.adminId, adminId)).returning();
     if (!result) throw new DomainError("Application unavailable", 404);
     await tx.insert(adminAuditEvents).values({ adminId, actorUserId: reviewerId, action: "KYC_CORRECTED", changedFields: Object.keys(changes), reason });

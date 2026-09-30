@@ -1,5 +1,19 @@
 # Backend verification — current checkpoint and historical evidence
 
+## Admin deletion and recovery checkpoint - 2026-09-30
+
+**New Admin deletion approval and archive recovery workflow: VERIFIED INTERNALLY.** Admin request and credential verification, Super Admin approval/rejection, soft archival, public product hiding, retained commerce history, and explicitly revalidated recovery are implemented. The isolated PostgreSQL suite has **187 passing tests, 0 failures, 0 skips**; backend regression has **67 passing tests**. TypeScript, Drizzle validation and diff checks pass. Migration `0012` was applied only to `CHECKOUT_TEST_DATABASE_URL`, with no historical data rewrite. Aiven/shared DB untouched; no live provider call or deployment. Legacy soft-deleted accounts without a new archive require case review. See [Admin deletion and recovery verification](ADMIN_DELETION_RECOVERY_VERIFICATION.md). The administrative concurrency checkpoint below is historical evidence for the earlier implemented paths.
+
+## Historical administrative concurrency checkpoint - 2026-09-30
+
+**Earlier implemented Admin review, category/catalog authorization, KYC write, invitation reissue, and suspension/recovery concurrency paths: VERIFIED INTERNALLY.** At this earlier checkpoint the isolated PostgreSQL suite had 167 passing tests, including 15 new Admin cases; 67 backend regression tests passed. TypeScript, Drizzle validation, and diff check passed. No migration, Aiven/shared DB mutation, live provider call, or deployment occurred in that checkpoint. The deletion approval and archive workflow was still absent then and is addressed by the current checkpoint above. See [Administrative concurrency verification](ADMIN_CONCURRENCY_VERIFICATION.md).
+
+## Refund result/payment session checkpoint - 2026-09-30
+
+**Refund result finality and payment session eligibility: VERIFIED INTERNALLY.** The refund adapter validates merchant refund ID, provider order/payment, amount, currency and provider reference before a terminal state is saved. Terminal results do not regress; unknown results remain reconcilable. Payment sessions require a locked, still-live CREATED/RESERVED/PENDING order and payment before a Cashfree call, with a database-clock deadline check and a checked conditional update.
+
+The PostgreSQL commerce suite has 152 passing tests, including 33 new refund/payment cases. The 67 backend regression tests, TypeScript, Drizzle validation and diff check pass. No migration, Aiven/shared DB mutation, live Cashfree call or deployment. This checkpoint supersedes older refund/session claims while retaining historical evidence below. See [Refund and payment session verification](REFUND_PAYMENT_SESSION_VERIFICATION.md).
+
 ## Finance settlement/payout checkpoint - 2026-09-30
 
 **Settlement eligibility, exact payout allocation and return/refund concurrency: VERIFIED INTERNALLY.** PostgreSQL commerce tests: **119 passed, 0 failed, 0 skipped**, including 26 finance cases. Backend regression tests: **67 passed, 0 failed, 0 skipped**. TypeScript, Drizzle validation and diff checks passed.

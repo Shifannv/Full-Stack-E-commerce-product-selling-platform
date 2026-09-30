@@ -1,9 +1,11 @@
 import { and, asc, count, desc, eq, sql } from "drizzle-orm";
 import type { createDb } from "../../db";
-import { adminCategoryAssignments } from "../../db/schema/admin";
+import { adminAuditEvents, adminCategoryAssignments } from "../../db/schema/admin";
+import { users } from "../../db/schema/auth";
 import { categories, categoryProductFields, inventories, productAdmins, productImages, products, productVariants, subcategories } from "../../db/schema/catalog";
 import { admins } from "../../db/schema/rbac";
 import { DomainError, requiredText } from "./admin.service";
+import { lockAdmin, requireActiveAdmin, type AdminTx } from "./admin-lock";
 
 type Db = ReturnType<typeof createDb>["db"];
 const money = (value: unknown): string => {
@@ -39,8 +41,9 @@ async function validateAttributes(db: Db, categoryId: string, input: unknown): P
 }
 
 export async function assertCategoryScope(db: Db, adminId: string, categoryId: string): Promise<void> {
-  const [admin] = await db.select({ status: admins.status }).from(admins).where(eq(admins.id, adminId)).limit(1);
-  if (admin?.status !== "ACTIVE") throw new DomainError("Admin approval required", 403);
+  const [admin] = await db.select({ status: admins.status, deletedAt: admins.deletedAt, userStatus: users.status, userDeletedAt: users.deletedAt })
+    .from(admins).innerJoin(users, eq(users.id, admins.userId)).where(eq(admins.id, adminId)).limit(1);
+  if (admin?.status !== "ACTIVE" || admin.deletedAt || admin.userStatus !== "ACTIVE" || admin.userDeletedAt) throw new DomainError("Admin approval required", 403);
   const [assignment] = await db.select({ id: adminCategoryAssignments.id }).from(adminCategoryAssignments)
     .where(and(eq(adminCategoryAssignments.adminId, adminId), eq(adminCategoryAssignments.categoryId, categoryId), eq(adminCategoryAssignments.status, "ACTIVE"))).limit(1);
   if (!assignment) throw new DomainError("Category is outside Admin scope", 403);
@@ -64,11 +67,14 @@ export async function createCategory(db: Db, input: Record<string, unknown>) {
 
 export async function createSubcategory(db: Db, input: Record<string, unknown>, adminId?: string) {
   const categoryId = requiredText(input.categoryId, "categoryId", 40);
-  const [category] = await db.select({ status: categories.status }).from(categories).where(eq(categories.id, categoryId)).limit(1);
-  if (!category || category.status !== "PUBLISHED") throw new DomainError("Category unavailable", 404);
-  if (adminId) await assertCategoryScope(db, adminId, categoryId);
-  const [result] = await db.insert(subcategories).values({ categoryId, name: requiredText(input.name, "name"), slug: slug(input.slug), customizedByAdminId: adminId, status: adminId ? "DRAFT" : "PUBLISHED" }).returning();
-  return result;
+  return db.transaction(async (tx) => {
+    const admin = adminId ? await lockedCategoryScope(tx, adminId, categoryId) : null;
+    const [category] = await tx.select({ status: categories.status }).from(categories).where(eq(categories.id, categoryId)).limit(1);
+    if (!category || category.status !== "PUBLISHED") throw new DomainError("Category unavailable", 404);
+    const [result] = await tx.insert(subcategories).values({ categoryId, name: requiredText(input.name, "name"), slug: slug(input.slug), customizedByAdminId: adminId, status: adminId ? "DRAFT" : "PUBLISHED" }).returning();
+    if (admin) await tx.insert(adminAuditEvents).values({ adminId: admin.id, actorUserId: admin.userId, action: "SUBCATEGORY_CREATED", changedFields: [result.id, categoryId] });
+    return result;
+  });
 }
 
 export async function configureField(db: Db, input: Record<string, unknown>) {
@@ -89,7 +95,6 @@ export async function configureField(db: Db, input: Record<string, unknown>) {
 export async function createProduct(db: Db, adminId: string, input: Record<string, unknown>) {
   const categoryId = requiredText(input.categoryId, "categoryId", 40);
   const subcategoryId = requiredText(input.subcategoryId, "subcategoryId", 40);
-  await assertCategoryScope(db, adminId, categoryId);
   const [subcategory] = await db.select({ id: subcategories.id }).from(subcategories).where(and(eq(subcategories.id, subcategoryId), eq(subcategories.categoryId, categoryId), eq(subcategories.status, "PUBLISHED"))).limit(1);
   if (!subcategory) throw new DomainError("Subcategory does not belong to the selected main category", 422);
   const values = await validateAttributes(db, categoryId, input.attributes);
@@ -97,6 +102,7 @@ export async function createProduct(db: Db, adminId: string, input: Record<strin
   if (input.returnEnabled !== undefined && typeof input.returnEnabled !== "boolean") throw new DomainError("returnEnabled must be a boolean", 422);
   if (input.returnEnabled === true && category?.slug !== "dress") throw new DomainError("Only Dress products can enable returns", 422);
   return db.transaction(async (tx) => {
+    const admin = await lockedCategoryScope(tx, adminId, categoryId);
     const [result] = await tx.insert(products).values({
       categoryId, subcategoryId, createdByAdminId: adminId,
       name: requiredText(input.name, "name"), slug: slug(input.slug),
@@ -109,8 +115,31 @@ export async function createProduct(db: Db, adminId: string, input: Record<strin
       heightCm: optionalPositive(input.heightCm, "heightCm"),
     }).returning();
     await tx.insert(productAdmins).values({ productId: result.id, adminId });
+    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: admin.userId, action: "PRODUCT_CREATED", changedFields: [result.id, categoryId] });
     return result;
   });
+}
+
+async function lockedCategoryScope(tx: AdminTx, adminId: string, categoryId: string) {
+  const admin = await lockAdmin(tx, adminId);
+  requireActiveAdmin(admin);
+  const [assignment] = await tx.select({ id: adminCategoryAssignments.id }).from(adminCategoryAssignments)
+    .where(and(eq(adminCategoryAssignments.adminId, adminId), eq(adminCategoryAssignments.categoryId, categoryId), eq(adminCategoryAssignments.status, "ACTIVE")))
+    .limit(1).for("update");
+  if (!assignment) throw new DomainError("Category is outside Admin scope", 403);
+  return admin;
+}
+
+async function lockedProductScope(tx: AdminTx, adminId: string, productId: string) {
+  const [candidate] = await tx.select({ categoryId: products.categoryId }).from(products).where(eq(products.id, productId)).limit(1);
+  if (!candidate) throw new DomainError("Product unavailable", 404);
+  const admin = await lockedCategoryScope(tx, adminId, candidate.categoryId);
+  const [managed] = await tx.select({ productId: productAdmins.productId }).from(productAdmins)
+    .where(and(eq(productAdmins.productId, productId), eq(productAdmins.adminId, adminId))).limit(1).for("update");
+  if (!managed) throw new DomainError("Product unavailable", 404);
+  const [product] = await tx.select().from(products).where(eq(products.id, productId)).limit(1).for("update");
+  if (!product || product.categoryId !== candidate.categoryId) throw new DomainError("Product category changed", 409);
+  return { admin, product };
 }
 
 export async function assertProductAdmin(db: Db, adminId: string, productId: string) {
@@ -122,7 +151,6 @@ export async function assertProductAdmin(db: Db, adminId: string, productId: str
 }
 
 export async function updateProduct(db: Db, adminId: string, productId: string, input: Record<string, unknown>) {
-  await assertProductAdmin(db, adminId, productId);
   const [current] = await db.select().from(products).where(eq(products.id, productId)).limit(1);
   if (!current) throw new DomainError("Product unavailable", 404);
   if (input.categoryId !== undefined || input.subcategoryId !== undefined || input.status !== undefined || input.createdByAdminId !== undefined || input.featured !== undefined) {
@@ -144,19 +172,25 @@ export async function updateProduct(db: Db, adminId: string, productId: string, 
   for (const key of ["weightKg", "lengthCm", "breadthCm", "heightCm"] as const) {
     if (input[key] !== undefined) changes[key] = optionalPositive(input[key], key);
   }
-  const [result] = await db.update(products).set(changes).where(eq(products.id, productId)).returning();
-  return result;
+  return db.transaction(async (tx) => {
+    const { admin } = await lockedProductScope(tx, adminId, productId);
+    const [result] = await tx.update(products).set(changes).where(eq(products.id, productId)).returning();
+    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: admin.userId, action: "PRODUCT_UPDATED", changedFields: [productId, ...Object.keys(input)] });
+    return result;
+  });
 }
 
 export async function createVariant(db: Db, adminId: string, productId: string, input: Record<string, unknown>) {
-  await assertProductAdmin(db, adminId, productId);
   const attributes = input.attributes && typeof input.attributes === "object" && !Array.isArray(input.attributes) ? input.attributes as Record<string, unknown> : {};
-  const [variant] = await db.insert(productVariants).values({ productId, sku: requiredText(input.sku, "sku", 100), title: requiredText(input.title, "title", 200), price: money(input.price), attributes }).returning();
-  return variant;
+  return db.transaction(async (tx) => {
+    const { admin } = await lockedProductScope(tx, adminId, productId);
+    const [variant] = await tx.insert(productVariants).values({ productId, sku: requiredText(input.sku, "sku", 100), title: requiredText(input.title, "title", 200), price: money(input.price), attributes }).returning();
+    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: admin.userId, action: "PRODUCT_VARIANT_CREATED", changedFields: [productId, variant.id] });
+    return variant;
+  });
 }
 
 export async function saveProductImageMetadata(db: Db, adminId: string, productId: string, input: Record<string, unknown>) {
-  await assertProductAdmin(db, adminId, productId);
   const objectKey = requiredText(input.objectKey, "objectKey", 500);
   if (!objectKey.startsWith(`products/${productId}/`)) throw new DomainError("Invalid product image object key", 422);
   const variantId = typeof input.variantId === "string" ? input.variantId : null;
@@ -166,24 +200,31 @@ export async function saveProductImageMetadata(db: Db, adminId: string, productI
   }
   const sortOrder = Number(input.sortOrder ?? 0);
   if (!Number.isInteger(sortOrder) || sortOrder < 0 || sortOrder > 1000) throw new DomainError("Invalid sortOrder", 422);
-  const [image] = await db.insert(productImages).values({ productId, variantId, objectKey, altText: typeof input.altText === "string" ? input.altText.trim().slice(0, 300) : null, sortOrder }).returning();
-  return image;
+  return db.transaction(async (tx) => {
+    const { admin } = await lockedProductScope(tx, adminId, productId);
+    const [image] = await tx.insert(productImages).values({ productId, variantId, objectKey, altText: typeof input.altText === "string" ? input.altText.trim().slice(0, 300) : null, sortOrder }).returning();
+    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: admin.userId, action: "PRODUCT_IMAGE_SAVED", changedFields: [productId, image.id] });
+    return image;
+  });
 }
 
 export async function setProductInventory(db: Db, adminId: string, productId: string, quantity: number, variantId?: string, expectedVersion?: number) {
-  await assertProductAdmin(db, adminId, productId);
   if (!Number.isInteger(quantity) || quantity < 0 || quantity > 10_000_000) throw new DomainError("Invalid inventory quantity", 422);
   if (variantId) {
     const [variant] = await db.select({ id: productVariants.id }).from(productVariants).where(and(eq(productVariants.id, variantId), eq(productVariants.productId, productId))).limit(1);
     if (!variant) throw new DomainError("Variant unavailable", 404);
   }
   if (!Number.isInteger(expectedVersion) || (expectedVersion as number) < 0) throw new DomainError("INVENTORY_VERSION_REQUIRED", 422);
-  const [existing] = await db.select({ id: inventories.id }).from(inventories).where(variantId ? eq(inventories.variantId, variantId) : and(eq(inventories.productId, productId), sql`${inventories.variantId} is null`)).limit(1);
-  const [inventory] = existing
-    ? await db.update(inventories).set({ availableQuantity: quantity, version: sql`${inventories.version} + 1`, updatedAt: new Date() }).where(and(eq(inventories.id, existing.id), eq(inventories.version, expectedVersion as number))).returning()
-    : expectedVersion === 0 ? await db.insert(inventories).values({ productId, variantId: variantId ?? null, availableQuantity: quantity }).onConflictDoNothing().returning() : [];
-  if (!inventory) throw new DomainError("INVENTORY_VERSION_STALE", 409);
-  return inventory;
+  return db.transaction(async (tx) => {
+    const { admin } = await lockedProductScope(tx, adminId, productId);
+    const [existing] = await tx.select({ id: inventories.id }).from(inventories).where(variantId ? eq(inventories.variantId, variantId) : and(eq(inventories.productId, productId), sql`${inventories.variantId} is null`)).limit(1).for("update");
+    const [inventory] = existing
+      ? await tx.update(inventories).set({ availableQuantity: quantity, version: sql`${inventories.version} + 1`, updatedAt: new Date() }).where(and(eq(inventories.id, existing.id), eq(inventories.version, expectedVersion as number))).returning()
+      : expectedVersion === 0 ? await tx.insert(inventories).values({ productId, variantId: variantId ?? null, availableQuantity: quantity }).onConflictDoNothing().returning() : [];
+    if (!inventory) throw new DomainError("INVENTORY_VERSION_STALE", 409);
+    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: admin.userId, action: "INVENTORY_SET", changedFields: [productId, variantId ?? "base", "availableQuantity"] });
+    return inventory;
+  });
 }
 
 // ---------------------------------------------------------------------------

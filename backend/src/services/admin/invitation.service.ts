@@ -137,19 +137,21 @@ export async function reissueInvitation(
 
   return db.transaction(async (tx) => {
     const [user] = await tx
-      .select({ id: users.id, status: users.status })
+      .select({ id: users.id, status: users.status, deletedAt: users.deletedAt })
       .from(users)
       .where(eq(users.email, email))
-      .limit(1);
+      .limit(1)
+      .for("update");
     if (!user) throw new DomainError("Invited user unavailable", 404);
-    if (user.status !== "PENDING") throw new DomainError("Account is already active", 409);
+    if (user.status !== "PENDING" || user.deletedAt) throw new DomainError("Account is already active", 409);
 
     const [admin] = await tx
-      .select({ id: admins.id })
+      .select({ id: admins.id, deletedAt: admins.deletedAt })
       .from(admins)
       .where(eq(admins.userId, user.id))
-      .limit(1);
-    if (!admin) throw new DomainError("Admin record unavailable", 404);
+      .limit(1)
+      .for("update");
+    if (!admin || admin.deletedAt) throw new DomainError("Admin record unavailable", 404);
 
     // Revoke only this Admin's prior invitations; other Admins' links remain valid.
     await tx
@@ -204,8 +206,7 @@ export async function activateAdminAccount(
       .select()
       .from(verifications)
       .where(eq(verifications.identifier, identifier))
-      .limit(1)
-      .for("update");
+      .limit(1);
 
     if (!verification) throw new DomainError("Invitation token is invalid", 404);
     if (verification.expiresAt < new Date()) {
@@ -221,21 +222,29 @@ export async function activateAdminAccount(
     }
 
     const [user] = await tx
-      .select({ id: users.id, status: users.status })
+      .select({ id: users.id, status: users.status, deletedAt: users.deletedAt })
       .from(users)
       .where(eq(users.email, payload.email))
       .limit(1)
       .for("update");
 
     if (!user) throw new DomainError("Invited user unavailable", 404);
-    if (user.status !== "PENDING") throw new DomainError("Account is already active", 409);
+    if (user.status !== "PENDING" || user.deletedAt) throw new DomainError("Account is already active", 409);
 
     const [admin] = await tx
-      .select({ id: admins.id })
+      .select({ id: admins.id, deletedAt: admins.deletedAt })
       .from(admins)
       .where(eq(admins.userId, user.id))
-      .limit(1);
-    if (!admin) throw new DomainError("Admin record unavailable", 404);
+      .limit(1)
+      .for("update");
+    if (!admin || admin.deletedAt) throw new DomainError("Admin record unavailable", 404);
+
+    // Reissue holds the user and Admin locks before removing old tokens.
+    // Recheck this token after taking those same locks.
+    const [currentToken] = await tx.select({ id: verifications.id, expiresAt: verifications.expiresAt })
+      .from(verifications).where(eq(verifications.identifier, identifier)).limit(1).for("update");
+    if (!currentToken || currentToken.id !== verification.id) throw new DomainError("Invitation token is invalid", 404);
+    if (currentToken.expiresAt < new Date()) throw new DomainError("Invitation token has expired", 422);
 
     const hashed = await hashPassword(input.password);
 
