@@ -4,7 +4,7 @@ import { sql } from "drizzle-orm";
 import { createDb } from "./db";
 import { createAuth, type AuthBindings } from "./lib/auth/auth";
 import { requireAuth, type Actor } from "./middleware/authorization";
-import { adminRoutes } from "./routes/admin";
+import { adminActivationRoutes, adminRoutes } from "./routes/admin";
 import { superAdminDashboardRoutes } from "./routes/super-admin-dashboard";
 import { invitationRoutes } from "./routes/invitations";
 import { shippingRoutes, webhookRoutes } from "./routes/shipping";
@@ -14,8 +14,9 @@ import { orderRoutes } from "./routes/orders";
 import { publicReviewRoutes, reviewRoutes } from "./routes/reviews";
 import { financeRoutes } from "./routes/finance";
 import { paymentRoutes, paymentWebhookRoutes } from "./routes/payments";
+import { runDueOrderExpiryBatch } from "./services/unpaid-expiry.service";
 
-const app = new Hono<{ Bindings: AuthBindings; Variables: { actor: Actor } }>();
+export const app = new Hono<{ Bindings: AuthBindings; Variables: { actor: Actor } }>();
 
 app.use("/api/*", cors({
   origin: (origin, c) => origin === c.env.FRONTEND_ORIGIN ? origin : undefined,
@@ -80,6 +81,7 @@ app.get("/health/db", async (c) => {
 app.get("/api/me", requireAuth, (c) => c.json(c.get("actor")));
 app.route("/api", publicCatalogRoutes);
 app.route("/api", publicReviewRoutes);
+app.route("/api/admin", adminActivationRoutes);
 app.route("/api/customer", customerRoutes);
 app.route("/api", orderRoutes);
 app.route("/api", reviewRoutes);
@@ -93,4 +95,11 @@ app.route("/api", returnRoutes);
 app.route("/webhooks", webhookRoutes);
 app.route("/webhooks", paymentWebhookRoutes);
 
-export default app;
+export default {
+  fetch: app.fetch,
+  async scheduled(_controller: unknown, env: AuthBindings) {
+    const { db, client } = createDb(env.HYPERDRIVE.connectionString);
+    try { await runDueOrderExpiryBatch(db); }
+    finally { await client.end({ timeout: 1 }); }
+  },
+};

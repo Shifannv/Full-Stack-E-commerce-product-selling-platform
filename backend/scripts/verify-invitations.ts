@@ -11,9 +11,14 @@
  *
  * Runs against the real Aiven database (DATABASE_URL env).
  * All fixture rows are deleted in the finally block.
+ * MUTATING: creates only unique temporary invitation fixtures, then deletes those rows.
+ * VERIFY_INVITATION_BROWSER=1 activates through the local static page + existing API.
  */
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { config } from "dotenv";
 import { and, eq, like, sql } from "drizzle-orm";
 import { verifyPassword } from "better-auth/crypto";
@@ -21,6 +26,7 @@ import { createDb } from "../src/db";
 import { adminAuditEvents } from "../src/db/schema/admin";
 import { accounts, users, verifications } from "../src/db/schema/auth";
 import { admins, userRoles } from "../src/db/schema/rbac";
+import { invitationLink } from "../src/services/admin/invitation-url";
 import {
   activateAdminAccount,
   createInvitation,
@@ -114,9 +120,45 @@ async function main() {
   );
 
   // --- 7. Activate with the new token ---
-  const activated = await activateAdminAccount(db, { rawToken: token2, password });
-  assert.equal(activated.email, email);
-  assert.equal(activated.adminId, adminId);
+  if (process.env.VERIFY_INVITATION_BROWSER === "1") {
+    const moduleUrl = pathToFileURL(resolve("../frontend/scripts/verify-phase11b3-browser.mjs")).href;
+    const { page } = await import(moduleUrl);
+    const link = new URL(invitationLink(process.env.ADMIN_SETUP_URL ?? "http://127.0.0.1:3000/admin/setup", token2));
+    assert.equal(link.origin, process.env.STOREFRONT_URL ?? "http://127.0.0.1:3000");
+    const tab = await page(link.pathname + link.search);
+    try {
+      assert.equal(await tab.evaluate("location.search"), "", "Invitation token must be removed from browser URL");
+      assert.equal(await tab.evaluate("document.querySelector('meta[name=referrer]')?.content"), "no-referrer");
+      assert.equal(await tab.evaluate("document.querySelectorAll('input[type=password]').length"), 2);
+      const screenshots = resolve("../frontend/.next/phase11b3a-browser");
+      await mkdir(screenshots, { recursive: true });
+      for (const [width, height, name] of [[1440, 900, "desktop"], [390, 844, "mobile"]] as const) {
+        await tab.send("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: false });
+        assert.equal(await tab.evaluate("document.documentElement.scrollWidth <= innerWidth"), true, "Setup page must fit viewport");
+        const { data } = await tab.send("Page.captureScreenshot", { format: "png" });
+        await writeFile(resolve(screenshots, `${name}.png`), Buffer.from(data, "base64"));
+      }
+      const fill = async (confirmation: string) => tab.evaluate(`(() => { const values = [${JSON.stringify(password)}, ${JSON.stringify(confirmation)}]; [...document.querySelectorAll('input[type=password]')].forEach((input, index) => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(input, values[index]); input.dispatchEvent(new Event('input', { bubbles: true })); }); })()`);
+      await fill(password + "mismatch");
+      await tab.evaluate("document.querySelector('form').requestSubmit()");
+      assert.equal(await tab.evaluate("document.body.innerText.includes('Passwords do not match')"), true);
+      await fill(password);
+      await tab.evaluate("document.querySelector('form').requestSubmit()");
+      let activated = false;
+      for (let attempt = 0; attempt < 60; attempt++) {
+        activated = await tab.evaluate("document.body.innerText.includes('Your account is activated')");
+        if (activated) break;
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
+      assert.equal(activated, true, "Browser must activate using the existing API");
+      assert.equal(await tab.evaluate("document.querySelectorAll('input[type=password]').length"), 0);
+      console.log("Generated invitation URL → static setup page → activation API → success UI: PASS (desktop/mobile, mismatch recovery, token removed from URL)");
+    } finally { await tab.close(); }
+  } else {
+    const activated = await activateAdminAccount(db, { rawToken: token2, password });
+    assert.equal(activated.email, email);
+    assert.equal(activated.adminId, adminId);
+  }
 
   // Account must now be ACTIVE
   const [activeUser] = await db.select({ status: users.status }).from(users).where(eq(users.id, invitedUserId!)).limit(1);

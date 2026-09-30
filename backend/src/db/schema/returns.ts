@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { check, foreignKey, index, integer, jsonb, numeric, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { check, foreignKey, index, integer, jsonb, numeric, pgTable, text, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import { users } from "./auth";
 import { orders, orderItems, payments, type AddressSnapshot } from "./orders";
 import { admins } from "./rbac";
@@ -27,6 +27,7 @@ export const returns = pgTable("returns", {
   index("returns_customer_idx").on(table.customerId),
   index("returns_admin_idx").on(table.adminId),
   unique("returns_id_order_admin_unique").on(table.id, table.orderId, table.adminId),
+  unique("returns_id_order_unique").on(table.id, table.orderId),
   check("returns_status_check", sql`${table.status} in ('REQUESTED','APPROVED','RETURN_PENDING','RECEIVED','QC_IN_PROGRESS','QC_APPROVED','QC_REJECTED','REFUND_PROCESSING','REFUNDED','RETURN_ISSUE','REJECTED')`),
   check("returns_amounts_check", sql`(${table.grossRefundAmount} is null or ${table.grossRefundAmount} >= 0) and (${table.deductionAmount} is null or ${table.deductionAmount} >= 0) and (${table.netRefundAmount} is null or ${table.netRefundAmount} >= 0)`),
 ]);
@@ -64,7 +65,7 @@ export const returnInspections = pgTable("return_inspections", {
 
 export const refunds = pgTable("refunds", {
   id: uuid("id").defaultRandom().primaryKey(),
-  returnId: uuid("return_id").notNull().unique().references(() => returns.id),
+  returnId: uuid("return_id").unique().references(() => returns.id),
   orderId: uuid("order_id").notNull().references(() => orders.id),
   paymentId: uuid("payment_id").notNull().references(() => payments.id),
   amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
@@ -76,5 +77,10 @@ export const refunds = pgTable("refunds", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
   index("refunds_order_idx").on(table.orderId),
+  uniqueIndex("refunds_late_payment_unique").on(table.paymentId).where(sql`${table.reason} = 'LATE_PAYMENT'`),
+  foreignKey({ columns: [table.paymentId, table.orderId], foreignColumns: [payments.id, payments.orderId], name: "refunds_payment_order_fk" }),
+  foreignKey({ columns: [table.returnId, table.orderId], foreignColumns: [returns.id, returns.orderId], name: "refunds_return_order_fk" }),
+  check("refunds_origin_check", sql`(${table.returnId} is not null and ${table.reason} <> 'LATE_PAYMENT') or (${table.returnId} is null and ${table.reason} = 'LATE_PAYMENT')`),
+  check("refunds_internal_record_check", sql`${table.status} <> 'INTERNAL_RECORDED' or (${table.reason} = 'LATE_PAYMENT' and ${table.providerReference} is null)`),
   check("refunds_amount_check", sql`${table.amount} >= 0`),
 ]);

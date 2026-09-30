@@ -6,6 +6,9 @@
   "observability": {
     "enabled": true
   },
+  "triggers": {
+    "crons": ["* * * * *"]
+  },
 
   // Add nodejs_compat compatibility flag to support common database drivers
   "compatibility_flags": [
@@ -24,6 +27,11 @@
     {
       "binding": "KYC_BUCKET",
       "bucket_name": "ecommerce-admin-kyc-private"
+    },
+    {
+      "binding": "PRODUCT_IMAGES_BUCKET",
+      "bucket_name": "shop-product-images",
+      "remote": true
     }
   ]
 }

@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { config, parse } from "dotenv";
 import { eq, inArray } from "drizzle-orm";
-import app from "../src";
+import { app } from "../src";
 import { createDb } from "../src/db";
 import { adminAuditEvents, adminCategoryAssignments } from "../src/db/schema/admin";
 import { categories, productAdmins, products, subcategories } from "../src/db/schema/catalog";

@@ -7,11 +7,13 @@ import { categories, products, subcategories } from "../db/schema/catalog";
 import { shippingProviderConfigs, shippingProviderLocations } from "../db/schema/shipping";
 import { requireAuth, type AuthorizedEnv } from "../middleware/authorization";
 import { correctApplication, DomainError, getAdminId, parseAddress, requestCategory, requiredText, reviewApplication, saveAddress, saveKyc, setCategoryAssignment, submitApplication } from "../services/admin/admin.service";
-import { configureField, createCategory, createProduct, createSubcategory, createVariant, getAdminCategoryConfig, listAdminProducts, saveProductImageMetadata, setProductInventory, updateProduct } from "../services/admin/catalog.service";
+import { assertProductAdmin, configureField, createCategory, createProduct, createSubcategory, createVariant, getAdminCategoryConfig, listAdminProducts, saveProductImageMetadata, setProductInventory, updateProduct } from "../services/admin/catalog.service";
+import { MAX_PRODUCT_IMAGE_BYTES, productImageExtension, productImageObjectKey, readProductImageForm } from "../services/admin/product-image-upload";
 import { getAdminSummary } from "../services/admin/summary.service";
 import { getShiprocketAdapter } from "../services/shipping/providers/shiprocket.adapter";
 import { activateAdminAccount, createInvitation, peekInvitation, reissueInvitation } from "../services/admin/invitation.service";
 import { sendInvitationEmail } from "../services/admin/invitation-email.service";
+import { invitationSetupUrl } from "../services/admin/invitation-url";
 
 type AdminEnv = AuthorizedEnv & {
   Bindings: AuthorizedEnv["Bindings"] & {
@@ -22,12 +24,17 @@ type AdminEnv = AuthorizedEnv & {
 };
 
 export const adminRoutes = new Hono<AdminEnv>();
+export const adminActivationRoutes = new Hono<AdminEnv>();
 
 // ---------------------------------------------------------------------------
 // Unauthenticated activation routes — Admin has no session before password setup.
 // These MUST be registered before the requireAuth middleware below.
 // ---------------------------------------------------------------------------
-adminRoutes.get("/activate", async (c) => {
+adminActivationRoutes.onError((error, c) => {
+  if (error instanceof DomainError) return c.json({ error: error.message }, error.status);
+  return c.json({ error: "Activation unavailable" }, 503);
+});
+adminActivationRoutes.get("/activate", async (c) => {
   const token = c.req.query("token") ?? "";
   if (!token) return c.json({ error: "token is required" }, 422);
   return withDbPublic(c.env.HYPERDRIVE.connectionString, async (db) => {
@@ -36,7 +43,7 @@ adminRoutes.get("/activate", async (c) => {
   }, c);
 });
 
-adminRoutes.post("/activate", async (c) => {
+adminActivationRoutes.post("/activate", async (c) => {
   const v = await bodyPublic(c);
   const rawToken = requiredText(v.token, "token", 200);
   const password = requiredText(v.password, "password", 256);
@@ -76,10 +83,8 @@ function superAdmin(actor: { roles: string[] }) {
 }
 function requireSetupUrl(value: string | undefined): string {
   if (!value) throw new DomainError("Admin invitation delivery is not configured", 409);
-  let url: URL;
-  try { url = new URL(value); } catch { throw new DomainError("Admin setup URL is invalid", 409); }
-  if (url.protocol !== "https:" || url.username || url.password || url.hash) throw new DomainError("Admin setup URL must use HTTPS", 409);
-  return value;
+  try { return invitationSetupUrl(value).toString(); }
+  catch { throw new DomainError("Admin setup URL must use HTTPS or the exact local development origin", 409); }
 }
 async function body(c: { req: { json: () => Promise<unknown> } }): Promise<Record<string, unknown>> {
   const value = await c.req.json().catch(() => null);
@@ -354,15 +359,48 @@ adminRoutes.post("/products/:productId/variants", async (c) => {
 adminRoutes.post("/products/:productId/images", async (c) => {
   const actor = c.get("actor");
   if (!actor.roles.includes("ADMIN") || !actor.adminApproved || !actor.permissions.includes("products.update")) throw new DomainError("Forbidden", 403);
+  if (!c.env.PRODUCT_IMAGES_BUCKET) throw new DomainError("Product image storage unavailable", 409);
   const v = await body(c);
-  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => saveProductImageMetadata(db, await getAdminId(db, actor.userId), c.req.param("productId"), v)), 201);
+  const key = requiredText(v.objectKey, "objectKey", 500);
+  if (!key.startsWith(`products/${c.req.param("productId")}/`)) throw new DomainError("Invalid product image object key", 422);
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
+    const adminId = await getAdminId(db, actor.userId);
+    await assertProductAdmin(db, adminId, c.req.param("productId"));
+    if (!await c.env.PRODUCT_IMAGES_BUCKET!.head(key)) throw new DomainError("Product image object unavailable", 404);
+    return saveProductImageMetadata(db, adminId, c.req.param("productId"), v);
+  }), 201);
+});
+
+adminRoutes.post("/products/:productId/images/upload", async (c) => {
+  const actor = c.get("actor");
+  if (!actor.roles.includes("ADMIN") || !actor.adminApproved || !actor.permissions.includes("products.update")) throw new DomainError("Forbidden", 403);
+  if (!c.env.PRODUCT_IMAGES_BUCKET) throw new DomainError("Product image storage unavailable", 409);
+  const form = await readProductImageForm(c.req.raw);
+  const file = form.get("file");
+  if (!(file instanceof File) || file.size === 0 || file.size > MAX_PRODUCT_IMAGE_BYTES) throw new DomainError("Image must be at most 5 MB", 422);
+  const data = await file.arrayBuffer();
+  const extension = productImageExtension(file.type, new Uint8Array(data));
+  const productId = c.req.param("productId");
+  const objectKey = productImageObjectKey(productId, extension);
+  const metadata = { objectKey, altText: form.get("altText"), sortOrder: form.get("sortOrder") ?? 0, variantId: form.get("variantId") };
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
+    const adminId = await getAdminId(db, actor.userId);
+    await assertProductAdmin(db, adminId, productId);
+    await c.env.PRODUCT_IMAGES_BUCKET!.put(objectKey, data, { httpMetadata: { contentType: file.type } });
+    try {
+      return await saveProductImageMetadata(db, adminId, productId, metadata);
+    } catch (error) {
+      await c.env.PRODUCT_IMAGES_BUCKET!.delete(objectKey).catch(() => undefined);
+      throw error;
+    }
+  }), 201);
 });
 
 adminRoutes.put("/products/:productId/inventory", async (c) => {
   const actor = c.get("actor");
   if (!actor.roles.includes("ADMIN") || !actor.adminApproved || !actor.permissions.includes("inventory.update")) throw new DomainError("Forbidden", 403);
   const v = await body(c);
-  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => setProductInventory(db, await getAdminId(db, actor.userId), c.req.param("productId"), Number(v.quantity), typeof v.variantId === "string" ? v.variantId : undefined)));
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => setProductInventory(db, await getAdminId(db, actor.userId), c.req.param("productId"), Number(v.quantity), typeof v.variantId === "string" ? v.variantId : undefined, Number(v.expectedVersion))));
 });
 
 adminRoutes.post("/catalog/categories", async (c) => {

@@ -21,7 +21,7 @@ const origin = process.env.CATALOG_BUILD_API_URL ?? process.env.NEXT_PUBLIC_API_
 
 async function readPublic<T>(path: string): Promise<T> {
   if (!origin) throw new Error("Set CATALOG_BUILD_API_URL or NEXT_PUBLIC_API_URL before building public pages");
-  const response = await fetch(new URL(path, origin), { cache: "force-cache" });
+  const response = await fetch(new URL(path, origin));
   if (!response.ok) throw new Error(`Public catalog API failed: ${path} (${response.status})`);
   return response.json() as Promise<T>;
 }

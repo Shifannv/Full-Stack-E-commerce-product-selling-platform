@@ -13,6 +13,11 @@ export type AuthBindings = {
     get: (key: string) => Promise<{ body: ReadableStream; httpMetadata?: { contentType?: string } } | null>;
     delete: (key: string) => Promise<void>;
   };
+  PRODUCT_IMAGES_BUCKET?: {
+    put: (key: string, value: ArrayBuffer, options?: { httpMetadata?: { contentType?: string } }) => Promise<unknown>;
+    head: (key: string) => Promise<unknown | null>;
+    delete: (key: string) => Promise<void>;
+  };
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL: string;
   FRONTEND_ORIGIN: string;

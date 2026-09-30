@@ -23,7 +23,6 @@ Drizzle → database ORM
 
 ## Critical business rules
 
-- No Collections.
 - Main Category → one-level Subcategory → Product.
 - Admin can create/manage permitted custom subcategories under existing main categories.
 - Better Auth is the single auth system.

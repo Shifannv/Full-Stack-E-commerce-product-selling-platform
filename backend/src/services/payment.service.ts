@@ -4,6 +4,7 @@ import { users } from "../db/schema/auth";
 import { cashfreeWebhookEvents, orders, payments } from "../db/schema/orders";
 import { DomainError } from "./admin/admin.service";
 import type { CashfreePaymentAdapter } from "./cashfree-payment.adapter";
+import { recordVerifiedPayment, withTransitionRetry } from "./reservation.service";
 
 type Db = ReturnType<typeof createDb>["db"];
 
@@ -28,19 +29,15 @@ export function parseCashfreeWebhook(value: unknown): CashfreeWebhook {
 
 export async function ingestCashfreeWebhook(db: Db, input: unknown) {
   const event = parseCashfreeWebhook(input), providerPaymentId = String(event.data.payment.cf_payment_id), eventKey = `${event.type}:${providerPaymentId}`;
-  return db.transaction(async (tx) => {
-    const [payment] = await tx.select().from(payments).where(and(eq(payments.provider, "CASHFREE"), eq(payments.providerOrderId, event.data.order.order_id))).limit(1).for("update");
+  return withTransitionRetry(db, async (tx) => {
+    const [payment] = await tx.select().from(payments).where(and(eq(payments.provider, "CASHFREE"), eq(payments.providerOrderId, event.data.order.order_id))).limit(1);
     if (!payment) throw new DomainError("Payment order unavailable", 404);
     const amount = Number(payment.amount);
     if (event.data.order.order_amount !== amount || event.data.payment.payment_amount !== amount || event.data.order.order_currency !== payment.currency || event.data.payment.payment_currency !== payment.currency) throw new DomainError("Payment webhook amount or currency mismatch", 422);
     const result = event.type === "PAYMENT_SUCCESS_WEBHOOK" && event.data.payment.payment_status === "SUCCESS" ? "PAID" : "IGNORED";
+    if (result === "PAID") await recordVerifiedPayment(tx, payment.orderId, providerPaymentId);
     const [receipt] = await tx.insert(cashfreeWebhookEvents).values({ eventKey, eventType: event.type, providerOrderId: event.data.order.order_id, providerPaymentId, orderId: payment.orderId, result }).onConflictDoNothing().returning({ id: cashfreeWebhookEvents.id });
     if (!receipt) return { accepted: 0, duplicates: 1 };
-    if (result === "PAID" && payment.status !== "PAID") {
-      const now = new Date();
-      await tx.update(payments).set({ status: "PAID", providerPaymentId, paidAt: now, updatedAt: now }).where(eq(payments.id, payment.id));
-      await tx.update(orders).set({ paymentStatus: "PAID", status: "CONFIRMED", placedAt: now, updatedAt: now }).where(eq(orders.id, payment.orderId));
-    }
     return { accepted: 1, duplicates: 0 };
   });
 }

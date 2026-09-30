@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { check, index, integer, jsonb, numeric, pgTable, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { check, index, integer, jsonb, numeric, pgTable, text, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import { users } from "./auth";
 import { products, productVariants } from "./catalog";
 import { admins } from "./rbac";
@@ -20,6 +20,12 @@ export const orders = pgTable("orders", {
   id: uuid("id").defaultRandom().primaryKey(),
   orderNumber: text("order_number").notNull().unique(),
   customerId: text("customer_id").notNull().references(() => users.id),
+  checkoutKey: uuid("checkout_key"),
+  checkoutRequestHash: text("checkout_request_hash"),
+  paymentExpiresAt: timestamp("payment_expires_at", { withTimezone: true }),
+  expiredAt: timestamp("expired_at", { withTimezone: true }),
+  cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+  stockState: text("stock_state").notNull().default("RESERVED"),
   status: text("status").notNull().default("CREATED"),
   currency: text("currency").notNull().default("INR"),
   subtotal: numeric("subtotal", { precision: 12, scale: 2 }).notNull(),
@@ -34,6 +40,9 @@ export const orders = pgTable("orders", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
   index("orders_customer_idx").on(table.customerId),
+  uniqueIndex("orders_customer_checkout_key_unique").on(table.customerId, table.checkoutKey).where(sql`${table.checkoutKey} is not null`),
+  index("orders_unpaid_expiry_idx").on(table.paymentExpiresAt).where(sql`${table.status} = 'CREATED' and ${table.paymentStatus} = 'PENDING'`),
+  check("orders_stock_state_check", sql`${table.stockState} in ('RESERVED','CONSUMED','RELEASED')`),
   check("orders_amounts_check", sql`${table.subtotal} >= 0 and ${table.shippingAmount} >= 0 and ${table.discountAmount} >= 0 and ${table.totalAmount} >= 0`),
 ]);
 
@@ -71,10 +80,18 @@ export const payments = pgTable("payments", {
   amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
   currency: text("currency").notNull().default("INR"),
   status: text("status").notNull().default("PENDING"),
+  resolutionStatus: text("resolution_status").notNull().default("NONE"),
   paidAt: timestamp("paid_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-}, (table) => [index("payments_order_idx").on(table.orderId), check("payments_amount_check", sql`${table.amount} >= 0`)]);
+}, (table) => [
+  unique("payments_order_unique").on(table.orderId),
+  unique("payments_id_order_unique").on(table.id, table.orderId),
+  uniqueIndex("payments_provider_order_unique").on(table.provider, table.providerOrderId).where(sql`${table.providerOrderId} is not null`),
+  uniqueIndex("payments_provider_payment_unique").on(table.provider, table.providerPaymentId).where(sql`${table.providerPaymentId} is not null`),
+  check("payments_amount_check", sql`${table.amount} >= 0`),
+  check("payments_resolution_status_check", sql`${table.resolutionStatus} in ('NONE','REFUND_REQUIRED','RESOLVED')`),
+]);
 
 export const cashfreeWebhookEvents = pgTable("cashfree_webhook_events", {
   id: uuid("id").defaultRandom().primaryKey(),

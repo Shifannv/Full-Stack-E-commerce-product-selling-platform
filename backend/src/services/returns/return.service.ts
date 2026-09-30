@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import type { createDb } from "../../db";
 import { adminAddresses } from "../../db/schema/admin";
 import { orderItems, orders, payments } from "../../db/schema/orders";
@@ -9,6 +9,8 @@ import { admins } from "../../db/schema/rbac";
 import type { Actor } from "../../middleware/authorization";
 import { DomainError, requiredText } from "../admin/admin.service";
 import { CashfreeRefundAdapter } from "./cashfree-refund.adapter";
+import { withTransitionRetry } from "../reservation.service";
+import { requireFulfillmentEligible } from "../order-eligibility";
 
 type Db = ReturnType<typeof createDb>["db"];
 
@@ -24,23 +26,30 @@ export function withinReturnWindow(deliveredAt: Date | null, now: Date, windowDa
 
 export async function requestReturn(db: Db, customerId: string, orderItemId: string, quantity: number, reason: string, notes: string | null, windowDays: number) {
   if (!Number.isInteger(quantity) || quantity < 1) throw new DomainError("Invalid return quantity", 422);
-  const [item] = await db.select().from(orderItems).where(eq(orderItems.id, orderItemId)).limit(1);
-  if (!item || quantity > item.quantity) throw new DomainError("Order item unavailable", 404);
-  const [order] = await db.select({ customerId: orders.customerId, paymentStatus: orders.paymentStatus, deliveredAt: orders.deliveredAt }).from(orders).where(eq(orders.id, item.orderId)).limit(1);
-  if (order?.customerId !== customerId) throw new DomainError("Order item unavailable", 404);
-  if (order.paymentStatus !== "PAID") throw new DomainError("Paid order required", 422);
-  const [product] = await db.select({ returnEnabled: products.returnEnabled, categorySlug: categories.slug })
-    .from(products).innerJoin(categories, eq(products.categoryId, categories.id)).where(eq(products.id, item.productId)).limit(1);
-  if (!product?.returnEnabled || product.categorySlug !== "dress") throw new DomainError("Product is not returnable", 422);
-  const [existing] = await db.select({ id: returnItems.id }).from(returnItems).where(eq(returnItems.orderItemId, orderItemId)).limit(1);
-  if (existing) throw new DomainError("Order item already has a return", 409);
-  const [delivery] = await db.select({ deliveredAt: shipments.deliveredAt }).from(shipmentItems)
-    .innerJoin(shipments, eq(shipmentItems.shipmentId, shipments.id))
-    .where(and(eq(shipmentItems.orderItemId, orderItemId), eq(shipments.status, "DELIVERED"))).limit(1);
-  if (!delivery?.deliveredAt) throw new DomainError("Delivered shipment required", 422);
-  if (!order.deliveredAt) throw new DomainError("Delivered order required", 422);
-  if (!withinReturnWindow(order.deliveredAt, new Date(), windowDays)) throw new DomainError("Return window has closed", 422);
-  return db.transaction(async (tx) => {
+  return withTransitionRetry(db, async (tx) => {
+    const [item] = await tx.select().from(orderItems).where(eq(orderItems.id, orderItemId)).limit(1);
+    if (!item || quantity > item.quantity) throw new DomainError("Order item unavailable", 404);
+    // Shared with settlement/payout eligibility. Check the deadline only after
+    // waiting for this lock, so a stale pre-lock check cannot admit a late return.
+    const [order] = await tx.select({ customerId: orders.customerId, paymentStatus: orders.paymentStatus, deliveredAt: orders.deliveredAt }).from(orders).where(eq(orders.id, item.orderId)).limit(1).for("update");
+    if (order?.customerId !== customerId) throw new DomainError("Order item unavailable", 404);
+    if (order.paymentStatus !== "PAID") throw new DomainError("Paid order required", 422);
+    const [product] = await tx.select({ returnEnabled: products.returnEnabled, categorySlug: categories.slug })
+      .from(products).innerJoin(categories, eq(products.categoryId, categories.id)).where(eq(products.id, item.productId)).limit(1);
+    if (!product?.returnEnabled || product.categorySlug !== "dress") throw new DomainError("Product is not returnable", 422);
+    const [existing] = await tx.select({ id: returnItems.id }).from(returnItems).where(eq(returnItems.orderItemId, orderItemId)).limit(1);
+    if (existing) throw new DomainError("Order item already has a return", 409);
+    const [delivery] = await tx.select({ deliveredAt: shipments.deliveredAt }).from(shipmentItems)
+      .innerJoin(shipments, eq(shipmentItems.shipmentId, shipments.id))
+      .where(and(eq(shipmentItems.orderItemId, orderItemId), eq(shipments.status, "DELIVERED"))).limit(1);
+    if (!delivery?.deliveredAt) throw new DomainError("Delivered shipment required", 422);
+    if (!order.deliveredAt) throw new DomainError("Delivered order required", 422);
+    // Keep PostgreSQL timestamp precision at the inclusive boundary. Converting
+    // to a JavaScript Date would truncate fractions of a millisecond and could
+    // overlap settlement's strictly-after deadline.
+    const [clock] = await tx.select({ within: sql<boolean>`clock_timestamp() between ${orders.deliveredAt} and ${orders.deliveredAt} + interval '5 days'` })
+      .from(orders).where(eq(orders.id, item.orderId));
+    if (windowDays !== 5 || !clock.within) throw new DomainError("Return window has closed", 422);
     const [result] = await tx.insert(returns).values({ orderId: item.orderId, customerId, adminId: item.adminId, reason: requiredText(reason, "reason", 500), customerNotes: notes?.slice(0, 2000) ?? null }).returning();
     await tx.insert(returnItems).values({ returnId: result.id, orderItemId, orderId: item.orderId, adminId: item.adminId, quantity });
     return result;
@@ -48,10 +57,13 @@ export async function requestReturn(db: Db, customerId: string, orderItemId: str
 }
 
 export async function decideReturn(db: Db, returnId: string, adminId: string, approve: boolean, notes: string) {
-  return db.transaction(async (tx) => {
-    const [record] = await tx.select().from(returns).where(and(eq(returns.id, returnId), eq(returns.adminId, adminId))).limit(1);
+  return withTransitionRetry(db, async (tx) => {
+    const [record] = await tx.select().from(returns).where(and(eq(returns.id, returnId), eq(returns.adminId, adminId))).limit(1).for("update");
     if (!record) throw new DomainError("Return unavailable", 404);
-    if (record.status !== "REQUESTED") throw new DomainError("Return is not pending", 409);
+    // A replay must preserve the original timestamp, notes and address snapshot,
+    // including when an approved return has progressed to receipt/QC/refund.
+    if (approve ? record.approvedAt !== null : record.status === "REJECTED") return record;
+    if (record.status !== "REQUESTED") throw new DomainError("RETURN_DECISION_CONFLICT", 409);
     let address: typeof record.returnAddressSnapshot = null;
     if (approve) {
       const [configured] = await tx.select().from(adminAddresses).where(and(eq(adminAddresses.adminId, adminId), eq(adminAddresses.addressType, "RETURN"), eq(adminAddresses.isActive, true))).limit(1);
@@ -64,15 +76,25 @@ export async function decideReturn(db: Db, returnId: string, adminId: string, ap
 }
 
 export async function markReturnReceived(db: Db, returnId: string, adminId: string) {
-  const [result] = await db.update(returns).set({ status: "RECEIVED", receivedAt: new Date(), updatedAt: new Date() })
-    .where(and(eq(returns.id, returnId), eq(returns.adminId, adminId), eq(returns.status, "APPROVED"))).returning();
-  if (!result) throw new DomainError("Approved return unavailable", 409);
-  return result;
+  return withTransitionRetry(db, async (tx) => {
+    const [record] = await tx.select().from(returns).where(and(eq(returns.id, returnId), eq(returns.adminId, adminId))).limit(1).for("update");
+    if (!record) throw new DomainError("Return unavailable", 404);
+    if (record.receivedAt) return record;
+    if (record.status !== "APPROVED") throw new DomainError("RETURN_RECEIPT_CONFLICT", 409);
+    const [result] = await tx.update(returns).set({ status: "RECEIVED", receivedAt: new Date(), updatedAt: new Date() }).where(eq(returns.id, returnId)).returning();
+    return result;
+  });
 }
 
 export async function inspectReturn(db: Db, returnId: string, adminId: string, decision: "APPROVED" | "REJECTED", conditionStatus: string, packagingStatus: string | null, notes: string) {
-  return db.transaction(async (tx) => {
-    const [record] = await tx.select().from(returns).where(and(eq(returns.id, returnId), eq(returns.adminId, adminId))).limit(1);
+  return withTransitionRetry(db, async (tx) => {
+    const [record] = await tx.select().from(returns).where(and(eq(returns.id, returnId), eq(returns.adminId, adminId))).limit(1).for("update");
+    if (!record) throw new DomainError("Return unavailable", 404);
+    const [existing] = await tx.select().from(returnInspections).where(eq(returnInspections.returnId, returnId)).limit(1);
+    if (existing) {
+      if (existing.decision === decision) return existing;
+      throw new DomainError("RETURN_QC_CONFLICT", 409);
+    }
     if (!record || record.status !== "RECEIVED" || !record.receivedAt) throw new DomainError("Seller receipt is required before QC", 409);
     const [inspection] = await tx.insert(returnInspections).values({ returnId, inspectedByAdminId: adminId, conditionStatus: requiredText(conditionStatus, "conditionStatus", 100), packagingStatus, notes, decision, inspectedAt: new Date() }).returning();
     await tx.update(returns).set({ status: decision === "APPROVED" ? "QC_APPROVED" : "QC_REJECTED", qcStatus: decision, qcNotes: notes, updatedAt: new Date() }).where(eq(returns.id, returnId));
@@ -86,14 +108,19 @@ function paise(value: string): number {
 }
 
 export async function authorizeRefund(db: Db, returnId: string) {
-  return db.transaction(async (tx) => {
-    const [record] = await tx.select().from(returns).where(eq(returns.id, returnId)).limit(1);
-    if (!record || record.status !== "QC_APPROVED" || !record.receivedAt) throw new DomainError("Receipt and approved QC are required", 409);
+  return withTransitionRetry(db, async (tx) => {
+    const [reference] = await tx.select({ orderId: returns.orderId }).from(returns).where(eq(returns.id, returnId)).limit(1);
+    if (!reference) throw new DomainError("RETURN_UNAVAILABLE", 404);
+    const [order] = await tx.select().from(orders).where(eq(orders.id, reference.orderId)).limit(1).for("update");
+    const [payment] = await tx.select().from(payments).where(eq(payments.orderId, reference.orderId)).limit(1).for("update");
+    const [record] = await tx.select().from(returns).where(eq(returns.id, returnId)).limit(1).for("update");
     const [existing] = await tx.select().from(refunds).where(eq(refunds.returnId, returnId)).limit(1);
     if (existing) return existing;
+    if (!record || record.status !== "QC_APPROVED" || !record.receivedAt) throw new DomainError("Receipt and approved QC are required", 409);
+    requireFulfillmentEligible(order, payment, true);
+    if (order.status !== "DELIVERED" || !order.deliveredAt) throw new DomainError("DELIVERED_ORDER_REQUIRED", 409);
     const [inspection] = await tx.select().from(returnInspections).where(and(eq(returnInspections.returnId, returnId), eq(returnInspections.decision, "APPROVED"))).limit(1);
     if (!inspection) throw new DomainError("Approved QC inspection is required", 409);
-    const [payment] = await tx.select().from(payments).where(and(eq(payments.orderId, record.orderId), eq(payments.status, "PAID"))).limit(1).for("update");
     if (!payment?.providerOrderId) throw new DomainError("Verified provider payment is required", 422);
     const itemRows = await tx.select({ quantity: returnItems.quantity, purchasedQuantity: orderItems.quantity, totalAmount: orderItems.totalAmount }).from(returnItems)
       .innerJoin(orderItems, eq(returnItems.orderItemId, orderItems.id)).where(eq(returnItems.returnId, returnId));
@@ -120,7 +147,17 @@ export async function submitRefund(db: Db, returnId: string, provider: CashfreeR
     ? await provider.createRefund(payment.providerOrderId, refund.id, refund.amount)
     : await provider.getRefund(payment.providerOrderId, refund.id);
   const status = result.status === "SUCCESS" ? "SUCCESS" : ["CANCELLED", "REJECTED"].includes(result.status) ? "FAILED" : "PROCESSING";
-  const [updated] = await db.transaction(async (tx) => {
+  const [updated] = await withTransitionRetry(db, async (tx) => {
+    // Result persistence participates in the finance lock protocol. No provider
+    // call is made while holding these locks, including on transaction retries.
+    await tx.select({ id: orders.id }).from(orders).where(eq(orders.id, refund.orderId)).for("update");
+    await tx.select({ id: payments.id }).from(payments).where(eq(payments.id, refund.paymentId)).for("update");
+    await tx.select({ id: returns.id }).from(returns).where(eq(returns.id, returnId)).for("update");
+    const [current] = await tx.select().from(refunds).where(eq(refunds.id, refund.id)).for("update");
+    if (!current) throw new DomainError("Authorized refund unavailable", 404);
+    // A delayed response cannot reopen an obligation already used by finance.
+    if (current.status === "SUCCESS") return [current];
+    if (current.status === "FAILED") throw new DomainError("Failed refund needs manual review", 409);
     const [saved] = await tx.update(refunds).set({ status, providerReference: result.providerReference, updatedAt: new Date() }).where(eq(refunds.id, refund.id)).returning();
     await tx.update(returns).set({ status: status === "SUCCESS" ? "REFUNDED" : status === "FAILED" ? "RETURN_ISSUE" : "REFUND_PROCESSING", updatedAt: new Date() }).where(eq(returns.id, returnId));
     return [saved];

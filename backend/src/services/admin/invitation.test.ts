@@ -14,6 +14,18 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { activateAdminAccount, createInvitation, peekInvitation } from "./invitation.service";
 import { CashfreePaymentAdapter } from "../cashfree-payment.adapter";
+import { invitationLink, invitationSetupUrl } from "./invitation-url";
+
+test("invitation links use HTTPS or the exact development origin and encode only the token", () => {
+  const link = new URL(invitationLink("http://127.0.0.1:3000/admin/setup", "a+b/token"));
+  assert.equal(link.pathname, "/admin/setup");
+  assert.equal(link.searchParams.get("token"), "a+b/token");
+  assert.equal([...link.searchParams.keys()].join(), "token");
+  assert.equal(invitationSetupUrl("https://shop.example/admin/setup").protocol, "https:");
+  for (const url of ["http://shop.example/admin/setup", "http://127.0.0.1:3001/admin/setup", "http://127.0.0.1.evil.test:3000/admin/setup", "https://user:password@shop.example/admin/setup", "https://shop.example/admin/setup#token", "https://shop.example/admin/setup?secret=value"]) {
+    assert.throws(() => invitationSetupUrl(url));
+  }
+});
 
 // ─── Token hashing ────────────────────────────────────────────────────────────
 

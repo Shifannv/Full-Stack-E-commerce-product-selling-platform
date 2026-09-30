@@ -1,0 +1,2 @@
+ALTER TABLE "payments" DROP CONSTRAINT "payments_resolution_status_check";--> statement-breakpoint
+ALTER TABLE "payments" ADD CONSTRAINT "payments_resolution_status_check" CHECK ("payments"."resolution_status" in ('NONE','REFUND_REQUIRED','RESOLVED'));

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import app from "../index";
+import { app } from "../index";
 import { webhookRoutes } from "./shipping";
 
 const endpoint = "/shipping/events";

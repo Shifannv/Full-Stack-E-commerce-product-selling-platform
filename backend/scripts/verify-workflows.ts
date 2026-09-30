@@ -14,7 +14,7 @@ import { shipmentEvents, shipmentItems, shipments } from "../src/db/schema/shipp
 import { correctApplication, requestCategory, reviewApplication, saveAddress, saveKyc, submitApplication } from "../src/services/admin/admin.service";
 import { assertCategoryScope, createProduct, createVariant, setProductInventory, updateProduct } from "../src/services/admin/catalog.service";
 import { createSettlement, markPayoutPaid, requestPayout, reviewPayout } from "../src/services/admin/finance.service";
-import { checkoutCart, getCustomerOrders } from "../src/services/customer/order.service";
+import { checkoutCart, getCustomerOrders, quoteCart } from "../src/services/customer/order.service";
 import { getPublicProduct, listCatalog } from "../src/services/customer/customer.service";
 import { createReview, listPublishedReviews, moderateReview } from "../src/services/customer/review.service";
 import { authorizeRefund, decideReturn, getReturn, inspectReturn, markReturnReceived, requestReturn } from "../src/services/returns/return.service";
@@ -27,6 +27,10 @@ const { client, db } = createDb(process.env.DATABASE_URL);
 type Db = typeof db;
 const rollback = new Error("ROLLBACK_WORKFLOW_FIXTURE");
 const address = { contactName: "Fixture", phone: "9999999999", line1: "Fixture Lane", city: "Delhi", state: "Delhi", postalCode: "110001", country: "IN" };
+async function checkoutFixture(work: Db, customerId: string, addressId: string) {
+  const quote = await quoteCart(work, customerId, addressId);
+  return checkoutCart(work, customerId, { addressId, key: randomUUID(), cartVersion: quote.cartVersion, lineFingerprint: quote.lineFingerprint });
+}
 
 async function main() {
   const fixtureId = `workflow-${randomUUID()}`;
@@ -90,15 +94,17 @@ async function main() {
         const [cart] = await tx.insert(carts).values({ customerId }).returning();
         await tx.insert(cartItems).values({ cartId: cart.id, productId: product.id, quantity: 2 });
         await tx.insert(inventories).values({ productId: product.id, availableQuantity: 3 });
-        const checkoutOrder = await checkoutCart(work, customerId, checkoutAddress.id);
-        const [checkoutHistory] = await tx.select({ unitPrice: orderItems.unitPrice, quantity: orderItems.quantity }).from(orderItems).where(eq(orderItems.orderId, checkoutOrder.id));
+        const checkoutOrder = await checkoutFixture(work, customerId, checkoutAddress.id);
+        const [checkoutHistory] = await tx.select({ unitPrice: orderItems.unitPrice, quantity: orderItems.quantity }).from(orderItems).where(eq(orderItems.orderId, checkoutOrder.orderId));
         assert.deepEqual(checkoutHistory, { unitPrice: "100.00", quantity: 2 });
         const [remainingStock] = await tx.select({ quantity: inventories.availableQuantity }).from(inventories).where(eq(inventories.productId, product.id));
         assert.equal(remainingStock.quantity, 1);
-        assert.equal((await getCustomerOrders(work, customerId, checkoutOrder.id))[0].customerId, customerId);
-        await assert.rejects(getCustomerOrders(work, otherCustomerId, checkoutOrder.id), /Order unavailable/);
+        const [customerOrder] = await getCustomerOrders(work, customerId, checkoutOrder.orderId);
+        assert.equal(customerOrder.id, checkoutOrder.orderId);
+        assert.equal("customerId" in customerOrder, false);
+        await assert.rejects(getCustomerOrders(work, otherCustomerId, checkoutOrder.orderId), /Order unavailable/);
         await updateProduct(work, seller.id, product.id, { name: "Updated Fixture Product", price: "125.00", attributes: { size: "L" } });
-        const [unchangedBaseSnapshot] = await tx.select({ name: orderItems.productNameSnapshot, price: orderItems.unitPrice }).from(orderItems).where(eq(orderItems.orderId, checkoutOrder.id));
+        const [unchangedBaseSnapshot] = await tx.select({ name: orderItems.productNameSnapshot, price: orderItems.unitPrice }).from(orderItems).where(eq(orderItems.orderId, checkoutOrder.orderId));
         assert.deepEqual(unchangedBaseSnapshot, { name: "Fixture Product", price: "100.00" });
         await assert.rejects(updateProduct(work, otherSeller.id, product.id, { price: "1.00" }), /Product unavailable/);
         await tx.update(adminCategoryAssignments).set({ status: "REVOKED" }).where(eq(adminCategoryAssignments.adminId, seller.id));
@@ -110,20 +116,20 @@ async function main() {
         const [otherAddress] = await tx.insert(customerAddresses).values({ customerId: otherCustomerId, ...address, label: "Home", isDefault: true }).returning();
         const [otherCart] = await tx.insert(carts).values({ customerId: otherCustomerId }).returning();
         await tx.insert(cartItems).values({ cartId: otherCart.id, productId: product.id, quantity: 2 });
-        await assert.rejects(checkoutCart(work, otherCustomerId, otherAddress.id), /Insufficient stock/);
+        await assert.rejects(checkoutFixture(work, otherCustomerId, otherAddress.id), /INSUFFICIENT_STOCK/);
         await tx.delete(cartItems).where(eq(cartItems.cartId, otherCart.id));
         const variant = await createVariant(work, seller.id, product.id, { sku: `${fixtureId}-VARIANT`, title: "Large", price: "140.00", attributes: { size: "L" } });
-        await setProductInventory(work, seller.id, product.id, 2, variant.id);
+        await setProductInventory(work, seller.id, product.id, 2, variant.id, 0);
         await tx.insert(cartItems).values({ cartId: otherCart.id, productId: product.id, variantId: variant.id, quantity: 1 });
-        const variantOrder = await checkoutCart(work, otherCustomerId, otherAddress.id);
+        const variantOrder = await checkoutFixture(work, otherCustomerId, otherAddress.id);
         await tx.update(productVariants).set({ title: "Changed Large", price: "175.00" }).where(eq(productVariants.id, variant.id));
-        const [variantSnapshot] = await tx.select({ title: orderItems.variantTitleSnapshot, price: orderItems.unitPrice }).from(orderItems).where(eq(orderItems.orderId, variantOrder.id));
+        const [variantSnapshot] = await tx.select({ title: orderItems.variantTitleSnapshot, price: orderItems.unitPrice }).from(orderItems).where(eq(orderItems.orderId, variantOrder.orderId));
         assert.deepEqual(variantSnapshot, { title: "Large", price: "140.00" });
-        await tx.update(payments).set({ providerOrderId: variantOrder.id }).where(eq(payments.orderId, variantOrder.id));
-        const paymentWebhook = { type: "PAYMENT_SUCCESS_WEBHOOK", data: { order: { order_id: variantOrder.id, order_amount: 140, order_currency: "INR" }, payment: { cf_payment_id: `${fixtureId}-payment`, payment_status: "SUCCESS", payment_amount: 140, payment_currency: "INR" } } };
+        await tx.update(payments).set({ providerOrderId: variantOrder.orderId }).where(eq(payments.orderId, variantOrder.orderId));
+        const paymentWebhook = { type: "PAYMENT_SUCCESS_WEBHOOK", data: { order: { order_id: variantOrder.orderId, order_amount: 140, order_currency: "INR" }, payment: { cf_payment_id: `${fixtureId}-payment`, payment_status: "SUCCESS", payment_amount: 140, payment_currency: "INR" } } };
         assert.deepEqual(await ingestCashfreeWebhook(work, paymentWebhook), { accepted: 1, duplicates: 0 });
         assert.deepEqual(await ingestCashfreeWebhook(work, paymentWebhook), { accepted: 0, duplicates: 1 });
-        const [paidOrder] = await tx.select({ paymentStatus: orders.paymentStatus, status: orders.status }).from(orders).where(eq(orders.id, variantOrder.id));
+        const [paidOrder] = await tx.select({ paymentStatus: orders.paymentStatus, status: orders.status }).from(orders).where(eq(orders.id, variantOrder.orderId));
         assert.deepEqual(paidOrder, { paymentStatus: "PAID", status: "CONFIRMED" });
 
         const [order] = await tx.insert(orders).values({ orderNumber: fixtureId, customerId, subtotal: "100.00", totalAmount: "100.00", shippingAddressSnapshot: address, paymentStatus: "PAID", placedAt: new Date() }).returning();

@@ -26,6 +26,7 @@ export const customerAddresses = pgTable("customer_addresses", {
 export const carts = pgTable("carts", {
   id: uuid("id").defaultRandom().primaryKey(),
   customerId: text("customer_id").notNull().unique().references(() => users.id),
+  version: integer("version").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });

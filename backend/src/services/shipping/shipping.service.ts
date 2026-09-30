@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { createDb } from "../../db";
 import { adminAddresses } from "../../db/schema/admin";
 import { users } from "../../db/schema/auth";
@@ -7,10 +7,13 @@ import { shipmentEvents, shipmentItems, shipments, shippingProviderConfigs, ship
 import { admins } from "../../db/schema/rbac";
 import type { Actor } from "../../middleware/authorization";
 import { DomainError } from "../admin/admin.service";
+import { requireFulfillmentEligible } from "../order-eligibility";
+import { withTransitionRetry } from "../reservation.service";
 import { normalizeShiprocketStatus, parseShiprocketTime } from "./status";
-import type { ShippingProvider, ShipmentStatus } from "./shipping-provider";
+import type { ProviderShipment, ShippingProvider, ShipmentStatus } from "./shipping-provider";
 
 type Db = ReturnType<typeof createDb>["db"];
+type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
 type Json = Record<string, unknown>;
 const record = (value: unknown): Json => value && typeof value === "object" && !Array.isArray(value) ? value as Json : {};
 const string = (value: unknown): string | undefined => typeof value === "string" || typeof value === "number" ? String(value) : undefined;
@@ -34,9 +37,8 @@ export async function createForwardShipment(db: Db, provider: ShippingProvider, 
   const [location] = await db.select().from(shippingProviderLocations).where(and(eq(shippingProviderLocations.adminAddressId, origin.id), eq(shippingProviderLocations.providerKey, provider.key), eq(shippingProviderLocations.status, "ACTIVE"))).limit(1);
   if (!location) throw new DomainError("Provider pickup location mapping is required", 422);
   const [order] = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
-  if (!order || order.paymentStatus !== "PAID") throw new DomainError("Paid order required", 422);
-  const [payment] = await db.select({ id: payments.id }).from(payments).where(and(eq(payments.orderId, orderId), eq(payments.status, "PAID"))).limit(1);
-  if (!payment) throw new DomainError("Verified payment required", 422);
+  const [payment] = await db.select({ status: payments.status, resolutionStatus: payments.resolutionStatus }).from(payments).where(eq(payments.orderId, orderId)).limit(1);
+  requireFulfillmentEligible(order, payment);
   const items = await db.select().from(orderItems).where(and(eq(orderItems.orderId, orderId), eq(orderItems.adminId, adminId)));
   if (!items.length) throw new DomainError("No order items for this Admin", 404);
   const existingItems = await db.select({ orderItemId: shipmentItems.orderItemId }).from(shipmentItems)
@@ -51,6 +53,9 @@ export async function createForwardShipment(db: Db, provider: ShippingProvider, 
   const serviceability = await provider.getServiceability(origin.postalCode, order.shippingAddressSnapshot.postalCode, pkg.weightKg);
   if (!serviceability.available) throw new DomainError("No courier is available for this route and package", 422);
   const [shipment] = await db.transaction(async (tx) => {
+    const [lockedOrder] = await tx.select().from(orders).where(eq(orders.id, orderId)).limit(1).for("update");
+    const [lockedPayment] = await tx.select({ status: payments.status, resolutionStatus: payments.resolutionStatus }).from(payments).where(eq(payments.orderId, orderId)).limit(1).for("update");
+    requireFulfillmentEligible(lockedOrder, lockedPayment);
     const [reserved] = await tx.insert(shipments).values({ orderId, adminId, providerKey: provider.key, originAddressSnapshot: snapshot(origin), destinationAddressSnapshot: order.shippingAddressSnapshot }).returning();
     await tx.insert(shipmentItems).values(items.map((item) => ({ shipmentId: reserved.id, orderItemId: item.id, orderId, adminId })));
     return [reserved];
@@ -66,8 +71,20 @@ export async function createForwardShipment(db: Db, provider: ShippingProvider, 
     subtotal: items.reduce((total, item) => total + Number(item.totalAmount), 0).toFixed(2),
     ...pkg,
   });
-  const [updated] = await db.update(shipments).set({ providerOrderId: created.providerOrderId, providerShipmentId: created.providerShipmentId, status: "CONFIRMED", updatedAt: new Date() }).where(eq(shipments.id, shipment.id)).returning();
-  return updated;
+  return recordKnownProviderShipment(db, shipment.id, provider.key, { externalOrderId: shipment.id, ...created });
+}
+
+export async function recordKnownProviderShipment(db: Db, shipmentId: string, providerKey: string, evidence: ProviderShipment & { externalOrderId: string }) {
+  if (evidence.externalOrderId !== shipmentId || !evidence.providerOrderId?.trim() || !evidence.providerShipmentId?.trim()) throw new DomainError("Provider shipment evidence is invalid", 422);
+  return withTransitionRetry(db, async (tx) => {
+    const [current] = await tx.select().from(shipments).where(and(eq(shipments.id, shipmentId), eq(shipments.providerKey, providerKey))).limit(1).for("update");
+    if (!current) throw new DomainError("Shipment unavailable for provider evidence", 404);
+    if (current.providerShipmentId && current.providerShipmentId !== evidence.providerShipmentId || current.providerOrderId && current.providerOrderId !== evidence.providerOrderId) throw new DomainError("Conflicting provider shipment reference", 409);
+    if (current.providerShipmentId === evidence.providerShipmentId && current.providerOrderId === evidence.providerOrderId) return current;
+    const [updated] = await tx.update(shipments).set({ providerOrderId: evidence.providerOrderId, providerShipmentId: evidence.providerShipmentId,
+      status: current.status === "CREATED" ? "CONFIRMED" : current.status, updatedAt: new Date() }).where(eq(shipments.id, current.id)).returning();
+    return updated;
+  });
 }
 
 export async function assignShipmentAwb(db: Db, provider: ShippingProvider, shipmentId: string, adminId: string) {
@@ -75,8 +92,14 @@ export async function assignShipmentAwb(db: Db, provider: ShippingProvider, ship
   if (!shipment?.providerShipmentId) throw new DomainError("Provider shipment unavailable", 404);
   if (shipment.awbNumber) return shipment;
   const awb = await provider.assignAwb(shipment.providerShipmentId);
-  const [updated] = await db.update(shipments).set({ awbNumber: awb.awbNumber, carrierName: awb.carrierName, status: "PACKED", updatedAt: new Date() }).where(eq(shipments.id, shipment.id)).returning();
-  return updated;
+  return withTransitionRetry(db, async (tx) => {
+    const [current] = await tx.select().from(shipments).where(eq(shipments.id, shipment.id)).limit(1).for("update");
+    if (!current) throw new DomainError("Shipment unavailable", 404);
+    if (current.awbNumber) return current;
+    const status = ["CREATED", "CONFIRMED", "PACKED"].includes(current.status) ? "PACKED" : current.status;
+    const [updated] = await tx.update(shipments).set({ awbNumber: awb.awbNumber, carrierName: awb.carrierName ?? current.carrierName, status, updatedAt: new Date() }).where(eq(shipments.id, shipment.id)).returning();
+    return updated;
+  });
 }
 
 export async function requestShipmentPickup(db: Db, provider: ShippingProvider, shipmentId: string, adminId: string) {
@@ -94,6 +117,84 @@ async function eventKey(parts: string[]): Promise<string> {
   return Array.from(new Uint8Array(hash), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
+const progress: Record<ShipmentStatus, number> = {
+  CREATED: 0, CONFIRMED: 1, PACKED: 2, SHIPPED: 3, PICKED_UP: 4,
+  IN_TRANSIT: 5, OUT_FOR_DELIVERY: 6, DELIVERY_FAILED: 6,
+  DELIVERED: 7, RTO: 7, CANCELLED: 7,
+};
+const terminal = new Set<ShipmentStatus>(["DELIVERED", "RTO", "CANCELLED"]);
+
+// Callers lock the order first, then this shipment. Persisted events provide
+// the evidence for repair without consulting or changing provider state.
+async function reconcileLockedShipment(tx: Tx, shipment: typeof shipments.$inferSelect) {
+  const events = await tx.select().from(shipmentEvents).where(eq(shipmentEvents.shipmentId, shipment.id))
+    .orderBy(shipmentEvents.eventTime, shipmentEvents.createdAt, shipmentEvents.id);
+  let status = shipment.status as ShipmentStatus;
+  if (status === "CREATED" && shipment.providerShipmentId) status = "CONFIRMED";
+  let shippedAt = shipment.shippedAt, pickedUpAt = shipment.pickedUpAt;
+  let outForDeliveryAt = shipment.outForDeliveryAt, deliveredAt = shipment.deliveredAt;
+  let lastEventAt = shipment.lastEventAt;
+  for (const event of events) {
+    const next = event.normalizedStatus as ShipmentStatus;
+    if (next in progress && !terminal.has(status)
+      && (progress[next] >= progress[status] || status === "DELIVERY_FAILED" && ["IN_TRANSIT", "OUT_FOR_DELIVERY"].includes(next))) status = next;
+    if (next === "SHIPPED") shippedAt ??= event.eventTime;
+    if (next === "PICKED_UP") pickedUpAt ??= event.eventTime;
+    if (next === "OUT_FOR_DELIVERY") outForDeliveryAt ??= event.eventTime;
+    if (next === "DELIVERED" && status === "DELIVERED") deliveredAt ??= event.eventTime;
+    if (!lastEventAt || event.eventTime > lastEventAt) lastEventAt = event.eventTime;
+  }
+  const changed = status !== shipment.status || shippedAt !== shipment.shippedAt || pickedUpAt !== shipment.pickedUpAt
+    || outForDeliveryAt !== shipment.outForDeliveryAt || deliveredAt !== shipment.deliveredAt || lastEventAt !== shipment.lastEventAt;
+  if (changed) await tx.update(shipments).set({ status, shippedAt, pickedUpAt, outForDeliveryAt, deliveredAt, lastEventAt, lastSyncedAt: new Date(), updatedAt: new Date() }).where(eq(shipments.id, shipment.id));
+  if (status === "DELIVERED" && deliveredAt) {
+    const items = await tx.select({ id: orderItems.id }).from(orderItems).where(eq(orderItems.orderId, shipment.orderId));
+    const deliveredItems = await tx.select({ id: shipmentItems.orderItemId, deliveredAt: shipments.deliveredAt }).from(shipmentItems)
+      .innerJoin(shipments, eq(shipmentItems.shipmentId, shipments.id))
+      .where(and(eq(shipmentItems.orderId, shipment.orderId), eq(shipments.status, "DELIVERED")));
+    if (items.length && items.every((item) => deliveredItems.some((delivery) => delivery.id === item.id && delivery.deliveredAt))) {
+      const [order] = await tx.select().from(orders).where(eq(orders.id, shipment.orderId)).limit(1);
+      const [payment] = await tx.select({ status: payments.status, resolutionStatus: payments.resolutionStatus }).from(payments).where(eq(payments.orderId, shipment.orderId)).limit(1);
+      requireFulfillmentEligible(order, payment, true);
+      if (order.status === "CONFIRMED" || !order.deliveredAt) {
+        const completedAt = new Date(Math.max(...deliveredItems.map((item) => item.deliveredAt!.getTime())));
+        await tx.update(orders).set({ status: "DELIVERED", deliveredAt: order.deliveredAt ?? completedAt, updatedAt: new Date() }).where(eq(orders.id, shipment.orderId));
+      }
+    }
+  }
+  return { status, deliveredAt };
+}
+
+export async function reconcileShipment(db: Db, shipmentId: string) {
+  return withTransitionRetry(db, async (tx) => {
+    const [reference] = await tx.select({ orderId: shipments.orderId }).from(shipments).where(eq(shipments.id, shipmentId)).limit(1);
+    if (!reference) throw new DomainError("Shipment unavailable", 404);
+    await tx.select({ id: orders.id }).from(orders).where(eq(orders.id, reference.orderId)).limit(1).for("update");
+    const [shipment] = await tx.select().from(shipments).where(eq(shipments.id, shipmentId)).limit(1).for("update");
+    if (!shipment) throw new DomainError("Shipment unavailable", 404);
+    return reconcileLockedShipment(tx, shipment);
+  });
+}
+
+export async function listShipmentReconciliationCandidates(db: Db) {
+  const rows = await db.select({ id: shipments.id, orderId: shipments.orderId, status: shipments.status,
+    providerOrderId: shipments.providerOrderId, providerShipmentId: shipments.providerShipmentId,
+    awbNumber: shipments.awbNumber, deliveredAt: shipments.deliveredAt, createdAt: shipments.createdAt })
+    .from(shipments);
+  const candidates = [];
+  for (const shipment of rows) {
+    const events = await db.select({ status: shipmentEvents.normalizedStatus }).from(shipmentEvents).where(eq(shipmentEvents.shipmentId, shipment.id));
+    const [order] = await db.select({ status: orders.status, deliveredAt: orders.deliveredAt }).from(orders).where(eq(orders.id, shipment.orderId)).limit(1);
+    const reason = events.some((event) => event.status === "DELIVERED") && ["RTO", "CANCELLED"].includes(shipment.status) ? "CONFLICTING_TERMINAL_EVENT"
+      : events.some((event) => event.status === "DELIVERED") && (!shipment.deliveredAt || !order?.deliveredAt) ? "DELIVERY_MILESTONE_MISSING"
+      : shipment.status === "CREATED" && shipment.providerShipmentId ? "LOCAL_STATE_STALE"
+      : shipment.status === "CREATED" ? "PROVIDER_OUTCOME_UNKNOWN"
+      : shipment.providerShipmentId && !shipment.awbNumber ? "AWB_PENDING" : null;
+    if (reason) candidates.push({ ...shipment, reason });
+  }
+  return candidates;
+}
+
 export async function ingestShiprocketWebhook(db: Db, payload: unknown): Promise<{ accepted: number; duplicates: number }> {
   const v = record(payload);
   const awb = string(v.awb);
@@ -106,7 +207,7 @@ export async function ingestShiprocketWebhook(db: Db, payload: unknown): Promise
       const scan = record(item);
       return { providerStatus: string(scan["sr-status-label"] ?? scan.status ?? scan.activity), id: statusId(scan["sr-status"]), location: string(scan.location), description: string(scan.activity), time: parseShiprocketTime(scan.date) };
     }) : [],
-    { providerStatus: string(v.current_status ?? v.shipment_status), id: statusId(v.current_status_id ?? v.shipment_status_id), location: undefined, description: undefined, time: parseShiprocketTime(v.current_timestamp) },
+    ...(v.current_status || v.shipment_status ? [{ providerStatus: string(v.current_status ?? v.shipment_status), id: statusId(v.current_status_id ?? v.shipment_status_id), location: undefined, description: undefined, time: parseShiprocketTime(v.current_timestamp) }] : []),
   ];
   if (!incoming.length || incoming.some((item) => !item.providerStatus || !item.time || !normalizeShiprocketStatus(item.providerStatus, item.id))) throw new DomainError("Invalid tracking event", 422);
   const events = await Promise.all(incoming.map(async (item) => ({
@@ -119,42 +220,20 @@ export async function ingestShiprocketWebhook(db: Db, payload: unknown): Promise
     eventTime: item.time!,
   })));
   const estimated = parseShiprocketTime(v.etd);
-  return db.transaction(async (tx) => {
+  return withTransitionRetry(db, async (tx) => {
+    await tx.select({ id: orders.id }).from(orders).where(eq(orders.id, shipment.orderId)).limit(1).for("update");
+    const [locked] = await tx.select().from(shipments).where(eq(shipments.id, shipment.id)).limit(1).for("update");
+    if (!locked || locked.awbNumber !== awb) throw new DomainError("Shipment unavailable", 404);
     let accepted = 0;
     for (const event of events) {
       const result = await tx.insert(shipmentEvents).values(event).onConflictDoNothing().returning({ id: shipmentEvents.id });
       accepted += result.length;
     }
-    if (accepted) {
-      const [latest] = await tx.select({ status: shipmentEvents.normalizedStatus, eventTime: shipmentEvents.eventTime }).from(shipmentEvents)
-        .where(eq(shipmentEvents.shipmentId, shipment.id)).orderBy(desc(shipmentEvents.eventTime), desc(shipmentEvents.createdAt)).limit(1);
-      if (latest) {
-        const status = latest.status as ShipmentStatus;
-        await tx.update(shipments).set({
-          status,
-          lastEventAt: latest.eventTime,
-          lastSyncedAt: new Date(),
-          estimatedDeliveryDate: estimated ?? shipment.estimatedDeliveryDate,
-          carrierName: string(v.courier_name)?.slice(0, 150) ?? shipment.carrierName,
-          shippedAt: status === "SHIPPED" && !shipment.shippedAt ? latest.eventTime : shipment.shippedAt,
-          pickedUpAt: status === "PICKED_UP" && !shipment.pickedUpAt ? latest.eventTime : shipment.pickedUpAt,
-          outForDeliveryAt: status === "OUT_FOR_DELIVERY" && !shipment.outForDeliveryAt ? latest.eventTime : shipment.outForDeliveryAt,
-          deliveredAt: status === "DELIVERED" && !shipment.deliveredAt ? latest.eventTime : shipment.deliveredAt,
-          updatedAt: new Date(),
-        }).where(eq(shipments.id, shipment.id));
-        if (status === "DELIVERED") {
-          const items = await tx.select({ id: orderItems.id }).from(orderItems).where(eq(orderItems.orderId, shipment.orderId));
-          const deliveredItems = await tx.select({ id: shipmentItems.orderItemId, deliveredAt: shipments.deliveredAt }).from(shipmentItems)
-            .innerJoin(shipments, eq(shipmentItems.shipmentId, shipments.id))
-            .where(and(eq(shipmentItems.orderId, shipment.orderId), eq(shipments.status, "DELIVERED")));
-          if (items.length && items.every((item) => deliveredItems.some((delivered) => delivered.id === item.id && delivered.deliveredAt))) {
-            const deliveredAt = new Date(Math.max(...deliveredItems.map((item) => item.deliveredAt!.getTime())));
-            await tx.update(orders).set({ deliveredAt, status: "DELIVERED", updatedAt: new Date() })
-              .where(and(eq(orders.id, shipment.orderId), isNull(orders.deliveredAt)));
-          }
-        }
-      }
-    }
+    if (accepted && (estimated || v.courier_name)) await tx.update(shipments).set({
+      estimatedDeliveryDate: estimated ?? locked.estimatedDeliveryDate,
+      carrierName: string(v.courier_name)?.slice(0, 150) ?? locked.carrierName,
+    }).where(eq(shipments.id, locked.id));
+    await reconcileLockedShipment(tx, locked);
     return { accepted, duplicates: events.length - accepted };
   });
 }
@@ -178,10 +257,15 @@ export async function getOrderTracking(db: Db, orderId: string, actor: Actor, vi
     deliveredAt: shipments.deliveredAt, lastEventAt: shipments.lastEventAt,
   }).from(shipments).where(adminId ? and(eq(shipments.orderId, orderId), eq(shipments.adminId, adminId)) : eq(shipments.orderId, orderId));
   if (adminId && !rows.length) throw new DomainError("Order unavailable", 404);
-  return Promise.all(rows.map(async (shipment) => ({
-    ...shipment,
-    adminId: actor.roles.includes("SUPER_ADMIN") ? shipment.adminId : undefined,
-    events: await db.select({ status: shipmentEvents.normalizedStatus, providerStatus: shipmentEvents.providerStatus, location: shipmentEvents.location, description: shipmentEvents.description, eventTime: shipmentEvents.eventTime })
-      .from(shipmentEvents).where(eq(shipmentEvents.shipmentId, shipment.id)).orderBy(shipmentEvents.eventTime),
-  })));
+  return Promise.all(rows.map(async (shipment) => {
+    const events = await db.select({ status: shipmentEvents.normalizedStatus, providerStatus: shipmentEvents.providerStatus, location: shipmentEvents.location, description: shipmentEvents.description, eventTime: shipmentEvents.eventTime })
+      .from(shipmentEvents).where(eq(shipmentEvents.shipmentId, shipment.id)).orderBy(shipmentEvents.eventTime);
+    if (view === "customer") return {
+      id: shipment.id, carrierName: shipment.carrierName, awbNumber: shipment.awbNumber,
+      trackingUrl: shipment.trackingUrl, status: shipment.status, estimatedDeliveryDate: shipment.estimatedDeliveryDate,
+      deliveredAt: shipment.deliveredAt,
+      events: events.map((event) => ({ status: event.status, location: event.location, description: event.description, eventTime: event.eventTime })),
+    };
+    return { ...shipment, adminId: actor.roles.includes("SUPER_ADMIN") ? shipment.adminId : undefined, events };
+  }));
 }

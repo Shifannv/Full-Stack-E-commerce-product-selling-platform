@@ -113,7 +113,7 @@ export async function createProduct(db: Db, adminId: string, input: Record<strin
   });
 }
 
-async function assertProductAdmin(db: Db, adminId: string, productId: string) {
+export async function assertProductAdmin(db: Db, adminId: string, productId: string) {
   const [owned] = await db.select({ id: productAdmins.productId }).from(productAdmins).where(and(eq(productAdmins.productId, productId), eq(productAdmins.adminId, adminId))).limit(1);
   if (!owned) throw new DomainError("Product unavailable", 404);
   const [product] = await db.select({ categoryId: products.categoryId }).from(products).where(eq(products.id, productId)).limit(1);
@@ -170,17 +170,19 @@ export async function saveProductImageMetadata(db: Db, adminId: string, productI
   return image;
 }
 
-export async function setProductInventory(db: Db, adminId: string, productId: string, quantity: number, variantId?: string) {
+export async function setProductInventory(db: Db, adminId: string, productId: string, quantity: number, variantId?: string, expectedVersion?: number) {
   await assertProductAdmin(db, adminId, productId);
   if (!Number.isInteger(quantity) || quantity < 0 || quantity > 10_000_000) throw new DomainError("Invalid inventory quantity", 422);
   if (variantId) {
     const [variant] = await db.select({ id: productVariants.id }).from(productVariants).where(and(eq(productVariants.id, variantId), eq(productVariants.productId, productId))).limit(1);
     if (!variant) throw new DomainError("Variant unavailable", 404);
   }
+  if (!Number.isInteger(expectedVersion) || (expectedVersion as number) < 0) throw new DomainError("INVENTORY_VERSION_REQUIRED", 422);
   const [existing] = await db.select({ id: inventories.id }).from(inventories).where(variantId ? eq(inventories.variantId, variantId) : and(eq(inventories.productId, productId), sql`${inventories.variantId} is null`)).limit(1);
   const [inventory] = existing
-    ? await db.update(inventories).set({ availableQuantity: quantity, updatedAt: new Date() }).where(eq(inventories.id, existing.id)).returning()
-    : await db.insert(inventories).values({ productId, variantId: variantId ?? null, availableQuantity: quantity }).returning();
+    ? await db.update(inventories).set({ availableQuantity: quantity, version: sql`${inventories.version} + 1`, updatedAt: new Date() }).where(and(eq(inventories.id, existing.id), eq(inventories.version, expectedVersion as number))).returning()
+    : expectedVersion === 0 ? await db.insert(inventories).values({ productId, variantId: variantId ?? null, availableQuantity: quantity }).onConflictDoNothing().returning() : [];
+  if (!inventory) throw new DomainError("INVENTORY_VERSION_STALE", 409);
   return inventory;
 }
 

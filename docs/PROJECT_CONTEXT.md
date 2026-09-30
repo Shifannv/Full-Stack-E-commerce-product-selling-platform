@@ -1,20 +1,81 @@
 # ECOMMERCE PROJECT - MASTER SOURCE OF TRUTH
 
+## CURRENT CHECKPOINT — Phase 11b-3B authenticated continuation — 2026-09-29
+
+**Operator reports local Chrome Google sign-in success; independent authenticated browser checks remain BLOCKED. Phase 11b is OPEN and NOT SAFE TO DEPLOY.** A read-only database query found 1 Google account, 1 unexpired CUSTOMER session, and 1 CUSTOMER role assignment, with the retained Admin, Super Admin, category, and product counts unchanged. No identity or token was exposed. These aggregate results support callback success but do not prove `/api/me`, role scope, refresh, or logout in the operator's browser.
+
+The isolated debugging Chrome profile started for this continuation remained signed out: Better Auth returned no session, `/api/me` returned 401, and `/account` showed signed-out UI. The user's successful login is in a different profile. Signed-out customer and privileged routes returned 401; the static frontend export contained none of the checked local secrets. Authenticated wishlist, cart, addresses, quote, UI, security, and cross-customer checks were not executed; no synthetic data, order, payment, or deployment was created. Backend TypeScript and 64/64 tests, frontend TypeScript and lint, and `git diff --check` passed. Cashfree remains PARKED; production HTTPS OAuth is unverified.
+
+**Exact next task:** Complete Google sign-in in the isolated Chrome profile on port 9222, then perform the authenticated CUSTOMER session, persistence, logout, endpoint, UI, and cleanup checks described in `docs/BACKEND_VERIFICATION.md`. Use a second real authorized Google account for live isolation only if available. Do not mark Google VERIFIED LOCALLY until the browser session and logout sequence pass.
+
+## CURRENT CHECKPOINT — Phase 11b-3B — 2026-09-29
+
+**Google customer OAuth: BLOCKED before authenticated consent/callback. Phase 11b remains OPEN and NOT SAFE TO DEPLOY.** The 11b-3A `redirect_uri_mismatch` is historical; this real Chrome attempt reached Google's rendered account-entry screen without that error. No authenticated customer success is claimed.
+
+The application generated `http://127.0.0.1:8787/api/auth/callback/google`, exactly the expected local callback. The authorization request used Google's provider, a configured client ID (redacted), `response_type=code`, scopes `email profile openid`, and a present `state`. Google Cloud Console's registered URI and the intended account's External-app Test users membership were not directly accessible, so both require operator confirmation. No test identity was guessed or entered. Consent, callback, CUSTOMER role, session persistence, logout, wishlist, cart, address, quote, and cross-customer isolation remain unverified. Signed-out `/api/me` returned 401. No auth, Cashfree, fixture, schema, or deployment changes were made.
+
+**Exact next task:** Confirm the current Google OAuth client's authorized redirect URI and the intended account's Test users membership in Google Cloud Console; finish real browser sign-in and then verify authenticated customer session and endpoints using the retained product. Do not place a payment order or start Phase 11c. Detailed evidence and checks: `docs/BACKEND_VERIFICATION.md`.
+
+## CURRENT CHECKPOINT — Phase 11b-3A — 2026-09-29
+
+**Phase 11b: OPEN. NOT DEPLOYED. NOT SAFE TO DEPLOY.** These statements describe the current local changes; earlier Worker deployment evidence is historical. This checkpoint supersedes all older status, “current”, “latest”, and next-task statements below. Retained historical evidence is not a claim about today's environment.
+
+- Architecture remains Next.js 16.3.6 / React 19 / TypeScript / Tailwind 4 / shadcn/ui with `output: "export"`; Cloudflare Workers / Hono / Better Auth / Drizzle; Aiven PostgreSQL through Hyperdrive. No schema or migration change in 11b-3A.
+- Development origins: frontend `http://127.0.0.1:3000`, API `http://127.0.0.1:8787`. Earlier localhost/8788 evidence is historical. Public environment examples now use these IPv4 origins; R2 stays blank in the example.
+- Retained development data: **1 active Admin, 1 Super Admin, 0 customers, 1 category, 1 product**. Product is **published, featured=true, inventory=12**. Category: `phase11b2-accessories-730d72e64790`; product: `phase11b2-cotton-tote-730d72e64790`.
+- **R2: real development image uploaded; HTTPS r2.dev retrieval verified; Chrome rendering verified. Production custom domain NOT configured.** The existing authorized Admin upload endpoint and existing `shop-product-images` bucket were used. No second bucket. Ignored `frontend/.env.local` sets `NEXT_PUBLIC_R2_PUBLIC_BASE_URL=https://pub-568301fa6e09442d9faf61b0274abb0c.r2.dev`; application source resolves it only through `src/lib/images.ts`.
+- Retained object key: `products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png`. Prior HTTPS response: 200, image/png, 68 bytes. Prior Chrome verified direct URL, home product card and detail gallery; no R2 credentials appeared in public product JSON or image request URL. This phase reuses that object.
+- **Google: External audience; browser still fails `redirect_uri_mismatch`; CUSTOMER session NOT VERIFIED.** Known callback: `http://127.0.0.1:8787/api/auth/callback/google`. No Google success is claimed or retested in this reconciliation.
+- **Cashfree: PARKED.** No credentials, endpoint, adapter, payment flow, or Razorpay change.
+- Minimal public/static `/admin/setup` uses existing `POST /api/admin/activate`. Email URL construction accepts HTTPS, plus only the exact local HTTP origin above. Token is removed from the browser URL, kept in memory only, submitted with no referrer, and consumed by the existing hashed-token/expiry/password activation flow. Activation leaves seller approval separate; no Admin dashboard or RBAC bypass was added. Real email delivery remains unverified.
+- Static home and public category/product slug routes remain active. Private `/orders/[id]` and `/orders/[id]/tracking` remain inactive; fixed `/orders` retains inline details/tracking.
+- **Exact next task:** Google browser OAuth verification → authenticated CUSTOMER session → wishlist/cart/address/checkout quote verification. Do not start Phase 11c Admin UI.
+
+### Targeted corrections
+
+| Boundary | Current contract |
+| --- | --- |
+| Admin products | `adminApi.products()` uses distinct `AdminProductSummary[]` plus limit/offset. It matches the existing Admin endpoint; no public Product coercion. |
+| Customer orders | Explicit whitelist: customer order ID/number, order/payment status, created/delivered timestamps, currency/totals, contact/address snapshot, and item ID/product/variant/name/title/quantity/historical unit price/total. No Admin/customer foreign key, operational snapshots or finance internals. |
+| Customer tracking | Shipment ID, carrier, AWB, public tracking URL, normalized status, estimated/delivered dates, events (status/location/description/eventTime). No Admin ID, provider status/payload or provider operational IDs. Ownership is checked before reading shipments; operator responses are unchanged. |
+| R2 request boundary | Actual streamed bytes capped at 5,500,000 before multipart parsing, even without a usable Content-Length; oversized declared requests rejected immediately. Parsed file maximum remains 5,000,000 bytes. MIME/magic bytes, authorization, ownership/category scope, generated keys and R2 cleanup on DB failure retained. |
+| Browser verification | Read-only storefront script imports the actual image helper and reads the public environment base; checks real image DOM/decoding and HTTPS 200 image response. Existing upload script is explicitly marked MUTATING; not rerun here. |
+
+### Phase 11b-3A verification
+
+Backend unit tests: **64/64 PASS**, including auth/security, customer projection/ownership and upload limits. Backend TypeScript: PASS. Frontend lint and production static export: PASS. Static build includes `/`, both retained fixture slug pages and `/admin/setup`.
+
+Invitation integration: **PASS in real headless Chrome**, generated invitation link → static setup page → existing activation API → ACTIVE account; verified stored password hash, hashed token, expiry/reissue/reuse rejection and audit events. Temporary unique Aiven invitation records were cleaned. Desktop 1440×900 and mobile 390×844 reviewed, no horizontal overflow; mismatch recovery and token removal passed. No real email sent.
+
+Final checks: backend `npm run typecheck`, `npm test` (**64/64**), `npx drizzle-kit check`; frontend `npm run typecheck`, `npm run lint`, `npm run build`; and `git diff --check` **PASS**. Read-only Aiven readiness after invitation cleanup confirms ADMIN=1 (ACTIVE), SUPER_ADMIN=1, CUSTOMER=0, categories=1, products=1.
+
+Updated `node scripts/verify-phase11b3-browser.mjs`: **PASS** for all ten storefront routes, exact-origin browser API reads, signed-out protection, real home-card/detail image, centralized helper URL and HTTPS 200. Existing `verify-phase11b3-r2-browser.mjs`: **PASS** for direct image URL opening, image rendering and no R2 credential-like fields in public product JSON or credentials in the browser image request URL. These checks do not establish authenticated customer behavior.
+
+The first static export reused a legacy catalog fetch-cache entry containing an empty image array. That specific build-cache directory was preserved under `.next/cache/fetch-cache-before-phase11b3a` and a fresh build passed with the real image. A retry hit a Chrome profile lock inside the frontend scan; the task-created profile was moved outside the frontend and the build then passed. When catalog/media changes, build from fresh catalog data and rerun the image assertion; a successful compilation alone does not prove a fresh export. No pre-existing Wrangler sidecars were removed or reset.
+
+No unexplained current-state contradictions remain in these reconciled checkpoints. Older contradictory evidence is explicitly historical. Remaining gates: Google consent/callback/session and authenticated customer flows, production R2 custom domain, real invitation email delivery and production host/cookie verification. Cashfree stays PARKED. No deployment, staging or commit.
+
+**HISTORICAL CHECKPOINT — SUPERSEDED: Phase 11b-3 R2 development-media verification (2026-09-29):** `NEXT_PUBLIC_R2_PUBLIC_BASE_URL` now supplies the configured development R2 public base locally; the frontend image helper validates it as HTTPS and resolves stored product object keys with per-segment encoding. The local Worker uses the existing `shop-product-images` binding in remote mode for development only, without deployment. An approved Admin uploaded one 68-byte PNG using `POST /api/admin/products/:productId/images/upload`; the returned object key was stored with the fixture product and its public HTTPS URL returned `200 image/png`. Headless Chrome opened that URL and loaded it on both the fixture product detail and home-page product card. Browser public-product data and the R2 image request URL contained no R2 credential-like fields or query credentials. This `r2.dev` URL is a development verification base only, not a production-domain decision. Google customer OAuth and authenticated customer flows remain open; no deployment occurred.
+
+**HISTORICAL CHECKPOINT — SUPERSEDED: Phase 11b-3 update (2026-09-29):** A narrow Admin-only product-image upload API now targets the existing `shop-product-images` R2 bucket. It validates PNG/JPEG/WebP content, limits files to 5 MB, generates product-scoped keys, and stores metadata only after an authorized upload. No image was attached to the Aiven fixture because no real public R2 custom domain is confirmed; `NEXT_PUBLIC_R2_PUBLIC_BASE_URL` stays blank and the storefront fallback remains visible. Local frontend and Worker settings now use `127.0.0.1` consistently; real Chrome checks passed for public and logged-out customer pages. Google sign-in reached Google but failed with **Error 400: redirect_uri_mismatch**, so no customer session or authenticated wishlist/cart/address/quote flow was verified. Static export still builds the category and product slugs. No deployment occurred. Phase 11b remains **OPEN / NOT SAFE TO DEPLOY**.
+
+**HISTORICAL CHECKPOINT — SUPERSEDED: Phase 11b-2 update (2026-09-29):** One controlled test Super Admin and one fully onboarded, approved test Admin now exist in development Aiven via the existing private bootstrap and invitation/onboarding workflow. The retained `phase11b2-` category and product fixture is published, in stock, and featured. Static category/product pages and metadata now build from those real slugs. Product images remain on the missing-image fallback because there is no public product-image upload binding or R2 domain. Customer identity, Google browser OAuth, Resend delivery, and Cashfree remain unverified or blocked. No deployment occurred. Phase 11b remains **OPEN / NOT SAFE TO DEPLOY**. See the latest checkpoints in `BACKEND_VERIFICATION.md` and `FRONTEND_API_MAPPING.md`.
+
 **Purpose:** Permanent compact project specification for humans and AI coding agents.
 
 **Rule:** Read this document before planning, changing architecture, changing schema, creating routes, or writing feature code. Do not invent architecture that conflicts with this document. This document intentionally combines project decisions, workflows, schema, routes, UI responsibilities, security, caching, SEO, and implementation order so an AI does not need to load many duplicated files.
 
-**Current baseline:** 2026-09-28, Phase 11b-1 partial catalog API and checkout quote checkpoint. Earlier phase-gate history remains below.
+**Current baseline:** Phase 11b-3A, 2026-09-29. The CURRENT CHECKPOINT at the top is authoritative; older checkpoints are retained as historical evidence.
 
-**Phase 11b-1 update:** Product cards now receive image key, availability, published rating/count, and creation time from the public list response without per-card detail reads. Server-backed sort and in-stock filters are available. Customer checkout review uses the new read-only quote but does not create an order or payment. The configured database has no Admin/Super Admin/customer user and no catalog data, preventing authorized API fixture creation and dynamic static-page activation. Public R2 media and Google browser OAuth remain unverified. See the detailed checkpoint near the end of this document and `docs/FRONTEND_API_MAPPING.md`. **Phase 11b remains open; deployment is not safe.**
+**HISTORICAL CHECKPOINT — SUPERSEDED: Historical Phase 11b-1 update:** Product cards gained image key, availability, published rating/count, and creation time from the public list response without per-card detail reads. Server-backed sort and in-stock filters became available. Customer checkout review gained the read-only quote but did not create an order or payment. At that checkpoint, the configured database had no operator/customer users or catalog data, so fixture creation and static-page activation were pending. The Phase 11b-2 update above supersedes that database and route status.
 
-**Phase 11b partial checkpoint:** The customer home now fetches real public categories, featured products (`featured=true`), and newest products at static build time. Search and backend-supported price/category/subcategory filtering use URL queries and paginated public API reads. Fixed customer routes implement Google session UI, wishlist, cart, account, addresses, checkout review, orders, and inline normalized tracking. The local Worker returned 200 with empty public categories/products and 401 for protected customer APIs; no authenticated customer or Google browser flow was verified. Static export cannot activate category/product `[slug]` routes while the published catalog is empty, so their source remains `page.pending.tsx`. Private `[id]` paths remain unresolved under static export; order details/tracking are available only as panels on `/orders`. Cashfree is parked, and checkout does not create an order or payment. The R2 public base URL is unconfigured, so media uses missing-image states. The deployed Worker has not received Phase 11e-pre updates. **Phase 11b is not complete and storefront deployment is not safe.** See `docs/FRONTEND_API_MAPPING.md`.
+**HISTORICAL CHECKPOINT — SUPERSEDED: Phase 11b partial checkpoint:** The customer home now fetches real public categories, featured products (`featured=true`), and newest products at static build time. Search and backend-supported price/category/subcategory filtering use URL queries and paginated public API reads. Fixed customer routes implement Google session UI, wishlist, cart, account, addresses, checkout review, orders, and inline normalized tracking. The local Worker returned 200 with empty public categories/products and 401 for protected customer APIs; no authenticated customer or Google browser flow was verified. Static export cannot activate category/product `[slug]` routes while the published catalog is empty, so their source remains `page.pending.tsx`. Private `[id]` paths remain unresolved under static export; order details/tracking are available only as panels on `/orders`. Cashfree is parked, and checkout does not create an order or payment. The R2 public base URL is unconfigured, so media uses missing-image states. The deployed Worker has not received Phase 11e-pre updates. **Phase 11b is not complete and storefront deployment is not safe.** See `docs/FRONTEND_API_MAPPING.md`.
 
-**Phase 11a frontend:** `frontend/` is now an isolated npm Next.js 16.3.6 App Router package with TypeScript, Tailwind CSS 4, ESLint, source-owned shadcn/ui primitives, warm Ownline design tokens, customer and operator layout shells, data-driven catalog/state components, centralized API and R2 public URL helpers, and public environment examples. `/`, `/search`, `/wishlist`, `/cart`, `/orders`, `/account`, `/admin`, and `/super-admin` are static foundation pages; secondary customer pages are explicit placeholders with no business data. `npm install`, TypeScript, lint, production build, and local HTTP smoke checks passed. No business pages, real data, authentication flow, or deployment were added. The current Cloudflare Pages static export cannot directly emit unpredictable private `[id]` routes; later phases must settle their routing/deployment strategy before implementing them. See `docs/FRONTEND_DESIGN_SYSTEM.md`. **Exact next task: Phase 11b Customer Storefront.**
+**HISTORICAL CHECKPOINT — SUPERSEDED: Phase 11a frontend:** `frontend/` is now an isolated npm Next.js 16.3.6 App Router package with TypeScript, Tailwind CSS 4, ESLint, source-owned shadcn/ui primitives, warm Ownline design tokens, customer and operator layout shells, data-driven catalog/state components, centralized API and R2 public URL helpers, and public environment examples. `/`, `/search`, `/wishlist`, `/cart`, `/orders`, `/account`, `/admin`, and `/super-admin` are static foundation pages; secondary customer pages are explicit placeholders with no business data. `npm install`, TypeScript, lint, production build, and local HTTP smoke checks passed. No business pages, real data, authentication flow, or deployment were added. The current Cloudflare Pages static export cannot directly emit unpredictable private `[id]` routes; later phases must settle their routing/deployment strategy before implementing them. See `docs/FRONTEND_DESIGN_SYSTEM.md`. **Exact next task: Phase 11b Customer Storefront.**
 
-**Phase 11e-pre backend:** Additive migration `0008_products_featured_flag.sql` adds `products.featured boolean NOT NULL DEFAULT false` and a partial index. Existing rows remain false; there is no `trending` field. Public `GET /api/products?featured=true` lists only featured published products in published categories/subcategories. Default public product order by `created_at DESC` supplies New Arrivals; Trending is deferred pending a real rule. Admin `GET /api/admin/summary` and `GET /api/admin/products` require an approved Admin and existing permissions; the product list and count respect ownership, active category assignment, and published category. Super Admin `GET /api/super-admin/summary` and `GET /api/super-admin/admins` require the Super Admin role. Summary queries use database aggregates; the Admin list excludes private KYC document keys and internal financial detail. The Featured flag has no management UI/API in this phase and remains false until a deliberate later curation flow or authorized database update.
+**HISTORICAL CHECKPOINT — SUPERSEDED: Phase 11e-pre backend:** Additive migration `0008_products_featured_flag.sql` adds `products.featured boolean NOT NULL DEFAULT false` and a partial index. Existing rows remain false; there is no `trending` field. Public `GET /api/products?featured=true` lists only featured published products in published categories/subcategories. Default public product order by `created_at DESC` supplies New Arrivals; Trending is deferred pending a real rule. Admin `GET /api/admin/summary` and `GET /api/admin/products` require an approved Admin and existing permissions; the product list and count respect ownership, active category assignment, and published category. Super Admin `GET /api/super-admin/summary` and `GET /api/super-admin/admins` require the Super Admin role. Summary queries use database aggregates; the Admin list excludes private KYC document keys and internal financial detail. The Featured flag has no management UI/API in this phase and remains false until a deliberate later curation flow or authorized database update.
 
-**Phase 11e-pre deployment:** Backend code is implemented locally and migration 0008 is applied to Aiven. The Worker has not been redeployed for this phase; the new endpoints are not LIVE VERIFIED. Next implementation task: **Phase 11a Next.js initialization** in the isolated `frontend/` project, after reviewing the backend verification checkpoint.
+**HISTORICAL CHECKPOINT — SUPERSEDED: Phase 11e-pre deployment:** Backend code is implemented locally and migration 0008 is applied to Aiven. The Worker has not been redeployed for this phase; the new endpoints are not LIVE VERIFIED. Next implementation task: **Phase 11a Next.js initialization** in the isolated `frontend/` project, after reviewing the backend verification checkpoint.
 
 **Shipping provider baseline:** Shiprocket is the selected V1 shipping/fulfillment integration. The application remains provider-agnostic through a shipping-provider adapter boundary so Delhivery, DTDC, or another provider can be added later without rewriting order logic.
 
@@ -220,8 +281,8 @@ Do not recreate `backend/` or `frontend/` elsewhere.
 Only browser-safe public values:
 
 ```env
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-NEXT_PUBLIC_API_URL=http://localhost:8787
+NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3000
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8787
 ```
 
 Never put private secrets here.
@@ -233,7 +294,7 @@ Server-side values:
 ```env
 DATABASE_URL=
 BETTER_AUTH_SECRET=
-BETTER_AUTH_URL=http://localhost:8787
+BETTER_AUTH_URL=http://127.0.0.1:8787
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 UPSTASH_REDIS_REST_URL=
@@ -4180,7 +4241,7 @@ This is intentionally the single compact context file for AI coding agents.
 
 This section records the implementation requirements that must be reconciled against the actual repository. It does not replace the business decisions above.
 
-### Current verified infrastructure baseline
+### HISTORICAL CHECKPOINT — SUPERSEDED: Current verified infrastructure baseline
 
 The latest backend verification has established the following as the current baseline:
 
@@ -4530,7 +4591,7 @@ Do not maintain conflicting old architecture statements.
 
 ---
 
-## 49. CURRENT VERIFICATION CHECKPOINT - 2026-09-27
+## HISTORICAL CHECKPOINT — SUPERSEDED: 49. CURRENT VERIFICATION CHECKPOINT - 2026-09-27
 
 This is the latest backend verification state and supersedes older status notes when they conflict.
 
@@ -4628,7 +4689,7 @@ Customer and Admin share the same normalized forward-shipment tracking service. 
 - `SHIPROCKET_WEBHOOK_TOKEN` is a separate backend-only secret used for the `x-api-key` webhook check.
 - Secrets are never written into `PROJECT_CONTEXT.md`.
 
-### Next implementation priorities
+### HISTORICAL CHECKPOINT — SUPERSEDED: Next implementation priorities
 
 1. Verify the five-day Dress return policy through a real authenticated customer and paid/delivered order; backend/Aiven tests and Worker configuration pass.
 2. Configure and verify Cashfree sandbox payment/refund provider flows.
@@ -4640,7 +4701,7 @@ Customer and Admin share the same normalized forward-shipment tracking service. 
 
 Do not treat the project as production-complete until the required external/provider flows and browser flows are verified.
 
-### Phase-gate checkpoint — 2026-09-28
+### HISTORICAL CHECKPOINT — SUPERSEDED: Phase-gate checkpoint — 2026-09-28
 
 The Phase 0–12 gates in this checkpoint supersede the older numbered implementation outline above for status reporting; the older outline remains historical context.
 
@@ -4648,7 +4709,7 @@ Current phase is **Phase 1 (Identity / Authentication / RBAC / Admin onboarding)
 
 The local Cashfree secret carries a production marker while `CASHFREE_ENVIRONMENT=SANDBOX`. Do not retry or upload this pair. Obtain active Payment Gateway sandbox App ID and Secret Key, then run `npm run verify:cashfree-sandbox` before configuring Worker secrets. No payment or refund was performed in this phase-gate pass.
 
-### Cashfree sandbox credential checkpoint — 2026-09-27 (latest session)
+### HISTORICAL CHECKPOINT — SUPERSEDED: Cashfree sandbox credential checkpoint — 2026-09-27 (latest session)
 
 | Subsystem | Status | Evidence |
 |---|---|---|
@@ -4665,13 +4726,13 @@ The local Cashfree secret carries a production marker while `CASHFREE_ENVIRONMEN
 
 **Diagnosis**: The local `CASHFREE_CLIENT_SECRET` has an explicit production marker while the endpoint is sandbox. This strongly indicates an environment mismatch, but the provider has not confirmed it as the sole cause of HTTP 401. Replace both `CASHFREE_CLIENT_ID` and `CASHFREE_CLIENT_SECRET` in `.dev.vars` with active **Payment Gateway Sandbox** App ID and Secret Key from the Cashfree merchant dashboard. Do not upload the rejected pair to Cloudflare. After sandbox authentication passes, upload the working sandbox credentials as Worker secrets.
 
-### Phase 11b customer storefront checkpoint — 2026-09-28
+### HISTORICAL CHECKPOINT — SUPERSEDED: Phase 11b customer storefront checkpoint — 2026-09-28
 
 Frontend work now has API-backed home/search/price-filter pages and fixed customer routes for wishlist, cart, account, addresses, checkout review, and orders with inline details/tracking. The local Worker answered public catalog requests and returned 401 for unauthenticated customer requests. The connected database currently has no public categories or products, so category and product detail route sources remain prepared as `page.pending.tsx`: Next.js static export rejected `generateStaticParams()` with an empty slug list. No fake slugs or product records were created. Private order IDs remain on the fixed `/orders` page pending a routing/deployment decision. See `FRONTEND_API_MAPPING.md` for exact contracts and missing fields.
 
 Frontend typecheck, lint, local-Worker-backed static build, fixed-route HTTP smoke checks, and `git diff --check` pass. No authenticated browser flow, real product page, R2 image custom domain, checkout quote, Cashfree payment, or live frontend deployment was verified. Phase 11b remains **PARTIAL / NOT COMPLETE**; deployment is **NOT SAFE**. Next work: obtain at least one real published category/product and activate/build the SEO routes; decide private order URL handling; verify Google customer login and protected flows, then resolve the read-only checkout quote and payment gate before declaring Phase 11b complete.
 
-### Phase 11b-1 catalog and quote checkpoint — 2026-09-28
+### HISTORICAL CHECKPOINT — SUPERSEDED: Phase 11b-1 catalog and quote checkpoint — 2026-09-28
 
 Public product list/detail contracts now return existing-schema image, availability, published review summary, and created-at data; the list supports whitelisted newest/price sorting and in-stock filtering. The frontend no longer performs one detail fetch per card. A new authenticated read-only `GET /api/customer/checkout/quote` returns authoritative current cart lines, totals, and validation problems without order creation or stock reservation. The frontend review displays the quote but still stops before payment. Backend TypeScript and 53 tests, frontend TypeScript/lint/static build, Drizzle check, local API probes, and database integrity passed.
 

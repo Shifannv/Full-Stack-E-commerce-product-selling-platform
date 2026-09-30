@@ -85,7 +85,7 @@ export const productVariants = pgTable("product_variants", {
   productId: uuid("product_id").notNull().references(() => products.id),
   sku: text("sku").notNull().unique(),
   title: text("title").notNull(),
-  price: numeric("price", { precision: 12, scale: 2 }).notNull(),
+  price: numeric("price", { precision: 12, scale: 2 }),
   attributes: jsonb("attributes").$type<Record<string, unknown>>().notNull().default({}),
   status: text("status").notNull().default("ACTIVE"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -112,6 +112,7 @@ export const inventories = pgTable("inventories", {
   variantId: uuid("variant_id").references(() => productVariants.id),
   availableQuantity: integer("available_quantity").notNull().default(0),
   reservedQuantity: integer("reserved_quantity").notNull().default(0),
+  version: integer("version").notNull().default(0),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
   uniqueIndex("inventories_base_product_unique").on(table.productId).where(sql`${table.variantId} is null`),

@@ -4,6 +4,7 @@ import { categories, inventories, productImages, products, productVariants, subc
 import { cartItems, carts, customerAddresses, wishlistItems } from "../../db/schema/customer";
 import { reviews } from "../../db/schema/reviews";
 import { DomainError, requiredText } from "../admin/admin.service";
+import { canPurchaseProduct } from "./purchase-eligibility";
 
 type Db = ReturnType<typeof createDb>["db"];
 
@@ -82,26 +83,21 @@ export async function saveCustomerAddress(db: Db, customerId: string, value: Rec
 export async function listCustomerAddresses(db: Db, customerId: string) { return db.select().from(customerAddresses).where(eq(customerAddresses.customerId, customerId)).orderBy(desc(customerAddresses.isDefault), desc(customerAddresses.createdAt)); }
 export async function deleteCustomerAddress(db: Db, customerId: string, addressId: string) { const [deleted] = await db.delete(customerAddresses).where(and(eq(customerAddresses.id, addressId), eq(customerAddresses.customerId, customerId))).returning({ id: customerAddresses.id }); if (!deleted) throw new DomainError("Address unavailable", 404); return deleted; }
 
-async function getCartId(db: Db, customerId: string): Promise<string> { const [cart] = await db.insert(carts).values({ customerId }).onConflictDoUpdate({ target: carts.customerId, set: { updatedAt: new Date() } }).returning({ id: carts.id }); return cart.id; }
+async function getCartId(db: Db, customerId: string): Promise<string> { await db.insert(carts).values({ customerId }).onConflictDoNothing(); const [cart] = await db.select({ id: carts.id }).from(carts).where(eq(carts.customerId, customerId)).limit(1); return cart.id; }
 
 export async function setCartItem(db: Db, customerId: string, productId: string, quantity: number, variantId?: string) {
-  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 100) throw new DomainError("Invalid quantity", 422);
-  const [product] = await db.select({ id: products.id, status: products.status }).from(products).where(eq(products.id, productId)).limit(1);
-  if (!product || product.status !== "PUBLISHED") throw new DomainError("Product unavailable", 404);
-  if (variantId) {
-    const [variant] = await db.select({ id: productVariants.id }).from(productVariants).where(and(eq(productVariants.id, variantId), eq(productVariants.productId, productId), eq(productVariants.status, "ACTIVE"))).limit(1);
-    if (!variant) throw new DomainError("Variant unavailable", 404);
-  }
-  const stockWhere = variantId ? eq(inventories.variantId, variantId) : and(eq(inventories.productId, productId), sql`${inventories.variantId} is null`);
-  const [stock] = await db.select({ available: inventories.availableQuantity }).from(inventories).where(stockWhere).limit(1);
-  if (!stock || stock.available < quantity) throw new DomainError("Insufficient stock", 422);
   const cartId = await getCartId(db, customerId);
-  const existingWhere = variantId ? and(eq(cartItems.cartId, cartId), eq(cartItems.variantId, variantId)) : and(eq(cartItems.cartId, cartId), eq(cartItems.productId, productId), sql`${cartItems.variantId} is null`);
-  const [existing] = await db.select({ id: cartItems.id }).from(cartItems).where(existingWhere).limit(1);
-  const [item] = existing
-    ? await db.update(cartItems).set({ quantity, updatedAt: new Date() }).where(eq(cartItems.id, existing.id)).returning()
-    : await db.insert(cartItems).values({ cartId, productId, variantId: variantId ?? null, quantity }).returning();
-  return item;
+  return db.transaction(async (tx) => {
+    await tx.select({ id: carts.id }).from(carts).where(eq(carts.id, cartId)).for("update");
+    await canPurchaseProduct(tx, productId, variantId ?? null, quantity);
+    const existingWhere = variantId ? and(eq(cartItems.cartId, cartId), eq(cartItems.variantId, variantId)) : and(eq(cartItems.cartId, cartId), eq(cartItems.productId, productId), sql`${cartItems.variantId} is null`);
+    const [existing] = await tx.select({ id: cartItems.id }).from(cartItems).where(existingWhere).limit(1);
+    const [item] = existing
+      ? await tx.update(cartItems).set({ quantity, updatedAt: new Date() }).where(eq(cartItems.id, existing.id)).returning()
+      : await tx.insert(cartItems).values({ cartId, productId, variantId: variantId ?? null, quantity }).returning();
+    await tx.update(carts).set({ version: sql`${carts.version} + 1`, updatedAt: new Date() }).where(eq(carts.id, cartId));
+    return item;
+  });
 }
 
 export async function getCart(db: Db, customerId: string) {
@@ -112,7 +108,7 @@ export async function getCart(db: Db, customerId: string) {
   return { items: items.map((item) => ({ ...item, price: item.variantPrice ?? item.basePrice })), subtotal: items.reduce((sum, item) => sum + Number(item.variantPrice ?? item.basePrice) * item.quantity, 0).toFixed(2) };
 }
 
-export async function removeCartItem(db: Db, customerId: string, itemId: string) { const [cart] = await db.select({ id: carts.id }).from(carts).where(eq(carts.customerId, customerId)).limit(1); if (!cart) throw new DomainError("Cart item unavailable", 404); const [deleted] = await db.delete(cartItems).where(and(eq(cartItems.id, itemId), eq(cartItems.cartId, cart.id))).returning({ id: cartItems.id }); if (!deleted) throw new DomainError("Cart item unavailable", 404); return deleted; }
+export async function removeCartItem(db: Db, customerId: string, itemId: string) { return db.transaction(async (tx) => { const [cart] = await tx.select({ id: carts.id }).from(carts).where(eq(carts.customerId, customerId)).limit(1).for("update"); if (!cart) throw new DomainError("Cart item unavailable", 404); const [deleted] = await tx.delete(cartItems).where(and(eq(cartItems.id, itemId), eq(cartItems.cartId, cart.id))).returning({ id: cartItems.id }); if (!deleted) throw new DomainError("Cart item unavailable", 404); await tx.update(carts).set({ version: sql`${carts.version} + 1`, updatedAt: new Date() }).where(eq(carts.id, cart.id)); return deleted; }); }
 
 export async function setWishlist(db: Db, customerId: string, productId: string, enabled: boolean) {
   if (enabled) { const [product] = await db.select({ status: products.status }).from(products).where(eq(products.id, productId)).limit(1); if (product?.status !== "PUBLISHED") throw new DomainError("Product unavailable", 404); await db.insert(wishlistItems).values({ customerId, productId }).onConflictDoNothing(); }

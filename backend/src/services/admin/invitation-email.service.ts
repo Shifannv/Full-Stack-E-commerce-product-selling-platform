@@ -13,6 +13,8 @@
  * and the caller receives { delivered: false, reason: "..." }.
  */
 
+import { invitationLink } from "./invitation-url";
+
 export type InvitationEmailResult =
   | { delivered: true; id: string }
   | { delivered: false; reason: string };
@@ -22,7 +24,7 @@ export type InvitationEmailInput = {
   toName: string;
   rawToken: string;
   expiresAt: Date;
-  /** Explicit HTTPS frontend page where the Admin chooses a password. */
+  /** HTTPS setup page, or the exact loopback development origin. */
   setupPageUrl: string;
   fromEmail: string;
   resendApiKey: string;
@@ -37,10 +39,7 @@ export async function sendInvitationEmail(
     return { delivered: false, reason: "RESEND_API_KEY or RESEND_FROM_EMAIL is not configured" };
   }
 
-  const setupPage = new URL(setupPageUrl);
-  if (setupPage.protocol !== "https:" || setupPage.username || setupPage.password || setupPage.hash) throw new Error("Admin setup page must be HTTPS");
-  setupPage.searchParams.set("token", rawToken);
-  const setupUrl = setupPage.toString();
+  const setupUrl = invitationLink(setupPageUrl, rawToken);
   const expiryStr = expiresAt.toUTCString();
 
   const html = `

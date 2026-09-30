@@ -1,4 +1,3 @@
-// Activate as page.tsx when the build catalog has at least one real published product slug.
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { RatingDisplay } from "@/components/catalog/rating-display";

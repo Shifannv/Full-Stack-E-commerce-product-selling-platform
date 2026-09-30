@@ -3,6 +3,7 @@ const apiOrigin = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
 
 export type Actor = { userId: string; roles: string[]; permissions: string[]; adminApproved: boolean };
 export type Product = { id: string; name: string; slug: string; price: string; currency: string; categorySlug: string; returnEnabled: boolean; featured?: boolean; image: { objectKey: string; altText: string | null } | null; available: boolean; rating: number | null; reviewCount: number; createdAt: string };
+export type AdminProductSummary = { id: string; name: string; slug: string; price: string; currency: string; status: string; featured: boolean; returnEnabled: boolean; category: string; categorySlug: string; subcategory: string; subcategorySlug: string; createdAt: string; updatedAt: string };
 export type ProductDetail = Omit<Product, "categorySlug" | "image"> & { categoryId: string; description: string | null; attributes: Record<string, unknown>; variants: Array<{ id: string; title: string; price: string }>; images: Array<{ id: string; objectKey: string; altText: string | null }> };
 export type CustomerAddress = { id: string; label: string; contactName: string; phone: string; line1: string; line2: string | null; city: string; state: string; postalCode: string; country: string; isDefault: boolean };
 export type CartItem = { id: string; productId: string; variantId: string | null; name: string; slug: string; variantTitle: string | null; price: string; currency: string; quantity: number };
@@ -63,7 +64,7 @@ export const customerApi = {
 
 export const adminApi = {
   summary: () => api<unknown>("/api/admin/summary"),
-  products: (query: URLSearchParams = new URLSearchParams()) => api<{ products: Product[] }>(`/api/admin/products?${query}`),
+  products: (query: URLSearchParams = new URLSearchParams()) => api<{ products: AdminProductSummary[]; limit: number; offset: number }>(`/api/admin/products?${query}`),
   onboarding: () => api<unknown>("/api/admin/onboarding"),
   categories: () => api<unknown>("/api/admin/categories"),
   createProduct: (input: Record<string, unknown>) => api<unknown>("/api/admin/products", { method: "POST", body: json(input) }),
