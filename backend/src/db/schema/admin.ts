@@ -66,9 +66,12 @@ export const adminCategoryAssignments = pgTable("admin_category_assignments", {
 
 export const adminAuditEvents = pgTable("admin_audit_events", {
   id: uuid("id").defaultRandom().primaryKey(),
-  adminId: uuid("admin_id").notNull().references(() => admins.id),
+  adminId: uuid("admin_id").references(() => admins.id),
   actorUserId: text("actor_user_id").notNull().references(() => users.id),
   action: text("action").notNull(),
+  entityType: text("entity_type").notNull().default("ADMIN"),
+  entityId: text("entity_id").notNull(),
+  metadata: jsonb("metadata").$type<Record<string, string | number | boolean | null>>().notNull().default({}),
   changedFields: jsonb("changed_fields").$type<string[]>().notNull(),
   reason: text("reason"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),

@@ -1,4 +1,4 @@
-import type { CreateShipmentInput, ProviderAwb, ProviderServiceability, ProviderShipment, ShippingProvider } from "../shipping-provider";
+import { ShippingProviderRejection, type CreateShipmentInput, type ProviderAwb, type ProviderServiceability, type ProviderShipment, type ShippingProvider } from "../shipping-provider";
 import { ShiprocketAuthService, SHIPROCKET_API_BASE_URL, shiprocketBaseUrl } from "./shiprocket-auth.service";
 
 type Json = Record<string, unknown>;
@@ -76,7 +76,7 @@ export class ShiprocketAdapter implements ShippingProvider {
 
   async requestPickup(providerShipmentId: string): Promise<void> {
     const response = await this.request("/courier/generate/pickup", "POST", { shipment_id: [numericShipmentId(providerShipmentId)] });
-    if (response.status === 0 || response.status === false || response.pickup_status === 0 || response.pickup_status === false) throw new Error("Shiprocket pickup request was rejected");
+    if (response.status === 0 || response.status === false || response.pickup_status === 0 || response.pickup_status === false) throw new ShippingProviderRejection("Shiprocket pickup request was rejected");
   }
 
   async getTracking(awbNumber: string): Promise<unknown> {

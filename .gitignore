@@ -10,3 +10,8 @@ out/
 .dev.vars
 .dev.vars.*
 .wrangler/
+
+# Local probe/debug output must never be committed
+backend/scripts/_probe-*
+backend/scripts/_tmp-*
+snap.json

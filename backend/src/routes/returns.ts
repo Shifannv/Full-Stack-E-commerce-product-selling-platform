@@ -67,7 +67,7 @@ returnRoutes.post("/admin/returns/:returnId/inspection", async (c) => {
 
 returnRoutes.post("/super-admin/returns/:returnId/refund/authorize", async (c) => {
   owner(c.get("actor"));
-  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => authorizeRefund(db, c.req.param("returnId"))));
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => authorizeRefund(db, c.req.param("returnId"), c.get("actor").userId)));
 });
 
 returnRoutes.post("/super-admin/returns/:returnId/refund/submit", async (c) => {
@@ -75,6 +75,6 @@ returnRoutes.post("/super-admin/returns/:returnId/refund/submit", async (c) => {
   const env = c.env;
   if (!env.CASHFREE_CLIENT_ID || !env.CASHFREE_CLIENT_SECRET || !env.CASHFREE_ENVIRONMENT) throw new DomainError("Cashfree refund credentials are unavailable", 409);
   const provider = new CashfreeRefundAdapter(env.CASHFREE_CLIENT_ID, env.CASHFREE_CLIENT_SECRET, env.CASHFREE_ENVIRONMENT);
-  const result = await withDb(env.HYPERDRIVE.connectionString, (db) => submitRefund(db, c.req.param("returnId"), provider));
+  const result = await withDb(env.HYPERDRIVE.connectionString, (db) => submitRefund(db, c.req.param("returnId"), provider, c.get("actor").userId));
   return c.json({ id: result.id, status: result.status, providerReference: result.providerReference });
 });

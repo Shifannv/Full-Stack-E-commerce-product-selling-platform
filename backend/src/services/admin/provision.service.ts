@@ -29,7 +29,7 @@ export async function provisionCredentialUser(db: Db, input: { email: string; na
     await tx.insert(userRoles).values({ userId, roleId: role.id });
     if (roleName === "ADMIN") {
       const [admin] = await tx.insert(admins).values({ userId, status: "DRAFT" }).returning({ id: admins.id });
-      if (actorUserId) await tx.insert(adminAuditEvents).values({ adminId: admin.id, actorUserId, action: "ADMIN_PROVISIONED", changedFields: ["userId", "status"] });
+      if (actorUserId) await tx.insert(adminAuditEvents).values({ entityId: admin.id, adminId: admin.id, actorUserId, action: "ADMIN_PROVISIONED", changedFields: ["userId", "status"] });
       return { userId, email, adminId: admin.id };
     }
     return { userId, email };

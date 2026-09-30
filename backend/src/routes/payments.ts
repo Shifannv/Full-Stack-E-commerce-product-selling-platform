@@ -4,6 +4,7 @@ import { requireAuth, type AuthorizedEnv } from "../middleware/authorization";
 import { DomainError } from "../services/admin/admin.service";
 import { CashfreePaymentAdapter, verifyCashfreeWebhookSignature } from "../services/cashfree-payment.adapter";
 import { createPaymentSession, ingestCashfreeWebhook } from "../services/payment.service";
+import { readBoundedBody } from "../lib/security/body";
 
 type PaymentEnv = AuthorizedEnv & { Bindings: AuthorizedEnv["Bindings"] & { CASHFREE_CLIENT_ID?: string; CASHFREE_CLIENT_SECRET?: string; CASHFREE_ENVIRONMENT?: string } };
 export const paymentRoutes = new Hono<PaymentEnv>();
@@ -38,8 +39,7 @@ paymentRoutes.post("/orders/:orderId/payment-session", requireAuth, async (c) =>
 paymentWebhookRoutes.post("/payments/cashfree", async (c) => {
   const secret = c.env.CASHFREE_CLIENT_SECRET;
   if (!secret) return c.json({ error: "Webhook unavailable" }, 503);
-  const raw = await c.req.text();
-  if (new TextEncoder().encode(raw).byteLength > 65536) return c.json({ error: "Payload too large" }, 413);
+  const raw = new TextDecoder().decode(await readBoundedBody(c.req.raw, 65536));
   const signature = c.req.header("x-webhook-signature") ?? "", timestamp = c.req.header("x-webhook-timestamp") ?? "";
   if (!await verifyCashfreeWebhookSignature(raw, timestamp, signature, secret)) return c.json({ error: "Unauthorized" }, 401);
   let payload: unknown;

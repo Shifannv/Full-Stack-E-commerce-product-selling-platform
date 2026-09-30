@@ -4,6 +4,18 @@ import { users } from "./auth";
 import { orderItems, orders } from "./orders";
 import { admins } from "./rbac";
 
+// These are percentage rates expressed in basis points (10% = 1000).  Keeping
+// the rate integral means settlement arithmetic never depends on floats.
+export const platformFinanceSettings = pgTable("platform_finance_settings", {
+  settingKey: text("setting_key").primaryKey(),
+  basisPoints: numeric("basis_points", { precision: 5, scale: 0 }).notNull(),
+  updatedByUserId: text("updated_by_user_id").references(() => users.id),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [
+  check("platform_finance_settings_key_check", sql`${table.settingKey} in ('COMMISSION_BPS', 'PAYMENT_GATEWAY_FEE_BPS')`),
+  check("platform_finance_settings_bps_check", sql`${table.basisPoints} >= 0 and ${table.basisPoints} <= 10000`),
+]);
+
 export const adminSettlements = pgTable("admin_settlements", {
   id: uuid("id").defaultRandom().primaryKey(),
   adminId: uuid("admin_id").notNull().references(() => admins.id),

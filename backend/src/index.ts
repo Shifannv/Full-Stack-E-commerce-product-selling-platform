@@ -16,6 +16,10 @@ import { publicReviewRoutes, reviewRoutes } from "./routes/reviews";
 import { financeRoutes } from "./routes/finance";
 import { paymentRoutes, paymentWebhookRoutes } from "./routes/payments";
 import { runDueOrderExpiryBatch } from "./services/unpaid-expiry.service";
+import { mutationOrigin } from "./middleware/mutation-origin";
+import { runShippingReconciliationBatch } from "./services/shipping/shipping.service";
+import { reconciliationRoutes } from "./routes/super-admin/reconciliation";
+import { runReconciliationBatch } from "./services/reconciliation.service";
 
 export const app = new Hono<{ Bindings: AuthBindings; Variables: { actor: Actor } }>();
 
@@ -23,6 +27,7 @@ app.use("/api/*", cors({
   origin: (origin, c) => origin === c.env.FRONTEND_ORIGIN ? origin : undefined,
   credentials: true,
 }));
+app.use("/api/*", mutationOrigin);
 
 app.all("/api/auth/*", async (c) => {
   let client: ReturnType<typeof createAuth>["client"] | undefined;
@@ -92,6 +97,7 @@ app.route("/api", paymentRoutes);
 app.route("/api", invitationRoutes);
 app.route("/api/admin", adminRoutes);
 app.route("/api/super-admin", superAdminDashboardRoutes);
+app.route("/api/super-admin", reconciliationRoutes);
 app.route("/api", shippingRoutes);
 app.route("/api", returnRoutes);
 app.route("/webhooks", webhookRoutes);
@@ -101,7 +107,11 @@ export default {
   fetch: app.fetch,
   async scheduled(_controller: unknown, env: AuthBindings) {
     const { db, client } = createDb(env.HYPERDRIVE.connectionString);
-    try { await runDueOrderExpiryBatch(db); }
+    try {
+      const results = await Promise.allSettled([runDueOrderExpiryBatch(db), runShippingReconciliationBatch(db), runReconciliationBatch(db)]);
+      const failed = results.find(result => result.status === "rejected");
+      if (failed?.status === "rejected") throw failed.reason;
+    }
     finally { await client.end({ timeout: 1 }); }
   },
 };

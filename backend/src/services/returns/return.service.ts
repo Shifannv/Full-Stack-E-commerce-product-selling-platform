@@ -1,4 +1,5 @@
 import { and, eq, sql } from "drizzle-orm";
+import { recordSensitiveAction } from "../security-audit";
 import type { createDb } from "../../db";
 import { adminAddresses } from "../../db/schema/admin";
 import { orderItems, orders, payments } from "../../db/schema/orders";
@@ -107,7 +108,7 @@ function paise(value: string): number {
   return Number(whole) * 100 + Number(decimals.padEnd(2, "0").slice(0, 2));
 }
 
-export async function authorizeRefund(db: Db, returnId: string) {
+export async function authorizeRefund(db: Db, returnId: string, actorUserId: string) {
   return withTransitionRetry(db, async (tx) => {
     const [reference] = await tx.select({ orderId: returns.orderId }).from(returns).where(eq(returns.id, returnId)).limit(1);
     if (!reference) throw new DomainError("RETURN_UNAVAILABLE", 404);
@@ -132,11 +133,12 @@ export async function authorizeRefund(db: Db, returnId: string) {
     const amount = (grossPaise / 100).toFixed(2);
     const [refund] = await tx.insert(refunds).values({ returnId, orderId: record.orderId, paymentId: payment.id, amount, currency: payment.currency, reason: "APPROVED_RETURN", status: "PENDING_PROVIDER" }).returning();
     await tx.update(returns).set({ grossRefundAmount: amount, deductionAmount: "0", netRefundAmount: amount, deductionBreakdown: {}, updatedAt: new Date() }).where(eq(returns.id, returnId));
+    await recordSensitiveAction(tx, actorUserId, "REFUND_AUTHORIZED", "REFUND", refund.id, { returnId }, record.adminId);
     return refund;
   });
 }
 
-export async function submitRefund(db: Db, returnId: string, provider: CashfreeRefundAdapter) {
+export async function submitRefund(db: Db, returnId: string, provider: CashfreeRefundAdapter, actorUserId: string) {
   const [refund] = await db.select().from(refunds).where(eq(refunds.returnId, returnId)).limit(1);
   if (!refund) throw new DomainError("Authorized refund unavailable", 404);
   if (refund.status === "SUCCESS") return refund;
@@ -172,10 +174,13 @@ export async function submitRefund(db: Db, returnId: string, provider: CashfreeR
     if (current.status === status && (!providerReference || current.providerReference === providerReference)) return current;
     const [saved] = await tx.update(refunds).set({ status, providerReference: providerReference ?? current.providerReference, updatedAt: new Date() }).where(eq(refunds.id, current.id)).returning();
     await tx.update(returns).set({ status: status === "SUCCESS" ? "REFUNDED" : status === "FAILED" ? "RETURN_ISSUE" : "REFUND_PROCESSING", updatedAt: new Date() }).where(eq(returns.id, returnId));
+    await recordSensitiveAction(tx, actorUserId, "REFUND_RESULT_RECORDED", "REFUND", saved.id, { status }, lockedReturn.adminId);
     return saved;
   });
 
   let result: Awaited<ReturnType<CashfreeRefundAdapter["createRefund"]>>;
+  // Durable intent before external I/O; never hold business locks over a call.
+  await db.transaction(tx => recordSensitiveAction(tx, actorUserId, "REFUND_SUBMITTED", "REFUND", refund.id, {}, record.adminId));
   try {
     result = refund.status === "PENDING_PROVIDER"
       ? await provider.createRefund(payment.providerOrderId, refund.id, refund.amount)

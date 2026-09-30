@@ -60,24 +60,24 @@ export async function getAdminCategoryConfig(db: Db, adminId: string) {
   })));
 }
 
-export async function createCategory(db: Db, input: Record<string, unknown>) {
+export async function createCategory(db: Db | AdminTx, input: Record<string, unknown>) {
   const [result] = await db.insert(categories).values({ name: requiredText(input.name, "name"), slug: slug(input.slug), description: typeof input.description === "string" ? input.description.trim().slice(0, 2000) : null }).returning();
   return result;
 }
 
-export async function createSubcategory(db: Db, input: Record<string, unknown>, adminId?: string) {
+export async function createSubcategory(db: Db | AdminTx, input: Record<string, unknown>, adminId?: string) {
   const categoryId = requiredText(input.categoryId, "categoryId", 40);
   return db.transaction(async (tx) => {
     const admin = adminId ? await lockedCategoryScope(tx, adminId, categoryId) : null;
     const [category] = await tx.select({ status: categories.status }).from(categories).where(eq(categories.id, categoryId)).limit(1);
     if (!category || category.status !== "PUBLISHED") throw new DomainError("Category unavailable", 404);
     const [result] = await tx.insert(subcategories).values({ categoryId, name: requiredText(input.name, "name"), slug: slug(input.slug), customizedByAdminId: adminId, status: adminId ? "DRAFT" : "PUBLISHED" }).returning();
-    if (admin) await tx.insert(adminAuditEvents).values({ adminId: admin.id, actorUserId: admin.userId, action: "SUBCATEGORY_CREATED", changedFields: [result.id, categoryId] });
+    if (admin) await tx.insert(adminAuditEvents).values({ entityType: "SUBCATEGORY", entityId: result.id, adminId: admin.id, actorUserId: admin.userId, action: "SUBCATEGORY_CREATED", changedFields: [result.id, categoryId] });
     return result;
   });
 }
 
-export async function configureField(db: Db, input: Record<string, unknown>) {
+export async function configureField(db: Db | AdminTx, input: Record<string, unknown>) {
   const categoryId = requiredText(input.categoryId, "categoryId", 40);
   const key = requiredText(input.key, "key", 80);
   if (!/^[a-z][a-z0-9_]*$/.test(key)) throw new DomainError("Invalid field key", 422);
@@ -115,7 +115,7 @@ export async function createProduct(db: Db, adminId: string, input: Record<strin
       heightCm: optionalPositive(input.heightCm, "heightCm"),
     }).returning();
     await tx.insert(productAdmins).values({ productId: result.id, adminId });
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: admin.userId, action: "PRODUCT_CREATED", changedFields: [result.id, categoryId] });
+    await tx.insert(adminAuditEvents).values({ entityType: "PRODUCT", entityId: result.id, adminId, actorUserId: admin.userId, action: "PRODUCT_CREATED", changedFields: [result.id, categoryId] });
     return result;
   });
 }
@@ -175,7 +175,7 @@ export async function updateProduct(db: Db, adminId: string, productId: string, 
   return db.transaction(async (tx) => {
     const { admin } = await lockedProductScope(tx, adminId, productId);
     const [result] = await tx.update(products).set(changes).where(eq(products.id, productId)).returning();
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: admin.userId, action: "PRODUCT_UPDATED", changedFields: [productId, ...Object.keys(input)] });
+    await tx.insert(adminAuditEvents).values({ entityType: "PRODUCT", entityId: productId, adminId, actorUserId: admin.userId, action: "PRODUCT_UPDATED", changedFields: [productId, ...Object.keys(input)] });
     return result;
   });
 }
@@ -185,7 +185,7 @@ export async function createVariant(db: Db, adminId: string, productId: string, 
   return db.transaction(async (tx) => {
     const { admin } = await lockedProductScope(tx, adminId, productId);
     const [variant] = await tx.insert(productVariants).values({ productId, sku: requiredText(input.sku, "sku", 100), title: requiredText(input.title, "title", 200), price: money(input.price), attributes }).returning();
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: admin.userId, action: "PRODUCT_VARIANT_CREATED", changedFields: [productId, variant.id] });
+    await tx.insert(adminAuditEvents).values({ entityType: "PRODUCT", entityId: productId, adminId, actorUserId: admin.userId, action: "PRODUCT_VARIANT_CREATED", changedFields: [productId, variant.id] });
     return variant;
   });
 }
@@ -203,7 +203,7 @@ export async function saveProductImageMetadata(db: Db, adminId: string, productI
   return db.transaction(async (tx) => {
     const { admin } = await lockedProductScope(tx, adminId, productId);
     const [image] = await tx.insert(productImages).values({ productId, variantId, objectKey, altText: typeof input.altText === "string" ? input.altText.trim().slice(0, 300) : null, sortOrder }).returning();
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: admin.userId, action: "PRODUCT_IMAGE_SAVED", changedFields: [productId, image.id] });
+    await tx.insert(adminAuditEvents).values({ entityType: "PRODUCT", entityId: productId, adminId, actorUserId: admin.userId, action: "PRODUCT_IMAGE_SAVED", changedFields: [productId, image.id] });
     return image;
   });
 }
@@ -222,7 +222,7 @@ export async function setProductInventory(db: Db, adminId: string, productId: st
       ? await tx.update(inventories).set({ availableQuantity: quantity, version: sql`${inventories.version} + 1`, updatedAt: new Date() }).where(and(eq(inventories.id, existing.id), eq(inventories.version, expectedVersion as number))).returning()
       : expectedVersion === 0 ? await tx.insert(inventories).values({ productId, variantId: variantId ?? null, availableQuantity: quantity }).onConflictDoNothing().returning() : [];
     if (!inventory) throw new DomainError("INVENTORY_VERSION_STALE", 409);
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: admin.userId, action: "INVENTORY_SET", changedFields: [productId, variantId ?? "base", "availableQuantity"] });
+    await tx.insert(adminAuditEvents).values({ entityType: "PRODUCT", entityId: productId, adminId, actorUserId: admin.userId, action: "INVENTORY_SET", changedFields: [productId, variantId ?? "base", "availableQuantity"] });
     return inventory;
   });
 }

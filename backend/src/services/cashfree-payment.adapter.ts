@@ -41,8 +41,14 @@ function equalBytes(actual: Uint8Array, expected: Uint8Array): boolean {
   for (let index = 0; index < Math.max(actual.length, expected.length); index++) difference |= (actual[index] ?? 0) ^ (expected[index] ?? 0);
   return difference === 0;
 }
-export async function verifyCashfreeWebhookSignature(rawBody: string, timestamp: string, signature: string, clientSecret: string): Promise<boolean> {
-  if (!timestamp || !signature || !clientSecret || !/^\d{10,16}$/.test(timestamp)) return false;
+// Application policy: 24 hours for delayed delivery/retries, five minutes future
+// skew. This is not a claim about configured merchant retry schedules.
+export const CASHFREE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+export const CASHFREE_FUTURE_SKEW_MS = 5 * 60 * 1000;
+export async function verifyCashfreeWebhookSignature(rawBody: string, timestamp: string, signature: string, clientSecret: string, now = Date.now()): Promise<boolean> {
+  if (!timestamp || !signature || !clientSecret || !/^\d{13}$/.test(timestamp)) return false;
+  const age = now - Number(timestamp);
+  if (age > CASHFREE_MAX_AGE_MS || age < -CASHFREE_FUTURE_SKEW_MS) return false;
   const supplied = decodeBase64(signature);
   if (!supplied) return false;
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(clientSecret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);

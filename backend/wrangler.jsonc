@@ -3,6 +3,14 @@
   "name": "ecommerce-api",
   "main": "src/index.ts",
   "compatibility_date": "2025-02-04",
+
+  // The frontend, BETTER_AUTH_URL and FRONTEND_ORIGIN all target this exact
+  // origin. Pinning it makes a port conflict fail loudly instead of silently
+  // moving the API to another port and breaking browser requests.
+  "dev": {
+    "ip": "127.0.0.1",
+    "port": 8787
+  },
   "observability": {
     "enabled": true
   },

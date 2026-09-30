@@ -106,16 +106,25 @@ export const releaseUnpaidOrder = (db: Db, orderId: string, reason: "EXPIRED") =
   return expireUnpaidOrder(db, orderId);
 };
 
-export async function cancelUnpaidOrder(db: Db, orderId: string, customerId: string) {
-  return withTransitionRetry(db, async (tx) => {
-    const { order, payment } = await lockOrderAndPayment(tx, orderId);
-    if (order.customerId !== customerId) throw new DomainError("ORDER_UNAVAILABLE", 404);
-    if (order.status !== "CREATED" || payment.status !== "PENDING" || order.stockState !== "RESERVED") throw new DomainError("UNPAID_CANCELLATION_UNAVAILABLE", 409);
-    await moveReserved(tx, orderId, true);
-    await tx.update(orders).set({ status: "CANCELLED", stockState: "RELEASED", cancelledAt: sql`clock_timestamp()`, updatedAt: sql`clock_timestamp()` }).where(eq(orders.id, orderId));
-    return { stockState: "RELEASED", status: "CANCELLED" };
-  });
+// Caller owns the transaction so a customer audit event can commit with the
+// established order -> payment -> inventory transition.
+export async function cancelUnpaidOrderInTransaction(tx: Tx, orderId: string, customerId: string) {
+  const { order, payment } = await lockOrderAndPayment(tx, orderId);
+  if (order.customerId !== customerId) throw new DomainError("ORDER_UNAVAILABLE", 404);
+  if (order.status === "CANCELLED" && order.stockState === "RELEASED" && payment.status === "PENDING") {
+    return { orderId: order.id, status: order.status, paymentStatus: payment.status, stockState: order.stockState, cancelledAt: order.cancelledAt, replayed: true };
+  }
+  if (order.status !== "CREATED" || payment.status !== "PENDING" || order.stockState !== "RESERVED") throw new DomainError("UNPAID_CANCELLATION_UNAVAILABLE", 409);
+  const [{ expired }] = await tx.execute<{ expired: boolean }>(sql`select payment_expires_at is null or clock_timestamp() >= payment_expires_at as expired from orders where id = ${orderId}`);
+  if (expired) throw new DomainError("UNPAID_CANCELLATION_WINDOW_ELAPSED", 409);
+  await moveReserved(tx, orderId, true);
+  const [updated] = await tx.update(orders).set({ status: "CANCELLED", stockState: "RELEASED", cancelledAt: sql`clock_timestamp()`, updatedAt: sql`clock_timestamp()` })
+    .where(eq(orders.id, orderId)).returning({ id: orders.id, status: orders.status, paymentStatus: orders.paymentStatus, stockState: orders.stockState, cancelledAt: orders.cancelledAt });
+  return { orderId: updated.id, status: updated.status, paymentStatus: updated.paymentStatus, stockState: updated.stockState, cancelledAt: updated.cancelledAt, replayed: false };
 }
+
+export const cancelUnpaidOrder = (db: Db, orderId: string, customerId: string) =>
+  withTransitionRetry(db, tx => cancelUnpaidOrderInTransaction(tx, orderId, customerId));
 
 // Only a definitive provider-order failure may call this. A dropped browser,
 // failed attempt, or timeout must leave the payment PENDING.

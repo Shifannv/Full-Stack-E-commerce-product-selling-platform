@@ -1,15 +1,60 @@
 import { and, eq, inArray } from "drizzle-orm";
 import type { createDb } from "../../db";
-import { adminSettlements, payoutRequests, payoutSettlementItems } from "../../db/schema/finance";
+import { adminSettlements, payoutRequests, payoutSettlementItems, platformFinanceSettings } from "../../db/schema/finance";
 import { orderItems, orders } from "../../db/schema/orders";
 import { DomainError, requiredText } from "./admin.service";
 import { requireSettlementEligible } from "./settlement-eligibility";
 import { refunds, returnItems } from "../../db/schema/returns";
 import { withTransitionRetry } from "../reservation.service";
+import { recordSensitiveAction } from "../security-audit";
+import { admins } from "../../db/schema/rbac";
 
 type Db = ReturnType<typeof createDb>["db"];
+type FinanceSettingKey = "COMMISSION_BPS" | "PAYMENT_GATEWAY_FEE_BPS";
+type FinanceTx = Parameters<Parameters<Db["transaction"]>[0]>[0];
+const financeSettingKeys: FinanceSettingKey[] = ["COMMISSION_BPS", "PAYMENT_GATEWAY_FEE_BPS"];
 const paise = (value: string) => { if (!/^\d+(\.\d{1,2})?$/.test(value)) throw new DomainError("Invalid amount", 422); const [whole, decimal = ""] = value.split("."); return Number(whole) * 100 + Number(decimal.padEnd(2, "0")); };
 const rupees = (value: number) => `${Math.floor(value / 100)}.${String(value % 100).padStart(2, "0")}`;
+
+function validBasisPoints(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0 && value <= 10000;
+}
+
+export function parseBasisPoints(value: unknown): number {
+  // JSON numbers only: strings such as "10%", exponent notation, and decimal
+  // percentages have no ambiguous interpretation at this API boundary.
+  if (!validBasisPoints(value)) throw new DomainError("Invalid fee rate", 422);
+  return value;
+}
+
+async function lockedFinanceSettings(tx: FinanceTx) {
+  const rows = await tx.select().from(platformFinanceSettings)
+    .where(inArray(platformFinanceSettings.settingKey, financeSettingKeys)).orderBy(platformFinanceSettings.settingKey).for("update");
+  if (rows.length !== financeSettingKeys.length) throw new DomainError("Finance settings unavailable", 503);
+  const values = new Map(rows.map(row => [row.settingKey, Number(row.basisPoints)]));
+  const commissionBps = values.get("COMMISSION_BPS"), gatewayFeeBps = values.get("PAYMENT_GATEWAY_FEE_BPS");
+  if (!validBasisPoints(commissionBps) || !validBasisPoints(gatewayFeeBps)) throw new DomainError("Finance settings invalid", 503);
+  return { commissionBps, gatewayFeeBps };
+}
+
+export async function getFinanceSettings(db: Db) {
+  return db.transaction(async tx => lockedFinanceSettings(tx));
+}
+
+export async function updateFinanceSetting(db: Db, settingKey: FinanceSettingKey, basisPoints: unknown, actorUserId: string) {
+  const rate = parseBasisPoints(basisPoints);
+  return db.transaction(async tx => {
+    // Lock both rows in a fixed order so an update and settlement observe either
+    // the complete old pair or the complete new pair.
+    const current = await lockedFinanceSettings(tx);
+    const oldValue = settingKey === "COMMISSION_BPS" ? current.commissionBps : current.gatewayFeeBps;
+    const [setting] = await tx.update(platformFinanceSettings).set({ basisPoints: String(rate), updatedByUserId: actorUserId, updatedAt: new Date() })
+      .where(eq(platformFinanceSettings.settingKey, settingKey)).returning();
+    await recordSensitiveAction(tx, actorUserId, "FINANCE_SETTING_UPDATED", "FINANCE_SETTING", settingKey,
+      { setting: settingKey, oldValue, newValue: rate });
+    return setting;
+  });
+}
 
 export function calculateSettlement(gross: string, commissionBps: number, gatewayFeeBps: number, refundAdjustment = "0.00") {
   if (!Number.isInteger(commissionBps) || commissionBps < 0 || commissionBps > 10000 || !Number.isInteger(gatewayFeeBps) || gatewayFeeBps < 0 || gatewayFeeBps > 10000) throw new DomainError("Invalid fee rate", 422);
@@ -20,12 +65,17 @@ export function calculateSettlement(gross: string, commissionBps: number, gatewa
   return { grossAmount: rupees(grossPaise), commissionAmount: rupees(commission), gatewayFeeAmount: rupees(gateway), refundAdjustmentAmount: rupees(refundPaise), netPayable: rupees(net) };
 }
 
-export async function createSettlement(db: Db, orderItemId: string, commissionBps: number, gatewayFeeBps: number, refundAdjustment: string) {
+export async function createSettlement(db: Db, orderItemId: string, refundAdjustment: string, actorUserId: string) {
   return withTransitionRetry(db, async (tx) => {
     paise(refundAdjustment);
+    const { commissionBps, gatewayFeeBps } = await lockedFinanceSettings(tx);
     const item = await requireSettlementEligible(tx, orderItemId, refundAdjustment);
     const values = calculateSettlement(item.totalAmount, commissionBps, gatewayFeeBps, refundAdjustment);
-    try { const [result] = await tx.insert(adminSettlements).values({ adminId: item.adminId, orderId: item.orderId, orderItemId: item.id, ...values }).returning(); return result; }
+    try {
+      const [result] = await tx.insert(adminSettlements).values({ adminId: item.adminId, orderId: item.orderId, orderItemId: item.id, ...values }).returning();
+      await recordSensitiveAction(tx, actorUserId, "SETTLEMENT_CREATED", "SETTLEMENT", result.id, { orderItemId }, item.adminId);
+      return result;
+    }
     catch (error) { if ((error as { code?: string }).code === "23505") throw new DomainError("Settlement already exists", 409); throw error; }
   });
 }
@@ -85,6 +135,8 @@ export async function requestPayout(db: Db, adminId: string) {
       .where(and(inArray(adminSettlements.id, ids), eq(adminSettlements.adminId, adminId), inArray(adminSettlements.status, ["AVAILABLE", "HELD"])))
       .returning({ id: adminSettlements.id });
     if (updated.length !== ids.length) throw new DomainError("SETTLEMENT_ALLOCATION_CONFLICT", 409);
+    const [owner] = await tx.select({ userId: admins.userId }).from(admins).where(eq(admins.id, adminId));
+    await recordSensitiveAction(tx, owner.userId, "PAYOUT_REQUESTED", "PAYOUT", request.id, { settlementCount: ids.length }, adminId);
     return request;
   });
   // Preserve quarantine changes even if no payable balance remains.
@@ -101,16 +153,18 @@ export async function reviewPayout(db: Db, payoutId: string, userId: string, dec
       for (const link of links) await tx.update(adminSettlements).set({ status: "HELD", updatedAt: new Date() }).where(eq(adminSettlements.id, link.id));
       await tx.delete(payoutSettlementItems).where(eq(payoutSettlementItems.payoutRequestId, payoutId));
     }
+    await recordSensitiveAction(tx, userId, `PAYOUT_${decision}`, "PAYOUT", request.id, {}, request.adminId);
     return request;
   });
 }
 
-export async function markPayoutPaid(db: Db, payoutId: string, reference: string) {
+export async function markPayoutPaid(db: Db, payoutId: string, reference: string, actorUserId: string) {
   return db.transaction(async (tx) => {
     const [request] = await tx.update(payoutRequests).set({ status: "PAID", paidAt: new Date(), paymentReference: requiredText(reference, "paymentReference", 200), updatedAt: new Date() }).where(and(eq(payoutRequests.id, payoutId), eq(payoutRequests.status, "APPROVED"))).returning();
     if (!request) throw new DomainError("Approved payout unavailable", 409);
     const links = await tx.select({ id: payoutSettlementItems.settlementId }).from(payoutSettlementItems).where(eq(payoutSettlementItems.payoutRequestId, payoutId));
     for (const link of links) await tx.update(adminSettlements).set({ status: "PAID", updatedAt: new Date() }).where(eq(adminSettlements.id, link.id));
+    await recordSensitiveAction(tx, actorUserId, "PAYOUT_PAID", "PAYOUT", request.id, {}, request.adminId);
     return request;
   });
 }
