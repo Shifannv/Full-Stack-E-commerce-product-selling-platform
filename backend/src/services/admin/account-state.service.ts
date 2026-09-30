@@ -21,7 +21,7 @@ export async function transitionAdminStatus(db: Db, adminId: string, actorUserId
     }
     const status = action === "SUSPEND" ? "SUSPENDED" : "ACTIVE";
     const [result] = await tx.update(admins).set({ status, updatedAt: new Date() }).where(eq(admins.id, adminId)).returning();
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId, action: action === "SUSPEND" ? "ADMIN_SUSPENDED" : "ADMIN_RECOVERED", changedFields: ["status"], reason });
+    await tx.insert(adminAuditEvents).values({ entityId: adminId, adminId, actorUserId, action: action === "SUSPEND" ? "ADMIN_SUSPENDED" : "ADMIN_RECOVERED", changedFields: ["status"], reason });
     return result;
   });
 }

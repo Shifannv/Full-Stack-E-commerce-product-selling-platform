@@ -34,7 +34,7 @@ async function ownIdentity(tx: AdminTx, userId: string) {
 }
 
 async function audit(tx: AdminTx, adminId: string, actorUserId: string, action: string, entityId: string, reason?: string) {
-  await tx.insert(adminAuditEvents).values({ adminId, actorUserId, action, changedFields: [entityId, "status"], reason });
+  await tx.insert(adminAuditEvents).values({ entityType: "ADMIN_LIFECYCLE", entityId, adminId, actorUserId, action, changedFields: [entityId, "status"], reason });
 }
 
 async function verifyCredential(tx: AdminTx, userId: string, password: unknown) {

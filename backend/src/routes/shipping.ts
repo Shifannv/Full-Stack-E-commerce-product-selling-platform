@@ -5,6 +5,9 @@ import { DomainError } from "../services/admin/admin.service";
 import { getAdminId } from "../services/admin/admin.service";
 import { assignShipmentAwb, createForwardShipment, getOrderTracking, ingestShiprocketWebhook, requestShipmentPickup } from "../services/shipping/shipping.service";
 import { getShiprocketAdapter } from "../services/shipping/providers/shiprocket.adapter";
+import { readBoundedBody } from "../lib/security/body";
+import { auditedMutation } from "../services/security-audit";
+import { listShippingOperations, recordShippingOperationEvidence, retryShippingOperationReconciliation, runShippingReconciliationBatch } from "../services/shipping/shipping.service";
 
 type ShippingEnv = AuthorizedEnv & { Bindings: AuthorizedEnv["Bindings"] & { SHIPPING_PROVIDER?: string; SHIPROCKET_API_EMAIL?: string; SHIPROCKET_API_PASSWORD?: string; SHIPROCKET_API_BASE_URL?: string; SHIPROCKET_WEBHOOK_TOKEN?: string } };
 export const shippingRoutes = new Hono<ShippingEnv>();
@@ -37,6 +40,30 @@ const onError = (error: Error, c: Parameters<Parameters<typeof shippingRoutes.on
 };
 shippingRoutes.onError(onError);
 webhookRoutes.onError(onError);
+
+shippingRoutes.use("/super-admin/shipping/*", requireAuth, async (c, next) => {
+  if (!c.get("actor").roles.includes("SUPER_ADMIN")) throw new DomainError("Forbidden", 403);
+  const id = c.req.param("id");
+  if (id && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) throw new DomainError("Invalid operation ID", 422);
+  await next();
+});
+shippingRoutes.get("/super-admin/shipping/operations", async (c) => {
+  const after = c.req.query("after");
+  if (after && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(after)) throw new DomainError("Invalid cursor", 422);
+  return c.json({ operations: await withDb(c.env.HYPERDRIVE.connectionString, db => listShippingOperations(db, after)) });
+});
+shippingRoutes.post("/super-admin/shipping/reconcile", async (c) => c.json(await withDb(c.env.HYPERDRIVE.connectionString, db => runShippingReconciliationBatch(db))));
+shippingRoutes.post("/super-admin/shipping/operations/:id/retry", async (c) => c.json({ operation: await withDb(c.env.HYPERDRIVE.connectionString,
+  db => auditedMutation(db, c.get("actor").userId, "shipping.reconciliation.retry", "shipping_operation",
+    tx => retryShippingOperationReconciliation(tx as never, c.req.param("id"), c.get("actor").userId), result => result.id)) }));
+shippingRoutes.post("/super-admin/shipping/operations/:id/evidence", async (c) => {
+  const raw = new TextDecoder().decode(await readBoundedBody(c.req.raw, 4096));
+  let body: { providerReference?: unknown; evidence?: unknown };
+  try { body = JSON.parse(raw); } catch { throw new DomainError("Invalid evidence", 422); }
+  if (!body || typeof body.providerReference !== "string" || !body.evidence || typeof body.evidence !== "object" || Array.isArray(body.evidence)) throw new DomainError("Invalid evidence", 422);
+  return c.json({ operation: await withDb(c.env.HYPERDRIVE.connectionString, db => auditedMutation(db, c.get("actor").userId, "shipping.reconciliation.evidence", "shipping_operation",
+    tx => recordShippingOperationEvidence(tx as never, c.req.param("id"), body.providerReference as string, body.evidence as Record<string, unknown>, c.get("actor").userId), result => result.id)) });
+});
 
 shippingRoutes.get("/orders/:orderId/tracking", requireAuth, async (c) => {
   const tracking = await withDb(c.env.HYPERDRIVE.connectionString, (db) => getOrderTracking(db, c.req.param("orderId"), c.get("actor"), "customer"));
@@ -80,8 +107,7 @@ webhookRoutes.post("/shipping/events", async (c) => {
   if (!sameToken(c.req.header("x-api-key") ?? "", expected)) return c.json({ error: "Unauthorized" }, 401);
   const contentType = c.req.header("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
   if (contentType !== "application/json") return c.json({ error: "Content-Type must be application/json" }, 415);
-  const raw = await c.req.text();
-  if (new TextEncoder().encode(raw).byteLength > 65536) return c.json({ error: "Payload too large" }, 413);
+  const raw = new TextDecoder().decode(await readBoundedBody(c.req.raw, 65536));
   let payload: unknown;
   try { payload = JSON.parse(raw); } catch { throw new DomainError("Invalid JSON body", 422); }
   const result = await withDb(c.env.HYPERDRIVE.connectionString, (db) => ingestShiprocketWebhook(db, payload));

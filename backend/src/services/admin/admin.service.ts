@@ -64,7 +64,7 @@ export async function saveAddress(db: Db, adminId: string, actorUserId: string, 
     const [address] = existing
       ? await tx.update(adminAddresses).set(data).where(eq(adminAddresses.id, existing.id)).returning()
       : await tx.insert(adminAddresses).values(data).returning();
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId, action: "ADDRESS_SAVED", changedFields: Object.keys(input) });
+    await tx.insert(adminAuditEvents).values({ entityId: adminId, adminId, actorUserId, action: "ADDRESS_SAVED", changedFields: Object.keys(input) });
     return address;
   });
 }
@@ -79,7 +79,7 @@ export async function saveKyc(db: Db, adminId: string, actorUserId: string, inpu
     const [result] = current
       ? await tx.update(adminKycSubmissions).set(data).where(eq(adminKycSubmissions.id, current.id)).returning()
       : await tx.insert(adminKycSubmissions).values(data).returning();
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId, action: "KYC_SAVED", changedFields: Object.keys(input) });
+    await tx.insert(adminAuditEvents).values({ entityId: adminId, adminId, actorUserId, action: "KYC_SAVED", changedFields: Object.keys(input) });
     return result;
   });
 }
@@ -92,7 +92,7 @@ export async function requestCategory(db: Db, adminId: string, categoryId: strin
     if (!category) throw new DomainError("Category unavailable", 404);
     const [assignment] = await tx.insert(adminCategoryAssignments).values({ adminId, categoryId, status: "REQUESTED" })
       .onConflictDoUpdate({ target: [adminCategoryAssignments.adminId, adminCategoryAssignments.categoryId], set: { status: "REQUESTED", updatedAt: new Date() } }).returning();
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: owner.userId, action: "CATEGORY_REQUESTED", changedFields: [categoryId, "status"] });
+    await tx.insert(adminAuditEvents).values({ entityType: "CATEGORY_ASSIGNMENT", entityId: assignment.id, metadata: { categoryId }, adminId, actorUserId: owner.userId, action: "CATEGORY_REQUESTED", changedFields: [categoryId, "status"] });
     return assignment;
   });
 }
@@ -105,7 +105,7 @@ export async function setCategoryAssignment(db: Db, adminId: string, categoryId:
     if (!category) throw new DomainError("Category unavailable", 404);
     const [assignment] = await tx.insert(adminCategoryAssignments).values({ adminId, categoryId, status: active ? "ACTIVE" : "REVOKED", assignedByUserId: reviewerId })
       .onConflictDoUpdate({ target: [adminCategoryAssignments.adminId, adminCategoryAssignments.categoryId], set: { status: active ? "ACTIVE" : "REVOKED", assignedByUserId: reviewerId, updatedAt: new Date() } }).returning();
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: reviewerId, action: active ? "CATEGORY_ASSIGNED" : "CATEGORY_REVOKED", changedFields: [categoryId, "status"], reason });
+    await tx.insert(adminAuditEvents).values({ entityType: "CATEGORY_ASSIGNMENT", entityId: assignment.id, metadata: { categoryId }, adminId, actorUserId: reviewerId, action: active ? "CATEGORY_ASSIGNED" : "CATEGORY_REVOKED", changedFields: [categoryId, "status"], reason });
     return assignment;
   });
 }
@@ -124,7 +124,7 @@ export async function submitApplication(db: Db, adminId: string, actorUserId: st
     if (!evidence) throw new DomainError("Private KYC evidence is required", 422);
     const [result] = await tx.update(adminKycSubmissions).set({ status: "PENDING_SUPER_ADMIN_APPROVAL", submittedAt: new Date(), updatedAt: new Date() }).where(eq(adminKycSubmissions.id, kyc.id)).returning();
     await tx.update(admins).set({ status: "PENDING_SUPER_ADMIN_APPROVAL", updatedAt: new Date() }).where(eq(admins.id, adminId));
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId, action: "APPLICATION_SUBMITTED", changedFields: ["status"] });
+    await tx.insert(adminAuditEvents).values({ entityId: adminId, adminId, actorUserId, action: "APPLICATION_SUBMITTED", changedFields: ["status"] });
     return result;
   });
 }
@@ -146,7 +146,7 @@ export async function reviewApplication(db: Db, adminId: string, reviewerId: str
     }
     const [result] = await tx.update(adminKycSubmissions).set({ status: decision, reviewedByUserId: reviewerId, reviewedAt: new Date(), reviewNotes: notes, updatedAt: new Date() }).where(eq(adminKycSubmissions.id, kyc.id)).returning();
     await tx.update(admins).set({ status: decision === "APPROVED" ? "ACTIVE" : decision, updatedAt: new Date() }).where(eq(admins.id, adminId));
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: reviewerId, action: "APPLICATION_REVIEWED", changedFields: [decision, "status", "reviewNotes"], reason: notes });
+    await tx.insert(adminAuditEvents).values({ entityId: adminId, adminId, actorUserId: reviewerId, action: "APPLICATION_REVIEWED", changedFields: [decision, "status", "reviewNotes"], reason: notes });
     return result;
   });
 }
@@ -159,7 +159,7 @@ export async function correctApplication(db: Db, adminId: string, reviewerId: st
     if (owner.status !== "PENDING_SUPER_ADMIN_APPROVAL") throw new DomainError("Application is not pending review", 409);
     const [result] = await tx.update(adminKycSubmissions).set({ ...changes, updatedAt: new Date() }).where(eq(adminKycSubmissions.adminId, adminId)).returning();
     if (!result) throw new DomainError("Application unavailable", 404);
-    await tx.insert(adminAuditEvents).values({ adminId, actorUserId: reviewerId, action: "KYC_CORRECTED", changedFields: Object.keys(changes), reason });
+    await tx.insert(adminAuditEvents).values({ entityId: adminId, adminId, actorUserId: reviewerId, action: "KYC_CORRECTED", changedFields: Object.keys(changes), reason });
     return result;
   });
 }

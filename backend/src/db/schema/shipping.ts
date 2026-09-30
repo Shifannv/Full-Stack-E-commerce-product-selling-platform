@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { boolean, check, foreignKey, index, jsonb, pgTable, text, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { boolean, check, foreignKey, index, integer, jsonb, pgTable, text, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import { adminAddresses } from "./admin";
 import { orders, orderItems, type AddressSnapshot } from "./orders";
 import { admins } from "./rbac";
@@ -90,4 +90,31 @@ export const shipmentEvents = pgTable("shipment_events", {
 }, (table) => [
   unique("shipment_events_shipment_key_unique").on(table.shipmentId, table.eventKey),
   index("shipment_events_shipment_time_idx").on(table.shipmentId, table.eventTime),
+]);
+
+// Unmatched events cannot use shipment_events, whose shipment FK is mandatory.
+export const shippingOperations = pgTable("shipping_operations", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  operationKey: text("operation_key").notNull().unique(),
+  shipmentId: uuid("shipment_id").references(() => shipments.id, { onDelete: "cascade" }),
+  providerKey: text("provider_key").notNull(),
+  providerReference: text("provider_reference").notNull(),
+  kind: text("kind").notNull(),
+  state: text("state").notNull().default("IN_FLIGHT"),
+  actor: text("actor").notNull(),
+  evidence: jsonb("evidence").$type<Record<string, unknown>>(),
+  retryCount: integer("retry_count").notNull().default(0),
+  lastError: text("last_error"),
+  lastAttemptedAt: timestamp("last_attempted_at", { withTimezone: true }),
+  nextRetryAt: timestamp("next_retry_at", { withTimezone: true }),
+  resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [
+  check("shipping_operations_kind_check", sql`${table.kind} in ('CREATE','AWB','PICKUP','EVENT')`),
+  check("shipping_operations_state_check", sql`${table.state} in ('IN_FLIGHT','UNKNOWN','SUCCEEDED','FAILED','REVIEW')`),
+  check("shipping_operations_retry_check", sql`${table.retryCount} between 0 and 5`),
+  check("shipping_operations_scope_check", sql`${table.kind} = 'EVENT' or ${table.shipmentId} is not null`),
+  index("shipping_operations_due_idx").on(table.nextRetryAt, table.id).where(sql`${table.state} in ('IN_FLIGHT','UNKNOWN')`),
+  index("shipping_operations_shipment_idx").on(table.shipmentId),
 ]);

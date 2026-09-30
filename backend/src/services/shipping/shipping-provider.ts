@@ -21,6 +21,9 @@ export type ProviderShipment = { providerOrderId: string; providerShipmentId: st
 export type ProviderAwb = { awbNumber: string; carrierName?: string };
 export type ProviderServiceability = { available: boolean; courierCount: number };
 
+// Use only for explicit provider rejection evidence, never transport failures.
+export class ShippingProviderRejection extends Error {}
+
 export interface ShippingProvider {
   readonly key: string;
   createShipment(input: CreateShipmentInput): Promise<ProviderShipment>;

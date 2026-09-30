@@ -3,6 +3,8 @@ import { createMiddleware } from "hono/factory";
 import { users } from "../db/schema/auth";
 import { admins, permissions, rolePermissions, roles, userRoles } from "../db/schema/rbac";
 import { createAuth, type AuthBindings } from "../lib/auth/auth";
+import { accountEligible } from "../lib/auth/eligibility";
+import { mutationRateLimit } from "./rate-limit";
 
 export type Actor = {
   userId: string;
@@ -13,7 +15,7 @@ export type Actor = {
 
 export type AuthorizedEnv = {
   Bindings: AuthBindings;
-  Variables: { actor: Actor };
+  Variables: { actor: Actor; mutationRateChecked?: boolean };
 };
 
 export function hasPermission(actor: Actor, key: string): boolean {
@@ -32,7 +34,7 @@ function authenticate(archiveRecovery = false) { return createMiddleware<Authori
 
     const [user] = await connection.db.select({ status: users.status, deletedAt: users.deletedAt }).from(users)
       .where(eq(users.id, session.user.id)).limit(1);
-    if (!user || ((user.status !== "ACTIVE" || user.deletedAt) && !(archiveRecovery && user.status === "SUSPENDED" && user.deletedAt))) return c.json({ error: "Account unavailable" }, 403);
+    if (!accountEligible(user) && !(archiveRecovery && user?.status === "SUSPENDED" && user.deletedAt)) return c.json({ error: "Account unavailable" }, 403);
 
     const grants = await connection.db.select({ role: roles.name, permission: permissions.key })
       .from(userRoles)
@@ -47,7 +49,7 @@ function authenticate(archiveRecovery = false) { return createMiddleware<Authori
     if (roleNames.includes("ADMIN")) {
       const [admin] = await connection.db.select({ status: admins.status, deletedAt: admins.deletedAt }).from(admins)
         .where(eq(admins.userId, session.user.id)).limit(1);
-      adminApproved = admin?.status === "ACTIVE" && !admin.deletedAt;
+      adminApproved = accountEligible(admin);
     }
 
     c.set("actor", {
@@ -66,7 +68,7 @@ function authenticate(archiveRecovery = false) { return createMiddleware<Authori
     await client?.end({ timeout: 1 }).catch(() => undefined);
   }
 
-  await next();
+  return mutationRateLimit(c, next);
 }); }
 
 export const requirePermission = (key: string) => createMiddleware<AuthorizedEnv>(async (c, next) => {

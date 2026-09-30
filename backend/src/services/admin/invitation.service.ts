@@ -98,7 +98,7 @@ export async function createInvitation(
       .values({ userId, status: "DRAFT" })
       .returning({ id: admins.id });
 
-    await tx.insert(adminAuditEvents).values({
+    await tx.insert(adminAuditEvents).values({ entityId: admin.id,
       adminId: admin.id,
       actorUserId: input.invitedByUserId,
       action: "ADMIN_INVITED",
@@ -158,7 +158,7 @@ export async function reissueInvitation(
       .delete(verifications)
       .where(and(like(verifications.identifier, `${INVITE_PREFIX}%`), sql`${verifications.value}::jsonb ->> 'adminId' = ${admin.id}`));
 
-    await tx.insert(adminAuditEvents).values({
+    await tx.insert(adminAuditEvents).values({ entityId: admin.id,
       adminId: admin.id,
       actorUserId: input.invitedByUserId,
       action: "ADMIN_REINVITED",
@@ -264,7 +264,7 @@ export async function activateAdminAccount(
     // Consume the token — one-time use.
     await tx.delete(verifications).where(eq(verifications.id, verification.id));
 
-    await tx.insert(adminAuditEvents).values({
+    await tx.insert(adminAuditEvents).values({ entityId: admin.id,
       adminId: admin.id,
       actorUserId: user.id,
       action: "ADMIN_ACTIVATED",

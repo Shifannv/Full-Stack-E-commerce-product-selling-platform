@@ -16,6 +16,9 @@ import { sendInvitationEmail } from "../services/admin/invitation-email.service"
 import { invitationSetupUrl } from "../services/admin/invitation-url";
 import { lockAdmin } from "../services/admin/admin-lock";
 import { transitionAdminStatus } from "../services/admin/account-state.service";
+import { readBoundedMultipart } from "../lib/security/body";
+import { mutationRateLimit } from "../middleware/rate-limit";
+import { auditedMutation } from "../services/security-audit";
 
 type AdminEnv = AuthorizedEnv & {
   Bindings: AuthorizedEnv["Bindings"] & {
@@ -36,6 +39,7 @@ adminActivationRoutes.onError((error, c) => {
   if (error instanceof DomainError) return c.json({ error: error.message }, error.status);
   return c.json({ error: "Activation unavailable" }, 503);
 });
+adminActivationRoutes.use("/activate", mutationRateLimit);
 adminActivationRoutes.get("/activate", async (c) => {
   const token = c.req.query("token") ?? "";
   if (!token) return c.json({ error: "token is required" }, 422);
@@ -123,9 +127,7 @@ adminRoutes.put("/onboarding/kyc", async (c) => {
 adminRoutes.post("/onboarding/kyc/documents", async (c) => {
   ownAdmin(c.get("actor"));
   if (!c.env.KYC_BUCKET) throw new DomainError("Private document storage unavailable", 409);
-  const length = Number(c.req.header("content-length") ?? "0");
-  if (length > 5_500_000) throw new DomainError("Document is too large", 422);
-  const form = await c.req.formData();
+  const form = await readBoundedMultipart(c.req.raw, 5_500_000);
   const file = form.get("file");
   const documentType = requiredText(form.get("documentType"), "documentType", 80);
   if (!(file instanceof File) || file.size === 0 || file.size > 5_000_000 || !["application/pdf", "image/jpeg", "image/png"].includes(file.type)) throw new DomainError("A PDF, JPEG, or PNG up to 5 MB is required", 422);
@@ -149,7 +151,7 @@ adminRoutes.post("/onboarding/kyc/documents", async (c) => {
           .where(eq(adminKycSubmissions.adminId, adminId)).limit(1).for("update");
         if (!current || current.id !== application.id || !["DRAFT", "CHANGES_REQUIRED"].includes(current.status)) throw new DomainError("Application cannot be edited in this state", 409);
         const [saved] = await tx.insert(adminKycDocuments).values({ submissionId: current.id, documentType, privateObjectKey: key }).returning({ id: adminKycDocuments.id, documentType: adminKycDocuments.documentType });
-        await tx.insert(adminAuditEvents).values({ adminId, actorUserId: c.get("actor").userId, action: "KYC_DOCUMENT_SAVED", changedFields: ["documentType"] });
+        await tx.insert(adminAuditEvents).values({ entityId: adminId, adminId, actorUserId: c.get("actor").userId, action: "KYC_DOCUMENT_SAVED", changedFields: ["documentType"] });
         return saved;
       });
     } catch (error) {
@@ -425,46 +427,46 @@ adminRoutes.put("/products/:productId/inventory", async (c) => {
 adminRoutes.post("/catalog/categories", async (c) => {
   superAdmin(c.get("actor"));
   const v = await body(c);
-  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => createCategory(db, v)));
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => auditedMutation(db, c.get("actor").userId, "CATEGORY_CREATED", "CATEGORY", tx => createCategory(tx, v), result => result.id)));
 });
 
 adminRoutes.patch("/catalog/categories/:categoryId/status", async (c) => {
   superAdmin(c.get("actor"));
   const v = await body(c);
   if (v.status !== "PUBLISHED" && v.status !== "DRAFT" && v.status !== "ARCHIVED") throw new DomainError("Invalid status", 422);
-  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
-    const [result] = await db.update(categories).set({ status: v.status as string, updatedAt: new Date() }).where(eq(categories.id, c.req.param("categoryId"))).returning();
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => auditedMutation(db, c.get("actor").userId, "CATEGORY_STATUS_CHANGED", "CATEGORY", async (tx) => {
+    const [result] = await tx.update(categories).set({ status: v.status as string, updatedAt: new Date() }).where(eq(categories.id, c.req.param("categoryId"))).returning();
     if (!result) throw new DomainError("Category unavailable", 404);
     return result;
-  }));
+  }, result => result.id)));
 });
 
 adminRoutes.post("/catalog/subcategories", async (c) => {
   superAdmin(c.get("actor"));
   const v = await body(c);
-  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => createSubcategory(db, v)));
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => auditedMutation(db, c.get("actor").userId, "SUBCATEGORY_CREATED", "SUBCATEGORY", tx => createSubcategory(tx, v), result => result.id)));
 });
 
 adminRoutes.patch("/catalog/subcategories/:subcategoryId/status", async (c) => {
   superAdmin(c.get("actor"));
   const v = await body(c);
   if (v.status !== "PUBLISHED" && v.status !== "DRAFT" && v.status !== "ARCHIVED") throw new DomainError("Invalid status", 422);
-  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
-    const [result] = await db.update(subcategories).set({ status: v.status as string, updatedAt: new Date() }).where(eq(subcategories.id, c.req.param("subcategoryId"))).returning();
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => auditedMutation(db, c.get("actor").userId, "SUBCATEGORY_STATUS_CHANGED", "SUBCATEGORY", async (tx) => {
+    const [result] = await tx.update(subcategories).set({ status: v.status as string, updatedAt: new Date() }).where(eq(subcategories.id, c.req.param("subcategoryId"))).returning();
     if (!result) throw new DomainError("Subcategory unavailable", 404);
     return result;
-  }));
+  }, result => result.id)));
 });
 
 adminRoutes.patch("/catalog/products/:productId/status", async (c) => {
   superAdmin(c.get("actor"));
   const v = await body(c);
   if (v.status !== "PUBLISHED" && v.status !== "DRAFT" && v.status !== "ARCHIVED") throw new DomainError("Invalid status", 422);
-  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
-    const [result] = await db.update(products).set({ status: v.status as string, updatedAt: new Date() }).where(eq(products.id, c.req.param("productId"))).returning();
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => auditedMutation(db, c.get("actor").userId, "PRODUCT_STATUS_CHANGED", "PRODUCT", async (tx) => {
+    const [result] = await tx.update(products).set({ status: v.status as string, updatedAt: new Date() }).where(eq(products.id, c.req.param("productId"))).returning();
     if (!result) throw new DomainError("Product unavailable", 404);
     return result;
-  }));
+  }, result => result.id)));
 });
 
 adminRoutes.patch("/catalog/products/:productId/featured", async (c) => {
@@ -472,17 +474,17 @@ adminRoutes.patch("/catalog/products/:productId/featured", async (c) => {
   const v = await body(c);
   if (typeof v.featured !== "boolean") throw new DomainError("featured must be a boolean", 422);
   const featured = v.featured as boolean;
-  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
-    const [result] = await db.update(products).set({ featured, updatedAt: new Date() }).where(eq(products.id, c.req.param("productId"))).returning({ id: products.id, featured: products.featured });
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => auditedMutation(db, c.get("actor").userId, "PRODUCT_FEATURED_CHANGED", "PRODUCT", async (tx) => {
+    const [result] = await tx.update(products).set({ featured, updatedAt: new Date() }).where(eq(products.id, c.req.param("productId"))).returning({ id: products.id, featured: products.featured });
     if (!result) throw new DomainError("Product unavailable", 404);
     return result;
-  }));
+  }, result => result.id)));
 });
 
 adminRoutes.put("/catalog/fields", async (c) => {
   superAdmin(c.get("actor"));
   const v = await body(c);
-  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => configureField(db, v)));
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => auditedMutation(db, c.get("actor").userId, "CATALOG_FIELD_CONFIGURED", "CATEGORY_FIELD", tx => configureField(tx, v), result => result.id)));
 });
 
 adminRoutes.put("/shipping/providers/shiprocket", async (c) => {
@@ -493,11 +495,11 @@ adminRoutes.put("/shipping/providers/shiprocket", async (c) => {
     const env = c.env as typeof c.env & { SHIPROCKET_API_EMAIL?: string; SHIPROCKET_API_PASSWORD?: string };
     if (!env.SHIPROCKET_API_EMAIL || !env.SHIPROCKET_API_PASSWORD) throw new DomainError("Shiprocket API user credentials are required", 422);
   }
-  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
-    const [result] = await db.update(shippingProviderConfigs).set({ enabled: v.enabled as boolean, updatedAt: new Date() }).where(eq(shippingProviderConfigs.providerKey, "shiprocket")).returning({ providerKey: shippingProviderConfigs.providerKey, enabled: shippingProviderConfigs.enabled });
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => auditedMutation(db, c.get("actor").userId, "SHIPPING_PROVIDER_CONFIGURED", "SHIPPING_PROVIDER", async (tx) => {
+    const [result] = await tx.update(shippingProviderConfigs).set({ enabled: v.enabled as boolean, updatedAt: new Date() }).where(eq(shippingProviderConfigs.providerKey, "shiprocket")).returning({ providerKey: shippingProviderConfigs.providerKey, enabled: shippingProviderConfigs.enabled });
     if (!result) throw new DomainError("Shipping provider metadata unavailable", 404);
     return result;
-  }));
+  }, result => result.providerKey)));
 });
 
 adminRoutes.put("/shipping/pickup-locations", async (c) => {
@@ -507,11 +509,11 @@ adminRoutes.put("/shipping/pickup-locations", async (c) => {
   const adminAddressId = requiredText(v.adminAddressId, "adminAddressId", 40);
   const providerLocationRef = requiredText(v.providerLocationRef, "providerLocationRef", 150);
   const locationName = requiredText(v.locationName, "locationName", 150);
-  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
-    const [result] = await db.insert(shippingProviderLocations).values({ adminId, adminAddressId, providerKey: "shiprocket", providerLocationRef, locationName })
+  return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => auditedMutation(db, c.get("actor").userId, "PICKUP_LOCATION_CONFIGURED", "PICKUP_LOCATION", async (tx) => {
+    const [result] = await tx.insert(shippingProviderLocations).values({ adminId, adminAddressId, providerKey: "shiprocket", providerLocationRef, locationName })
       .onConflictDoUpdate({ target: [shippingProviderLocations.providerKey, shippingProviderLocations.adminAddressId], set: { providerLocationRef, locationName, status: "ACTIVE", updatedAt: new Date() } }).returning();
     return result;
-  }));
+  }, result => result.id)));
 });
 
 adminRoutes.get("/shipping/provider-pickups", async (c) => {

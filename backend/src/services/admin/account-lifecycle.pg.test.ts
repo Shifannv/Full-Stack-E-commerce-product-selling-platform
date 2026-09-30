@@ -180,6 +180,10 @@ test("approved deletion archives identity and products while retaining commerce 
   assert.equal((await c.db.select().from(adminArchives).where(eq(adminArchives.adminId, c.adminId))).length, 1);
   const audits = await c.db.select().from(adminAuditEvents).where(eq(adminAuditEvents.adminId, c.adminId));
   for (const action of ["ADMIN_DELETION_REQUESTED", "ADMIN_DELETION_VERIFIED", "ADMIN_DELETION_APPROVED", "ADMIN_ARCHIVED"]) assert.equal(audits.filter((a) => a.action === action).length, 1);
+  for (const event of audits) {
+    assert.equal(event.entityType, "ADMIN_LIFECYCLE"); assert.equal(event.entityId, id);
+    assert.equal(event.actorUserId, ["ADMIN_DELETION_REQUESTED", "ADMIN_DELETION_VERIFIED"].includes(event.action) ? c.sellerId : c.reviewerId);
+  }
   assert.equal((await reviewAdminDeletion(c.db, c.adminId, id, c.reviewerId, "APPROVED", "repeat")).id, id);
 }));
 
@@ -276,7 +280,7 @@ test("archived Admin session can request recovery but cannot use normal authenti
     cookie = response.headers.get("set-cookie")?.split(";")[0] ?? "";
     assert.ok(cookie);
   } finally { await auth.client.end({ timeout: 1 }); }
-  const headers = { cookie, "content-type": "application/json" };
+  const headers = { cookie, origin: env.FRONTEND_ORIGIN, "content-type": "application/json" };
   const normal = await worker.fetch(new Request("http://127.0.0.1:8787/api/me", { headers }), env);
   assert.equal(normal.status, 403);
   const recovery = await worker.fetch(new Request("http://127.0.0.1:8787/api/admin/account/recovery-requests", {
@@ -341,6 +345,10 @@ test("approved recovery restores identity and reviewed scope without republishin
   assert.equal((await reviewAdminRecovery(c.db, c.adminId, request.id, c.reviewerId, "APPROVED", "repeat")).id, request.id);
   const audits = await c.db.select().from(adminAuditEvents).where(eq(adminAuditEvents.adminId, c.adminId));
   for (const action of ["ADMIN_RECOVERY_REQUESTED", "ADMIN_RECOVERY_APPROVED", "ADMIN_REACTIVATED"]) assert.equal(audits.filter((a) => a.action === action).length, 1);
+  for (const event of audits.filter(a => ["ADMIN_RECOVERY_REQUESTED", "ADMIN_RECOVERY_APPROVED", "ADMIN_REACTIVATED"].includes(a.action))) {
+    assert.equal(event.entityType, "ADMIN_LIFECYCLE"); assert.equal(event.entityId, request.id);
+    assert.equal(event.actorUserId, event.action === "ADMIN_RECOVERY_REQUESTED" ? c.sellerId : c.reviewerId);
+  }
 }));
 
 test("rejected recovery preserves archive and may be requested again", { skip: !testUrl }, async () => fixture(async (c) => {

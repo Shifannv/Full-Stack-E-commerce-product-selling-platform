@@ -21,7 +21,7 @@ test("Cashfree adapter creates a sandbox order without exposing credentials in i
 });
 
 test("Cashfree webhook signature accepts the exact raw body and rejects tampering", async () => {
-  const secret = "webhook-secret", timestamp = "1760000000000", raw = '{"type":"PAYMENT_SUCCESS_WEBHOOK"}';
+  const secret = "webhook-secret", timestamp = String(Date.now()), raw = '{"type":"PAYMENT_SUCCESS_WEBHOOK"}';
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const bytes = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${timestamp}${raw}`)));
   const signature = btoa(String.fromCharCode(...bytes));

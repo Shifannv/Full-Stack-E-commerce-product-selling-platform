@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
+import { readdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { config } from "dotenv";
 import postgres from "postgres";
+
+const drizzleDir = fileURLToPath(new URL("../drizzle", import.meta.url));
 
 config({ path: ".env", quiet: true });
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
@@ -14,8 +18,15 @@ async function main() {
     const [tables] = await client`select count(*)::integer as count from information_schema.tables where table_schema = 'public' and table_type = 'BASE TABLE'`;
     const [migrations] = await client`select count(*)::integer as count from drizzle.__drizzle_migrations`;
     const [provider] = await client`select enabled from shipping_provider_configs where provider_key = 'shiprocket'`;
-    assert.ok(tables.count >= 44);
-    assert.equal(migrations.count, 9);
+    const migrationFiles = readdirSync(drizzleDir).filter((name) => name.endsWith(".sql"));
+    assert.ok(tables.count >= 51);
+    // Derived from the migration folder so a database left behind the committed
+    // migrations fails here instead of at runtime on a live request.
+    assert.equal(
+      migrations.count,
+      migrationFiles.length,
+      `database has ${migrations.count} applied migrations but ${migrationFiles.length} migration files exist`,
+    );
     const [featuredColumn] = await client`select is_nullable, column_default from information_schema.columns where table_schema = 'public' and table_name = 'products' and column_name = 'featured'`;
     assert.equal(featuredColumn?.is_nullable, "NO");
     assert.equal(featuredColumn?.column_default, "false");
