@@ -3,7 +3,6 @@ import { registerHealthRoutes } from "./health";
 import { registerAuthHandler, registerSessionRoute } from "./auth/auth.routes";
 import { adminActivationRoutes, adminRoutes } from "./admin";
 import { adminLifecycleRoutes } from "./admin/admin-lifecycle";
-import { invitationRoutes } from "./admin/invitations";
 import { customerRoutes, publicCatalogRoutes } from "./customer/customer";
 import { orderRoutes } from "./customer/orders";
 import { publicReviewRoutes, reviewRoutes } from "./customer/reviews";
@@ -36,7 +35,6 @@ export function registerRoutes(app: App) {
   app.route("/api", reviewRoutes);
   app.route("/api", financeRoutes);
   app.route("/api", paymentRoutes);
-  app.route("/api", invitationRoutes);
   app.route("/api/admin", adminRoutes);
   app.route("/api/super-admin", superAdminDashboardRoutes);
   app.route("/api/super-admin", reconciliationRoutes);

@@ -4,6 +4,8 @@
 **Scope:** All backend source under `ecommerce/backend/src/`
 **Constraint:** Read-only audit. No code modifications were made.
 
+> **Path note (2026-10-01):** this audit was done before the structure refactor. References to `index.ts:<line>` and route files refer to the pre-refactor layout: the auth handler is now `routes/auth/auth.routes.ts`, health is `routes/health.ts`, and the `scheduled` handler is `scheduler.ts`. Route files moved under `routes/{customer,admin,super-admin,webhooks}/` (code moved verbatim; findings unchanged). Line numbers are historical.
+
 ---
 
 ## 1. Architecture Summary

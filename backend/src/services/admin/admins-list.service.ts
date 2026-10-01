@@ -32,14 +32,17 @@ export async function listAdmins(db: Db, filters: AdminListFilters) {
   if (filters.status) conditions.push(eq(admins.status, filters.status));
   if (filters.q) {
     const pattern = `%${filters.q.trim().slice(0, 100)}%`;
-    conditions.push(or(ilike(users.name, pattern), ilike(users.email, pattern))!);
+    conditions.push(
+      or(ilike(users.name, pattern), ilike(users.email, pattern))!,
+    );
   }
 
-  const whereClause = conditions.length === 0
-    ? undefined
-    : conditions.length === 1
-      ? conditions[0]
-      : and(...conditions);
+  const whereClause =
+    conditions.length === 0
+      ? undefined
+      : conditions.length === 1
+        ? conditions[0]
+        : and(...conditions);
 
   return db
     .select({

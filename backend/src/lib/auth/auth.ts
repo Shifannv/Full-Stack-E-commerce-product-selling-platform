@@ -9,12 +9,23 @@ import { authOptions } from "./options";
 export type AuthBindings = {
   HYPERDRIVE: { connectionString: string };
   KYC_BUCKET?: {
-    put: (key: string, value: ArrayBuffer, options?: { httpMetadata?: { contentType?: string } }) => Promise<unknown>;
-    get: (key: string) => Promise<{ body: ReadableStream; httpMetadata?: { contentType?: string } } | null>;
+    put: (
+      key: string,
+      value: ArrayBuffer,
+      options?: { httpMetadata?: { contentType?: string } },
+    ) => Promise<unknown>;
+    get: (key: string) => Promise<{
+      body: ReadableStream;
+      httpMetadata?: { contentType?: string };
+    } | null>;
     delete: (key: string) => Promise<void>;
   };
   PRODUCT_IMAGES_BUCKET?: {
-    put: (key: string, value: ArrayBuffer, options?: { httpMetadata?: { contentType?: string } }) => Promise<unknown>;
+    put: (
+      key: string,
+      value: ArrayBuffer,
+      options?: { httpMetadata?: { contentType?: string } },
+    ) => Promise<unknown>;
     head: (key: string) => Promise<unknown | null>;
     delete: (key: string) => Promise<void>;
   };
@@ -26,7 +37,13 @@ export type AuthBindings = {
 };
 
 export function createAuth(env: AuthBindings) {
-  if (!env.BETTER_AUTH_SECRET || !env.BETTER_AUTH_URL || !env.FRONTEND_ORIGIN || !env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
+  if (
+    !env.BETTER_AUTH_SECRET ||
+    !env.BETTER_AUTH_URL ||
+    !env.FRONTEND_ORIGIN ||
+    !env.GOOGLE_CLIENT_ID ||
+    !env.GOOGLE_CLIENT_SECRET
+  ) {
     throw new Error("Authentication configuration is incomplete");
   }
 
@@ -47,10 +64,20 @@ export function createAuth(env: AuthBindings) {
       user: {
         create: {
           after: async (user) => {
-            await db.insert(roles).values({ name: "CUSTOMER" }).onConflictDoNothing();
-            const [customerRole] = await db.select({ id: roles.id }).from(roles).where(eq(roles.name, "CUSTOMER")).limit(1);
+            await db
+              .insert(roles)
+              .values({ name: "CUSTOMER" })
+              .onConflictDoNothing();
+            const [customerRole] = await db
+              .select({ id: roles.id })
+              .from(roles)
+              .where(eq(roles.name, "CUSTOMER"))
+              .limit(1);
             if (!customerRole) throw new Error("Customer role is unavailable");
-            await db.insert(userRoles).values({ userId: user.id, roleId: customerRole.id }).onConflictDoNothing();
+            await db
+              .insert(userRoles)
+              .values({ userId: user.id, roleId: customerRole.id })
+              .onConflictDoNothing();
           },
         },
       },

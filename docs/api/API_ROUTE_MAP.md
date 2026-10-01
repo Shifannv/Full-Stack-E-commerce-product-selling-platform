@@ -92,10 +92,6 @@ Global: for `/api/*`, CORS (origin must equal `FRONTEND_ORIGIN`, credentials on)
 |---|---|---|
 | POST | `/api/orders/:orderId/payment-session` | `backend/src/routes/customer/payments.ts` |
 
-## invitationRoutes — mounted at `/api`
-
-_No routes registered (deprecated; retained for import compatibility)._
-
 ## adminRoutes — mounted at `/api/admin`
 
 | Method | Path | Source |

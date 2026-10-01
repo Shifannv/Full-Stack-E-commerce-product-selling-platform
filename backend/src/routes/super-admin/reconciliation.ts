@@ -14,7 +14,10 @@
 
 import { Hono } from "hono";
 import { createDb } from "../../db";
-import { type AuthorizedEnv, requireAuth } from "../../middleware/authorization";
+import {
+  type AuthorizedEnv,
+  requireAuth,
+} from "../../middleware/authorization";
 import { mutationRateLimit } from "../../middleware/rate-limit";
 import { DomainError } from "../../services/admin/admin.service";
 import {
@@ -29,8 +32,14 @@ export const reconciliationRoutes = new Hono<AuthorizedEnv>();
 reconciliationRoutes.use("*", requireAuth);
 
 reconciliationRoutes.onError((error, c) => {
-  if (error instanceof DomainError) return c.json({ error: error.message }, error.status as 400 | 401 | 403 | 404 | 409 | 422 | 503);
-  console.error("Reconciliation API failed", { name: error instanceof Error ? error.name : "UnknownError" });
+  if (error instanceof DomainError)
+    return c.json(
+      { error: error.message },
+      error.status as 400 | 401 | 403 | 404 | 409 | 422 | 503,
+    );
+  console.error("Reconciliation API failed", {
+    name: error instanceof Error ? error.name : "UnknownError",
+  });
   return c.json({ error: "Reconciliation operation unavailable" }, 503);
 });
 
@@ -50,7 +59,13 @@ async function withDb<T>(
   }
 }
 
-function pageNumber(raw: string | undefined, name: string, min: number, max: number, fallback: number): number {
+function pageNumber(
+  raw: string | undefined,
+  name: string,
+  min: number,
+  max: number,
+  fallback: number,
+): number {
   if (raw === undefined) return fallback;
   const value = Number(raw);
   if (!Number.isSafeInteger(value) || value < min || value > max) {
@@ -59,7 +74,9 @@ function pageNumber(raw: string | undefined, name: string, min: number, max: num
   return value;
 }
 
-async function jsonBody(c: { req: { json: () => Promise<unknown> } }): Promise<Record<string, unknown>> {
+async function jsonBody(c: {
+  req: { json: () => Promise<unknown> };
+}): Promise<Record<string, unknown>> {
   const value = await c.req.json().catch(() => null);
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new DomainError("Invalid JSON body", 422);
@@ -107,21 +124,26 @@ reconciliationRoutes.get("/reconciliation/:id", async (c) => {
 // Resolution is validated under lock and audited atomically.
 // Only PENDING, RETRYABLE, or REVIEW items may be resolved (RESOLVED is idempotent).
 // ─────────────────────────────────────────────────────────────────────────────
-reconciliationRoutes.post("/reconciliation/:id/resolve", mutationRateLimit, async (c) => {
-  requireSuperAdmin(c.get("actor").roles);
+reconciliationRoutes.post(
+  "/reconciliation/:id/resolve",
+  mutationRateLimit,
+  async (c) => {
+    requireSuperAdmin(c.get("actor").roles);
 
-  const id = c.req.param("id");
-  const body = await jsonBody(c);
+    const id = c.req.param("id");
+    const body = await jsonBody(c);
 
-  const note = body.note;
-  if (typeof note !== "string") throw new DomainError("note is required", 422);
+    const note = body.note;
+    if (typeof note !== "string")
+      throw new DomainError("note is required", 422);
 
-  const resolved = await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
-    resolveReconciliationItem(db, id, c.get("actor").userId, note),
-  );
+    const resolved = await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
+      resolveReconciliationItem(db, id, c.get("actor").userId, note),
+    );
 
-  return c.json({ item: resolved });
-});
+    return c.json({ item: resolved });
+  },
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/super-admin/reconciliation/:id/escalate
@@ -130,18 +152,23 @@ reconciliationRoutes.post("/reconciliation/:id/resolve", mutationRateLimit, asyn
 // PENDING or RETRYABLE items may be escalated. REVIEW is idempotent.
 // RESOLVED items cannot be escalated.
 // ─────────────────────────────────────────────────────────────────────────────
-reconciliationRoutes.post("/reconciliation/:id/escalate", mutationRateLimit, async (c) => {
-  requireSuperAdmin(c.get("actor").roles);
+reconciliationRoutes.post(
+  "/reconciliation/:id/escalate",
+  mutationRateLimit,
+  async (c) => {
+    requireSuperAdmin(c.get("actor").roles);
 
-  const id = c.req.param("id");
-  const body = await jsonBody(c);
+    const id = c.req.param("id");
+    const body = await jsonBody(c);
 
-  const note = body.note;
-  if (typeof note !== "string") throw new DomainError("note is required", 422);
+    const note = body.note;
+    if (typeof note !== "string")
+      throw new DomainError("note is required", 422);
 
-  const escalated = await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
-    escalateToReview(db, id, c.get("actor").userId, note),
-  );
+    const escalated = await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
+      escalateToReview(db, id, c.get("actor").userId, note),
+    );
 
-  return c.json({ item: escalated });
-});
+    return c.json({ item: escalated });
+  },
+);

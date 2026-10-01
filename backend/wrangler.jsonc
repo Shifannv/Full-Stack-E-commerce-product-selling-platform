@@ -9,37 +9,34 @@
   // moving the API to another port and breaking browser requests.
   "dev": {
     "ip": "127.0.0.1",
-    "port": 8787
+    "port": 8787,
   },
   "observability": {
-    "enabled": true
+    "enabled": true,
   },
   "triggers": {
-    "crons": ["* * * * *"]
+    "crons": ["* * * * *"],
   },
 
   // Add nodejs_compat compatibility flag to support common database drivers
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
+  "compatibility_flags": ["nodejs_compat"],
 
   // Add this to your wrangler.jsonc
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
       "id": "0c6bae39855446449b1276eecf3dd4d3",
-      
-    }
+    },
   ],
   "r2_buckets": [
     {
       "binding": "KYC_BUCKET",
-      "bucket_name": "ecommerce-admin-kyc-private"
+      "bucket_name": "ecommerce-admin-kyc-private",
     },
     {
       "binding": "PRODUCT_IMAGES_BUCKET",
       "bucket_name": "shop-product-images",
-      "remote": true
-    }
-  ]
+      "remote": true,
+    },
+  ],
 }

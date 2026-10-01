@@ -14,7 +14,9 @@ const { parsed } = config({
 });
 const databaseUrl = parsed?.DATABASE_URL;
 if (!databaseUrl) {
-  console.error("backend/.env.dev.local with a local DATABASE_URL is required.");
+  console.error(
+    "backend/.env.dev.local with a local DATABASE_URL is required.",
+  );
   process.exit(1);
 }
 const host = new URL(databaseUrl).hostname;

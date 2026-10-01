@@ -9,7 +9,10 @@
  */
 import { and, count, countDistinct, eq, sql, sum } from "drizzle-orm";
 import type { createDb } from "../../db";
-import { adminCategoryAssignments, adminKycSubmissions } from "../../db/schema/admin";
+import {
+  adminCategoryAssignments,
+  adminKycSubmissions,
+} from "../../db/schema/admin";
 import { categories, productAdmins, products } from "../../db/schema/catalog";
 import { adminSettlements, payoutRequests } from "../../db/schema/finance";
 import { orderItems, orders } from "../../db/schema/orders";
@@ -29,40 +32,71 @@ export async function getAdminSummary(db: Db, adminId: string) {
     pendingPayoutCount,
   ] = await Promise.all([
     // Only products in currently assigned, published categories.
-    db.select({ value: count() })
+    db
+      .select({ value: count() })
       .from(productAdmins)
       .innerJoin(products, eq(productAdmins.productId, products.id))
       .innerJoin(categories, eq(products.categoryId, categories.id))
-      .innerJoin(adminCategoryAssignments, and(eq(adminCategoryAssignments.adminId, adminId), eq(adminCategoryAssignments.categoryId, products.categoryId)))
-      .where(and(eq(productAdmins.adminId, adminId), eq(adminCategoryAssignments.status, "ACTIVE"), eq(categories.status, "PUBLISHED")))
+      .innerJoin(
+        adminCategoryAssignments,
+        and(
+          eq(adminCategoryAssignments.adminId, adminId),
+          eq(adminCategoryAssignments.categoryId, products.categoryId),
+        ),
+      )
+      .where(
+        and(
+          eq(productAdmins.adminId, adminId),
+          eq(adminCategoryAssignments.status, "ACTIVE"),
+          eq(categories.status, "PUBLISHED"),
+        ),
+      )
       .then((r) => r[0]?.value ?? 0),
 
     // Orders that contain at least one item from this admin.
-    db.select({ value: countDistinct(orderItems.orderId) })
+    db
+      .select({ value: countDistinct(orderItems.orderId) })
       .from(orderItems)
       .where(eq(orderItems.adminId, adminId))
       .then((r) => r[0]?.value ?? 0),
 
     // Paid, confirmed orders; this is not a carrier/shipment-state count.
-    db.select({ value: countDistinct(orderItems.orderId) })
+    db
+      .select({ value: countDistinct(orderItems.orderId) })
       .from(orderItems)
       .innerJoin(orders, eq(orderItems.orderId, orders.id))
-      .where(and(eq(orderItems.adminId, adminId), eq(orders.paymentStatus, "PAID"), eq(orders.status, "CONFIRMED")))
+      .where(
+        and(
+          eq(orderItems.adminId, adminId),
+          eq(orders.paymentStatus, "PAID"),
+          eq(orders.status, "CONFIRMED"),
+        ),
+      )
       .then((r) => r[0]?.value ?? 0),
 
     // Available settlement balance for this admin.
-    db.select({
-      available: sql<string>`coalesce(sum(case when ${adminSettlements.status} = 'AVAILABLE' then ${adminSettlements.netPayable} else 0 end), 0)::text`,
-      grossSettledSales: sql<string>`coalesce(sum(${adminSettlements.grossAmount}), 0)::text`,
-    })
+    db
+      .select({
+        available: sql<string>`coalesce(sum(case when ${adminSettlements.status} = 'AVAILABLE' then ${adminSettlements.netPayable} else 0 end), 0)::text`,
+        grossSettledSales: sql<string>`coalesce(sum(${adminSettlements.grossAmount}), 0)::text`,
+      })
       .from(adminSettlements)
       .where(eq(adminSettlements.adminId, adminId))
-      .then((r) => ({ available: r[0]?.available ?? "0", grossSettledSales: r[0]?.grossSettledSales ?? "0" })),
+      .then((r) => ({
+        available: r[0]?.available ?? "0",
+        grossSettledSales: r[0]?.grossSettledSales ?? "0",
+      })),
 
     // Payout requests awaiting approval.
-    db.select({ value: count() })
+    db
+      .select({ value: count() })
       .from(payoutRequests)
-      .where(and(eq(payoutRequests.adminId, adminId), eq(payoutRequests.status, "REQUESTED")))
+      .where(
+        and(
+          eq(payoutRequests.adminId, adminId),
+          eq(payoutRequests.status, "REQUESTED"),
+        ),
+      )
       .then((r) => r[0]?.value ?? 0),
   ]);
 
@@ -90,11 +124,14 @@ export async function getSuperAdminSummary(db: Db) {
     pendingPayoutCount,
   ] = await Promise.all([
     // Admin counts by status.
-    db.select({ status: admins.status, value: count() })
+    db
+      .select({ status: admins.status, value: count() })
       .from(admins)
       .groupBy(admins.status)
       .then((rows) => {
-        const byStatus = Object.fromEntries(rows.map((r) => [r.status, r.value]));
+        const byStatus = Object.fromEntries(
+          rows.map((r) => [r.status, r.value]),
+        );
         return {
           active: byStatus["ACTIVE"] ?? 0,
           pending: byStatus["PENDING"] ?? 0,
@@ -103,33 +140,37 @@ export async function getSuperAdminSummary(db: Db) {
       }),
 
     // Total published products across the platform.
-    db.select({ value: count() })
+    db
+      .select({ value: count() })
       .from(products)
       .where(eq(products.status, "PUBLISHED"))
       .then((r) => r[0]?.value ?? 0),
 
     // Total orders on the platform.
-    db.select({ value: count() })
+    db
+      .select({ value: count() })
       .from(orders)
       .then((r) => r[0]?.value ?? 0),
 
     // Gross revenue from all settled orders.
-    db.select({ value: sum(adminSettlements.grossAmount) })
+    db
+      .select({ value: sum(adminSettlements.grossAmount) })
       .from(adminSettlements)
       .then((r) => r[0]?.value ?? "0.00"),
 
     // KYC applications awaiting Super Admin review.
-    db.select({ value: count() })
+    db
+      .select({ value: count() })
       .from(adminKycSubmissions)
       .where(eq(adminKycSubmissions.status, "PENDING_SUPER_ADMIN_APPROVAL"))
       .then((r) => r[0]?.value ?? 0),
 
     // Payout requests awaiting approval across all admins.
-    db.select({ value: count() })
+    db
+      .select({ value: count() })
       .from(payoutRequests)
       .where(eq(payoutRequests.status, "REQUESTED"))
       .then((r) => r[0]?.value ?? 0),
-
   ]);
 
   return {

@@ -1,6 +1,12 @@
 # ECOMMERCE PROJECT - MASTER SOURCE OF TRUTH
 
-## CURRENT CHECKPOINT — Phase 11b-3B authenticated continuation — 2026-09-29
+> **HOW TO READ THIS FILE (reconciled 2026-10-01).**
+> - **Permanent rules** (business rules, security invariants, role/data isolation, workflows) are the numbered sections and remain authoritative unless a section says otherwise.
+> - **Current implementation status** lives only in [CURRENT_STATUS.md](CURRENT_STATUS.md). Every "CURRENT CHECKPOINT" below was current only on its date and is now **historical evidence**.
+> - **Current code structure** lives in [architecture/](architecture/) and [api/](api/). Sections 4, 26, 27 and 31 below describe an earlier/planned layout; each carries a note pointing to the actual structure. The backend was reorganized on 2026-10-01 (`index.ts` + `app.ts` + `scheduler.ts` + `routes/{auth,customer,admin,super-admin,webhooks}/` + `routes/health.ts`; frontend `lib/api/`).
+> - Verification reports moved to [verification/](verification/); text below that cites `docs/BACKEND_VERIFICATION.md`, `docs/FRONTEND_API_MAPPING.md` etc. means the files now at `verification/…` and `api/FRONTEND_API_MAP.md` (see [README.md](README.md)).
+
+## HISTORICAL CHECKPOINT — SUPERSEDED (was current on 2026-09-29; see CURRENT_STATUS.md): Phase 11b-3B authenticated continuation
 
 **Operator reports local Chrome Google sign-in success; independent authenticated browser checks remain BLOCKED. Phase 11b is OPEN and NOT SAFE TO DEPLOY.** A read-only database query found 1 Google account, 1 unexpired CUSTOMER session, and 1 CUSTOMER role assignment, with the retained Admin, Super Admin, category, and product counts unchanged. No identity or token was exposed. These aggregate results support callback success but do not prove `/api/me`, role scope, refresh, or logout in the operator's browser.
 
@@ -8,7 +14,7 @@ The isolated debugging Chrome profile started for this continuation remained sig
 
 **Exact next task:** Complete Google sign-in in the isolated Chrome profile on port 9222, then perform the authenticated CUSTOMER session, persistence, logout, endpoint, UI, and cleanup checks described in `docs/BACKEND_VERIFICATION.md`. Use a second real authorized Google account for live isolation only if available. Do not mark Google VERIFIED LOCALLY until the browser session and logout sequence pass.
 
-## CURRENT CHECKPOINT — Phase 11b-3B — 2026-09-29
+## HISTORICAL CHECKPOINT — SUPERSEDED (was current on 2026-09-29; see CURRENT_STATUS.md): Phase 11b-3B
 
 **Google customer OAuth: BLOCKED before authenticated consent/callback. Phase 11b remains OPEN and NOT SAFE TO DEPLOY.** The 11b-3A `redirect_uri_mismatch` is historical; this real Chrome attempt reached Google's rendered account-entry screen without that error. No authenticated customer success is claimed.
 
@@ -16,7 +22,7 @@ The application generated `http://127.0.0.1:8787/api/auth/callback/google`, exac
 
 **Exact next task:** Confirm the current Google OAuth client's authorized redirect URI and the intended account's Test users membership in Google Cloud Console; finish real browser sign-in and then verify authenticated customer session and endpoints using the retained product. Do not place a payment order or start Phase 11c. Detailed evidence and checks: `docs/BACKEND_VERIFICATION.md`.
 
-## CURRENT CHECKPOINT — Phase 11b-3A — 2026-09-29
+## HISTORICAL CHECKPOINT — SUPERSEDED (was current on 2026-09-29; see CURRENT_STATUS.md): Phase 11b-3A
 
 **Phase 11b: OPEN. NOT DEPLOYED. NOT SAFE TO DEPLOY.** These statements describe the current local changes; earlier Worker deployment evidence is historical. This checkpoint supersedes all older status, “current”, “latest”, and next-task statements below. Retained historical evidence is not a claim about today's environment.
 
@@ -216,6 +222,8 @@ Cloudflare currently documents Next.js static export on Pages and Hyperdrive for
 ---
 
 ## 4. CURRENT PROJECT STRUCTURE
+
+> **STRUCTURE NOTE (2026-10-01): The tree below is an earlier/planned layout, NOT the current source tree. Directories such as `backend/src/{admin,modules,super-admin,types,utils,validators,constants}` and `frontend/middleware.ts` do not exist; several `frontend/src` folders (`constants`, `features`, `hooks`, `types`, `validators`, `components/{admin,customer,shared,super-admin}`) exist but are empty. Actual structure: [architecture/BACKEND_STRUCTURE.md](architecture/BACKEND_STRUCTURE.md) and [architecture/FRONTEND_STRUCTURE.md](architecture/FRONTEND_STRUCTURE.md).**
 
 This is the current source structure. Generated folders such as `node_modules/` and `.wrangler/` are intentionally not treated as application architecture.
 
@@ -2227,6 +2235,8 @@ Role-specific UI should be different where business responsibilities differ. Reu
 
 ## 26. FRONTEND FOLDER RESPONSIBILITIES
 
+> **STRUCTURE NOTE (2026-10-01): Planned responsibilities. Implemented today: `components/{auth,catalog,layout,states,storefront,ui}` and `lib/{api/,public-catalog.ts,auth-client.ts,use-customer-session.ts,images.ts}`; `features/`, `lib/auth/`, `lib/seo/`, `lib/local-storage/` and the role-specific component folders are not implemented. See [architecture/FRONTEND_STRUCTURE.md](architecture/FRONTEND_STRUCTURE.md).**
+
 ```text
 frontend/src/app/
     routes/pages/layouts
@@ -2267,6 +2277,8 @@ shadcn/ui's official docs describe its source-code ownership model and the CLI's
 ---
 
 ## 27. BACKEND FOLDER RESPONSIBILITIES
+
+> **STRUCTURE NOTE (2026-10-01): Planned responsibilities. The implemented backend has no `modules/`, `admin/`, `super-admin/` or `validators/` directories; business logic is in `services/`, HTTP in `routes/{auth,customer,admin,super-admin,webhooks}/`, entry in `index.ts`/`app.ts`/`scheduler.ts`. See [architecture/BACKEND_STRUCTURE.md](architecture/BACKEND_STRUCTURE.md).**
 
 ```text
 backend/src/index.ts
@@ -3451,6 +3463,8 @@ Old order data is never changed.
 ---
 
 ## 31. API ORGANIZATION
+
+> **STRUCTURE NOTE (2026-10-01): Planned organization. Actual routes are grouped by domain under `backend/src/routes/` and mounted in a behavior-significant order from `routes/index.ts`; there is no `webhooks/cashfree/` directory (`webhooks/payments.webhook.ts`, `webhooks/shipping.webhook.ts`), and mixed-audience routers are not split by role. Zod validation is not used by the route layer today; handlers use hand-written validation. Authoritative list: [api/API_ROUTE_MAP.md](api/API_ROUTE_MAP.md).**
 
 ```text
 backend/src/routes/

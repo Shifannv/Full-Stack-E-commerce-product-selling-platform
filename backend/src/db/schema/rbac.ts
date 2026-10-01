@@ -1,9 +1,19 @@
-import { index, pgTable, primaryKey, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  index,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { users } from "./auth";
 
 export const admins = pgTable("admins", {
   id: uuid("id").defaultRandom().primaryKey(),
-  userId: text("user_id").notNull().unique().references(() => users.id),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => users.id),
   status: text("status").notNull().default("PENDING"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -28,8 +38,12 @@ export const permissions = pgTable("permissions", {
 export const userRoles = pgTable(
   "user_roles",
   {
-    userId: text("user_id").notNull().references(() => users.id),
-    roleId: uuid("role_id").notNull().references(() => roles.id),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id),
+    roleId: uuid("role_id")
+      .notNull()
+      .references(() => roles.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [
@@ -41,8 +55,12 @@ export const userRoles = pgTable(
 export const rolePermissions = pgTable(
   "role_permissions",
   {
-    roleId: uuid("role_id").notNull().references(() => roles.id),
-    permissionId: uuid("permission_id").notNull().references(() => permissions.id),
+    roleId: uuid("role_id")
+      .notNull()
+      .references(() => roles.id),
+    permissionId: uuid("permission_id")
+      .notNull()
+      .references(() => permissions.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [

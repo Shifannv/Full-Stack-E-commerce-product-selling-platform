@@ -7,7 +7,9 @@ app/
   (customer)/   storefront: home, categories/[slug], products/[slug], search, cart, checkout, orders, account, wishlist
   admin/        seller dashboard shell, setup
   super-admin/  operator dashboard shell
-components/     auth, catalog, layout, states, storefront, ui (shadcn)
+components/     auth, catalog, layout, states, storefront, ui (shadcn) contain files;
+                admin/, customer/, shared/, super-admin/ exist but are EMPTY
+constants/ features/ hooks/ types/ validators/   exist but are EMPTY (no files)
 lib/
   api/          the browser -> Worker boundary (below)
   public-catalog.ts   build-time public GETs for static generation (no credentials;
