@@ -300,3 +300,45 @@ test("invitation activation and reissue cannot both consume an old token", { ski
     await assert.rejects(peekInvitation(c.db, initial.rawToken), { status: 404 });
   }
 }, true));
+
+async function withOutsideAdmins(c: Awaited<ReturnType<typeof makeFixture>>, run: (ids: { assignedAdminId: string; unassignedAdminId: string }) => Promise<void>) {
+  const id = randomUUID(), assignedAdminId = randomUUID(), unassignedAdminId = randomUUID();
+  const userIds = [`scope-assigned-${id}`, `scope-unassigned-${id}`];
+  await c.db.transaction(async (tx) => {
+    await tx.insert(users).values(userIds.map((userId) => ({ id: userId, name: "Outside Admin", email: `${userId}@example.invalid`, status: "ACTIVE" as const })));
+    await tx.insert(admins).values([{ id: assignedAdminId, userId: userIds[0], status: "ACTIVE" }, { id: unassignedAdminId, userId: userIds[1], status: "ACTIVE" }]);
+    await tx.insert(adminCategoryAssignments).values({ adminId: assignedAdminId, categoryId: c.categoryId, status: "ACTIVE" });
+  });
+  try { await run({ assignedAdminId, unassignedAdminId }); } finally {
+    await c.db.transaction(async (tx) => {
+      await tx.delete(adminAuditEvents).where(sql`${adminAuditEvents.adminId} in (${assignedAdminId}, ${unassignedAdminId})`);
+      await tx.delete(adminCategoryAssignments).where(eq(adminCategoryAssignments.adminId, assignedAdminId));
+      await tx.delete(admins).where(sql`${admins.id} in (${assignedAdminId}, ${unassignedAdminId})`);
+      await tx.delete(users).where(sql`${users.id} in (${userIds[0]}, ${userIds[1]})`);
+    });
+  }
+}
+
+test("cross-Admin product update is indistinguishable from a missing product", { skip: !testUrl }, async () => fixture(async (c) => withOutsideAdmins(c, async ({ assignedAdminId, unassignedAdminId }) => {
+  const missing = await updateProduct(c.db, assignedAdminId, randomUUID(), { name: "Probe" }).catch((error: { status?: number; message?: string }) => error);
+  assert.equal((missing as { status?: number }).status, 404);
+  for (const outsider of [assignedAdminId, unassignedAdminId]) {
+    for (const input of [{ name: "Hijacked" }, { categoryId: c.categoryId }, { attributes: { bogus: 1 } }, { returnEnabled: true }]) {
+      const denied = await updateProduct(c.db, outsider, c.productId, input).catch((error: { status?: number; message?: string }) => error) as { status?: number; message?: string };
+      assert.equal(denied.status, 404);
+      assert.equal(denied.message, (missing as { message?: string }).message);
+    }
+  }
+  const [row] = await c.db.select({ name: products.name }).from(products).where(eq(products.id, c.productId));
+  assert.equal(row.name, "Product");
+})));
+
+test("owning Admin can still update a product and keeps existing validation errors", { skip: !testUrl }, async () => fixture(async (c) => {
+  const updated = await updateProduct(c.db, c.adminId, c.productId, { name: "Owner update" });
+  assert.equal(updated.name, "Owner update");
+  const [audit] = await c.db.select().from(adminAuditEvents).where(and(eq(adminAuditEvents.adminId, c.adminId), eq(adminAuditEvents.action, "PRODUCT_UPDATED")));
+  assert.ok(audit);
+  await assert.rejects(updateProduct(c.db, c.adminId, c.productId, { categoryId: c.categoryId }), { status: 422 });
+  await assert.rejects(updateProduct(c.db, c.adminId, c.productId, { returnEnabled: true }), { status: 422 });
+  await assert.rejects(updateProduct(c.db, c.adminId, c.productId, { returnEnabled: "yes" }), { status: 422 });
+}));

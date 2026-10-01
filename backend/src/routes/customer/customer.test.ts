@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import worker, { app } from "../index";
+import worker, { app } from "../../index";
 
 test("Worker exports HTTP and scheduled handlers", () => {
   assert.equal(typeof worker.fetch, "function");

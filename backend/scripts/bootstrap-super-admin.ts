@@ -1,8 +1,10 @@
 import { config } from "dotenv";
 import { createDb } from "../src/db";
 import { provisionCredentialUser } from "../src/services/admin/provision.service";
+import { assertLocalOrOptedIn } from "./local-db-guard";
 
 config({ path: ".env", quiet: true });
+assertLocalOrOptedIn("bootstrap:super-admin");
 const url = process.env.DATABASE_URL;
 const email = process.env.BOOTSTRAP_SUPER_ADMIN_EMAIL;
 const name = process.env.BOOTSTRAP_SUPER_ADMIN_NAME;

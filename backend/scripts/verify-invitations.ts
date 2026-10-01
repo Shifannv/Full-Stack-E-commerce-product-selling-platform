@@ -20,6 +20,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { config } from "dotenv";
+import { assertLocalOrOptedIn } from "./local-db-guard";
 import { and, eq, like, sql } from "drizzle-orm";
 import { verifyPassword } from "better-auth/crypto";
 import { createDb } from "../src/db";
@@ -35,6 +36,7 @@ import {
 } from "../src/services/admin/invitation.service";
 
 config({ path: ".env", quiet: true });
+assertLocalOrOptedIn("verify-invitations.ts");
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
 const { db, client } = createDb(process.env.DATABASE_URL);
 

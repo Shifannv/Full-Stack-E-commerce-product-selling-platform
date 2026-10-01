@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { createDb } from "../db";
-import { requireAuth, type AuthorizedEnv } from "../middleware/authorization";
-import { DomainError, requiredText } from "../services/admin/admin.service";
-import { createReview, listPendingReviews, listPublishedReviews, moderateReview } from "../services/customer/review.service";
+import { createDb } from "../../db";
+import { requireAuth, type AuthorizedEnv } from "../../middleware/authorization";
+import { DomainError, requiredText } from "../../services/admin/admin.service";
+import { createReview, listPendingReviews, listPublishedReviews, moderateReview } from "../../services/customer/review.service";
 
 export const publicReviewRoutes = new Hono<AuthorizedEnv>();
 export const reviewRoutes = new Hono<AuthorizedEnv>();

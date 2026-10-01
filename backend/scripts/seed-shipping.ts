@@ -1,8 +1,10 @@
 import { config } from "dotenv";
 import { createDb } from "../src/db";
 import { shippingProviderConfigs } from "../src/db/schema/shipping";
+import { assertLocalOrOptedIn } from "./local-db-guard";
 
 config({ path: ".env", quiet: true });
+assertLocalOrOptedIn("seed:shipping");
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
 async function main() {
   const { client, db } = createDb(process.env.DATABASE_URL!);

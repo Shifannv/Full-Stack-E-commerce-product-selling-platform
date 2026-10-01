@@ -1,14 +1,12 @@
 import { Hono } from "hono";
-import { createDb } from "../db";
-import { requireAuth, type AuthorizedEnv } from "../middleware/authorization";
-import { DomainError } from "../services/admin/admin.service";
-import { CashfreePaymentAdapter, verifyCashfreeWebhookSignature } from "../services/cashfree-payment.adapter";
-import { createPaymentSession, ingestCashfreeWebhook } from "../services/payment.service";
-import { readBoundedBody } from "../lib/security/body";
+import { createDb } from "../../db";
+import { requireAuth, type AuthorizedEnv } from "../../middleware/authorization";
+import { DomainError } from "../../services/admin/admin.service";
+import { CashfreePaymentAdapter } from "../../services/cashfree-payment.adapter";
+import { createPaymentSession } from "../../services/payment.service";
 
 type PaymentEnv = AuthorizedEnv & { Bindings: AuthorizedEnv["Bindings"] & { CASHFREE_CLIENT_ID?: string; CASHFREE_CLIENT_SECRET?: string; CASHFREE_ENVIRONMENT?: string } };
 export const paymentRoutes = new Hono<PaymentEnv>();
-export const paymentWebhookRoutes = new Hono<PaymentEnv>();
 
 async function withDb<T>(connectionString: string, action: (db: ReturnType<typeof createDb>["db"]) => Promise<T>): Promise<T> {
   const { client, db } = createDb(connectionString);
@@ -20,7 +18,6 @@ const onError = (error: Error, c: Parameters<Parameters<typeof paymentRoutes.onE
   return c.json({ error: "Payment operation unavailable" }, 503);
 };
 paymentRoutes.onError(onError);
-paymentWebhookRoutes.onError(onError);
 
 paymentRoutes.post("/orders/:orderId/payment-session", requireAuth, async (c) => {
   const actor = c.get("actor");
@@ -34,16 +31,4 @@ paymentRoutes.post("/orders/:orderId/payment-session", requireAuth, async (c) =>
     new URL("/webhooks/payments/cashfree", c.env.BETTER_AUTH_URL).toString(),
   ));
   return c.json(result);
-});
-
-paymentWebhookRoutes.post("/payments/cashfree", async (c) => {
-  const secret = c.env.CASHFREE_CLIENT_SECRET;
-  if (!secret) return c.json({ error: "Webhook unavailable" }, 503);
-  const raw = new TextDecoder().decode(await readBoundedBody(c.req.raw, 65536));
-  const signature = c.req.header("x-webhook-signature") ?? "", timestamp = c.req.header("x-webhook-timestamp") ?? "";
-  if (!await verifyCashfreeWebhookSignature(raw, timestamp, signature, secret)) return c.json({ error: "Unauthorized" }, 401);
-  let payload: unknown;
-  try { payload = JSON.parse(raw); } catch { throw new DomainError("Invalid JSON body", 422); }
-  const result = await withDb(c.env.HYPERDRIVE.connectionString, (db) => ingestCashfreeWebhook(db, payload));
-  return c.json({ ok: true, ...result });
 });

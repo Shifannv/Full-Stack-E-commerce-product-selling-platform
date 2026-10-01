@@ -1,5 +1,7 @@
 # Phase 11b API mapping — current checkpoint and historical evidence
 
+> **Location/structure note (2026-10-01):** this file moved from `docs/FRONTEND_API_MAPPING.md`. The browser API code now lives in `frontend/src/lib/api/` (`client.ts`, `types.ts`, `auth.ts`, `customer.ts`, `admin.ts`, `super-admin.ts`, re-exported by `index.ts`); mentions of `src/lib/api.ts` below are historical. Endpoint paths, methods and payloads are unchanged. Server route list: [API_ROUTE_MAP.md](API_ROUTE_MAP.md).
+
 ## CURRENT CHECKPOINT — Phase 11b-3B authenticated continuation — 2026-09-29
 
 **Authenticated customer browser mapping remains BLOCKED.** The operator reports successful Google login in Chrome, and read-only database counts show 1 Google account and 1 unexpired CUSTOMER session. The isolated Chrome profile accessible on debugging port 9222 remained signed out: Better Auth returned no session, `/api/me` returned 401, and account UI showed the sign-in gate. The signed-in operator profile could not be attached. Signed-out wishlist, cart, addresses, quote, Admin, and Super Admin API reads returned 401. Static export scanning found no embedded local Google, Better Auth, Cashfree, database, Resend, or Redis secrets. No authenticated wishlist/cart/address/quote or customer UI behavior, refresh, or logout is claimed. No frontend API source changed. See `docs/BACKEND_VERIFICATION.md` for exact next task and test results.

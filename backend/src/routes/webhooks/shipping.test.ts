@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { app } from "../index";
-import { webhookRoutes } from "./shipping";
+import { app } from "../../index";
+import { webhookRoutes } from "./shipping.webhook";
 
 const endpoint = "/shipping/events";
 const secret = "private-webhook-token";

@@ -107,7 +107,7 @@ Mobile navigation uses a keyboard-accessible Sheet; dashboards use a persistent 
 | `NEXT_PUBLIC_API_URL` | Worker API origin; local example `http://127.0.0.1:8787` |
 | `NEXT_PUBLIC_R2_PUBLIC_BASE_URL` | Environment-configured public media base; blank in example, development r2.dev configured locally; production custom domain pending |
 
-`src/lib/api.ts` is the only API origin resolver and preserves the existing browser-facing Worker contracts. `src/lib/images.ts` converts a database `objectKey` into a URL on the configured public R2 domain; an unset or invalid base returns no image. Product and category cards show a neutral missing-image state until the API supplies object keys and the public domain is configured. No R2 credential, Cashfree credential, or other backend secret belongs in `NEXT_PUBLIC_*`.
+`src/lib/api/` (`client.ts` resolves the API origin) is the only authenticated API boundary and preserves the existing browser-facing Worker contracts. `src/lib/images.ts` converts a database `objectKey` into a URL on the configured public R2 domain; an unset or invalid base returns no image. Product and category cards show a neutral missing-image state until the API supplies object keys and the public domain is configured. No R2 credential, Cashfree credential, or other backend secret belongs in `NEXT_PUBLIC_*`.
 
 The existing `frontend/.env.local`, route stubs, API helper, and Next config were preserved and adapted. The original no-op `middleware.ts` was removed because static export cannot use middleware. The development server generated `AGENTS.md` and `CLAUDE.md` containing Next.js version guidance.
 
