@@ -67,9 +67,13 @@ paymentRoutes.post(
         orderId,
         actor.userId,
         new URL("/orders", c.env.FRONTEND_ORIGIN).toString(),
+        // notify_url is a server-to-server callback from Cashfree. It must
+        // reach the Worker directly, not the Pages proxy, so prefer the
+        // dedicated Worker URL and fall back to BETTER_AUTH_URL for dev
+        // where both point at the same loopback origin.
         new URL(
           "/webhooks/payments/cashfree",
-          c.env.BETTER_AUTH_URL,
+          c.env.PUBLIC_WORKER_URL ?? c.env.BETTER_AUTH_URL,
         ).toString(),
       ),
     );

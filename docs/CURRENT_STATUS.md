@@ -1,6 +1,6 @@
 # Ownline Dropship — Current Status
 
-**Last reconciled:** 2026-10-01 (after the architecture refactor and documentation reconciliation)
+**Last reconciled:** 2026-10-01 (after the same-origin Pages Function proxy was added for cross-site cookie safety)
 **Purpose:** Single source of truth for the current implementation state. Historical checkpoints in `PROJECT_CONTEXT.md`, `verification/*` and the historical part of `api/FRONTEND_API_MAP.md` are evidence only; where they disagree with this file, this file wins.
 
 Labels: IMPLEMENTED, REFACTORED, TESTED, VERIFIED, BLOCKED, NOT VERIFIED, NOT TOUCHED, PRODUCTION VERIFIED.
@@ -98,6 +98,7 @@ Production deployment is **BLOCKED / NOT SAFE TO DEPLOY**:
 - Authenticated customer browser flows (wishlist, cart, address, checkout quote) are NOT VERIFIED.
 - R2: development image uploaded; production custom domain not configured.
 - ~~Cashfree payment return URL pointed to non-existent `/orders/<id>` route~~ — **RESOLVED 2026-10-01**: return URL changed to `/orders` (the existing valid route; static export cannot serve dynamic authenticated routes). See Cashfree payment return below.
+- ~~Cross-site session cookies broken between `*.pages.dev` frontend and `*.workers.dev` Worker (Better Auth default `SameSite=Lax` not sent on cross-site `fetch`)~~ — **RESOLVED 2026-10-01**: same-origin Pages Function proxy added at `frontend/functions/api/[[path]].ts` so the browser only ever talks to the Pages origin; Better Auth cookies remain first-party `SameSite=Lax`. See Same-origin API proxy below.
 
 ## External services
 
@@ -109,6 +110,23 @@ Production deployment is **BLOCKED / NOT SAFE TO DEPLOY**:
 | Resend (email) | **PARKED** — no live calls made |
 | Google OAuth | **BLOCKED** |
 | R2 | Development only |
+
+## Same-origin API proxy — IMPLEMENTED (2026-10-01)
+
+- **Why:** The chosen production domains are `https://ownline-ecommerce.pages.dev` (frontend) and `https://ecommerce-api.ownlinedropshipping.workers.dev` (Worker). These sit on different registrable domains (both on the Public Suffix List), so every browser `fetch(..., {credentials: "include"})` from Pages to Worker is a cross-site subresource request. Better Auth v1.7.5 defaults the session cookie to `SameSite=Lax`, which browsers refuse to attach to cross-site subresource requests, so authenticated API calls would 401 even though CORS passes. A code audit of the installed Better Auth source confirmed the defaults: `sameSite: "lax"`, `httpOnly: true`, `secure` auto-enabled when `baseURL` is HTTPS, and no `Domain` attribute. Switching to `SameSite=None` is functionally broken on Safari (ITP) and Firefox (Total Cookie Protection), so same-origin is the only architecture that works across mainstream browsers.
+- **Architecture:** The browser only ever talks to `https://ownline-ecommerce.pages.dev`. A Cloudflare Pages Function at `frontend/functions/api/[[path]].ts` proxies every `/api/*` request to the Worker's `PUBLIC_WORKER_URL`, forwarding method, path, query, body, cookies, and the `Origin` header verbatim, with `redirect: "manual"` so OAuth 302s reach the browser instead of being followed inside the Function. `Set-Cookie`, `Content-Type`, status and `Cache-Control` are relayed through. `frontend/public/_routes.json` pins `/api/*` to Functions; all other paths resolve to the Next.js static export. Webhooks (Cashfree, Shiprocket) are **not** proxied — they remain direct provider-to-Worker calls.
+- **Overload split for `BETTER_AUTH_URL`:** `BETTER_AUTH_URL` previously drove three things — Better Auth's `baseURL` (cookie prefix + OAuth callback), the Cashfree `notify_url` base, and a trusted mutation origin. Under this architecture `BETTER_AUTH_URL` becomes the Pages origin, which is correct for Better Auth and `mutationOrigin`, but a Cashfree webhook POST to the Pages origin would 404 because `_routes.json` only sends `/api/*` to Functions. A new optional binding `PUBLIC_WORKER_URL` was added to `AuthBindings` and consulted by `routes/customer/payments.ts` for `notify_url` construction; it falls back to `BETTER_AUTH_URL` when unset, which keeps every unit test and dev loopback working unchanged.
+- **Expected production environment variables:**
+  - Worker: `BETTER_AUTH_URL=https://ownline-ecommerce.pages.dev`, `FRONTEND_ORIGIN=https://ownline-ecommerce.pages.dev`, `PUBLIC_WORKER_URL=https://ecommerce-api.ownlinedropshipping.workers.dev`, `ADMIN_SETUP_URL=https://ownline-ecommerce.pages.dev/admin/setup`. All other Worker secrets unchanged.
+  - Pages (build env + Function env): `NEXT_PUBLIC_API_URL=https://ownline-ecommerce.pages.dev`, `NEXT_PUBLIC_SITE_URL=https://ownline-ecommerce.pages.dev`, `PUBLIC_WORKER_URL=https://ecommerce-api.ownlinedropshipping.workers.dev` (Function reads this from `ctx.env`), `NEXT_PUBLIC_R2_PUBLIC_BASE_URL` read from the R2 dashboard for bucket `shop-product-images`.
+- **URLs after the change:**
+  - Google OAuth callback (must be registered in Google Cloud Console before production login works): `https://ownline-ecommerce.pages.dev/api/auth/callback/google`.
+  - Cashfree return URL: `https://ownline-ecommerce.pages.dev/orders` (unchanged, matches the existing `/orders` static route).
+  - Cashfree notify URL: `https://ecommerce-api.ownlinedropshipping.workers.dev/webhooks/payments/cashfree` (direct Worker — webhooks must not traverse the proxy).
+  - Shiprocket webhook: `https://ecommerce-api.ownlinedropshipping.workers.dev/webhooks/shipping/events` (unchanged, provider-dashboard-registered).
+- **Local verification (2026-10-01):** `wrangler pages dev out --port 8880` served the built `out/` plus the Function, pointed at an echo backend on `127.0.0.1:8898` via `PUBLIC_WORKER_URL`. Seven integration probes passed: GET `/api/me` forwards `Origin: https://ownline-ecommerce.pages.dev` verbatim; POST with JSON body preserves method, Content-Type and body length (30 bytes); `/api/auth/sign-in/social` 302 to `accounts.google.com` is relayed to the client without being followed; `/api/auth/callback/google` relays both `Location` and `Set-Cookie: __Secure-better-auth.session_token=...; Secure; HttpOnly; SameSite=Lax`; `/orders` resolves to the static export (not the Function); `?limit=50` query is forwarded intact; inbound `Cookie: __Secure-better-auth.session_token=...` reaches the upstream request. Full Better Auth login + Google OAuth was NOT exercised locally — that requires real OAuth credentials and a deployed Worker.
+- **Regression gates (2026-10-01):** backend `npm run typecheck` PASS; backend `npm test` 82/82 PASS; frontend `npm run typecheck` PASS; frontend `npm run lint` PASS; frontend `npm run build` PASS (15 static pages generated with `NEXT_PUBLIC_API_URL=https://ownline-ecommerce.pages.dev`; `out/api/` not emitted; `out/_routes.json`, `out/orders.html`, `out/admin/setup.html` all present); `drizzle-kit check` PASS; `git diff --check` clean. Isolated PG suite was not re-run (no schema or query behavior changed).
+- **What is NOT verified:** real deployed browser authentication; full Google OAuth round-trip; Cashfree sandbox POST to the webhook from the production domain; Hyperdrive-to-Aiven reach from a deployed Worker; the R2 public URL for the production bucket.
 
 ## Cashfree payment return URL — RESOLVED (2026-10-01)
 
