@@ -130,7 +130,17 @@ async function lockedCategoryScope(tx: AdminTx, adminId: string, categoryId: str
   return admin;
 }
 
+// Ownership is established before any category/scope evaluation so a non-owner cannot tell a
+// foreign product from a missing one. Non-locking: the locked re-check in lockedProductScope
+// still guards races and the documented lock order is unchanged.
+async function requireManagedProduct(db: Db | AdminTx, adminId: string, productId: string) {
+  const [managed] = await db.select({ productId: productAdmins.productId }).from(productAdmins)
+    .where(and(eq(productAdmins.productId, productId), eq(productAdmins.adminId, adminId))).limit(1);
+  if (!managed) throw new DomainError("Product unavailable", 404);
+}
+
 async function lockedProductScope(tx: AdminTx, adminId: string, productId: string) {
+  await requireManagedProduct(tx, adminId, productId);
   const [candidate] = await tx.select({ categoryId: products.categoryId }).from(products).where(eq(products.id, productId)).limit(1);
   if (!candidate) throw new DomainError("Product unavailable", 404);
   const admin = await lockedCategoryScope(tx, adminId, candidate.categoryId);
@@ -151,6 +161,7 @@ export async function assertProductAdmin(db: Db, adminId: string, productId: str
 }
 
 export async function updateProduct(db: Db, adminId: string, productId: string, input: Record<string, unknown>) {
+  await requireManagedProduct(db, adminId, productId);
   const [current] = await db.select().from(products).where(eq(products.id, productId)).limit(1);
   if (!current) throw new DomainError("Product unavailable", 404);
   if (input.categoryId !== undefined || input.subcategoryId !== undefined || input.status !== undefined || input.createdByAdminId !== undefined || input.featured !== undefined) {

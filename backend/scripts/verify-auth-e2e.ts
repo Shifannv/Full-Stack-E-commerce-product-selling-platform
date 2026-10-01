@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { config, parse } from "dotenv";
+import { assertLocalOrOptedIn } from "./local-db-guard";
 import { eq, inArray } from "drizzle-orm";
 import { app } from "../src";
 import { createDb } from "../src/db";
@@ -13,6 +14,7 @@ import type { AuthBindings } from "../src/lib/auth/auth";
 import { provisionCredentialUser } from "../src/services/admin/provision.service";
 
 config({ path: ".env", quiet: true });
+assertLocalOrOptedIn("verify-auth-e2e.ts");
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
 const vars = parse(readFileSync(".dev.vars"));
 const target = process.env.VERIFY_API_URL;
@@ -184,7 +186,14 @@ async function main() {
   assert.equal(publicNew.status, 200);
   assert.deepEqual((await publicNew.json() as { products: { id: string }[] }).products.map((row) => row.id), [newerPublished.id, featuredPublished.id]);
   assert.notEqual(featuredDraft.id, featuredPublished.id);
-  assert.equal((await mutate(secondCookie, "PATCH", `/api/admin/products/${product.id}`, { price: "1.00" })).status, 404);
+  for (const input of [{ price: "1.00" }, { name: "Hijacked" }, { categoryId: scopes[0].id }, { attributes: { bogus: 1 } }, { returnEnabled: true }]) {
+    const crossAdminPatch = await mutate(secondCookie, "PATCH", `/api/admin/products/${product.id}`, input);
+    assert.equal(crossAdminPatch.status, 404);
+    assert.deepEqual(await crossAdminPatch.json(), { error: "Product unavailable" });
+  }
+  const ownerPatch = await mutate(adminCookie, "PATCH", `/api/admin/products/${product.id}`, { name: "Owner HTTP update" });
+  assert.equal(ownerPatch.status, 200);
+  assert.equal((await ownerPatch.json() as { name: string }).name, "Owner HTTP update");
   assert.equal((await mutate(adminCookie, "PATCH", `/api/admin/products/${product.id}`, { featured: true })).status, 422);
   assert.equal((await mutate(adminCookie, "PATCH", `/api/admin/products/${product.id}`, { status: "PUBLISHED" })).status, 422);
   await db.update(adminCategoryAssignments).set({ status: "REVOKED" }).where(eq(adminCategoryAssignments.adminId, sellerA.id));
@@ -195,7 +204,7 @@ async function main() {
   assert.equal(revokedSummary.status, 200);
   assert.equal((await revokedSummary.json() as { products: { total: number } }).products.total, 0);
   assert.equal((await mutate(adminCookie, "PATCH", `/api/admin/products/${product.id}`, { price: "1.00" })).status, 403);
-  assert.equal((await mutate(adminCookie, "PUT", `/api/admin/products/${product.id}/inventory`, { quantity: 5 })).status, 403);
+  assert.equal((await mutate(adminCookie, "PUT", `/api/admin/products/${product.id}/inventory`, { quantity: 5, expectedVersion: 0 })).status, 403);
   assert.equal((await request("/api/auth/sign-out", { method: "POST", headers: { Cookie: secondCookie } })).status, 200);
   assert.equal((await request("/api/me", { headers: { Cookie: secondCookie } })).status, 401);
 
@@ -208,7 +217,7 @@ async function main() {
 }
 
 main()
-  .then(() => console.log(`Better Auth E2E passed (${target ? "deployed HTTPS Worker" : "in-process API + Aiven"}): real fixture credential sessions, invalid-password rejection, role resolution, dashboard RBAC and aggregate/list routes, public Featured/New Arrivals filters, two-Admin ownership and revoked-category isolation, logout. Google OAuth and permanent operator credentials are NOT VERIFIED.`))
+  .then(() => console.log(`Better Auth E2E passed (${target ? "deployed HTTPS Worker" : "in-process API + configured local PostgreSQL"}): real fixture credential sessions, invalid-password rejection, role resolution, dashboard RBAC and aggregate/list routes, public Featured/New Arrivals filters, cross-Admin PATCH returned 404 { error: "Product unavailable" } for all payload variants, owner PATCH succeeded, revoked-category isolation, logout. Google OAuth and permanent operator credentials are NOT VERIFIED.`))
   .catch((error: unknown) => { console.error("Better Auth E2E failed", { name: error instanceof Error ? error.name : "UnknownError", message: error instanceof Error && error.name === "AssertionError" ? error.message.slice(0, 200) : undefined, code: (error as { code?: string } | null)?.code, at: error instanceof Error ? error.stack?.split("\n").find((line) => line.includes("verify-auth-e2e.ts"))?.trim() : undefined }); process.exitCode = 1; })
   .finally(async () => {
     try {

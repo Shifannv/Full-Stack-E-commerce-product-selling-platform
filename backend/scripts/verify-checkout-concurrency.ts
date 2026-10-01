@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { config } from "dotenv";
+import { assertLocalOrOptedIn } from "./local-db-guard";
 import { eq, inArray } from "drizzle-orm";
 import { createDb } from "../src/db";
 import { users } from "../src/db/schema/auth";
@@ -12,6 +13,7 @@ import { admins } from "../src/db/schema/rbac";
 import { checkoutCart, quoteCart } from "../src/services/customer/order.service";
 
 config({ path: ".env", quiet: true });
+assertLocalOrOptedIn("verify-checkout-concurrency.ts");
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
 const { db, client } = createDb(process.env.DATABASE_URL);
 const fixture = randomUUID();

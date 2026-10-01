@@ -4,6 +4,7 @@
  * email is sent to the synthetic .invalid address. */
 import assert from "node:assert/strict";
 import { config } from "dotenv";
+import { assertLocalOrOptedIn } from "./local-db-guard";
 import { createDb } from "../src/db";
 import { eq } from "drizzle-orm";
 import { categories, subcategories } from "../src/db/schema/catalog";
@@ -11,6 +12,7 @@ import { reissueInvitation } from "../src/services/admin/invitation.service";
 
 config({ path: ".env", quiet: true });
 config({ path: ".env.phase11b2.local", quiet: true });
+assertLocalOrOptedIn("create-phase11b2-fixture.ts");
 
 const base = process.env.PHASE11B2_API_URL ?? "http://127.0.0.1:8787";
 const origin = process.env.PHASE11B2_FRONTEND_ORIGIN ?? "http://127.0.0.1:3000";

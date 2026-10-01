@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { createDb } from "../db";
-import { requireArchiveRecoveryAuth, requireAuth, type AuthorizedEnv } from "../middleware/authorization";
-import { DomainError, requiredText } from "../services/admin/admin.service";
-import { getAdminLifecycle, requestAdminDeletion, requestAdminRecovery, reviewAdminDeletion, reviewAdminRecovery, verifyAdminDeletion, type RecoveryApproval } from "../services/admin/account-lifecycle.service";
+import { createDb } from "../../db";
+import { requireArchiveRecoveryAuth, requireAuth, type AuthorizedEnv } from "../../middleware/authorization";
+import { DomainError, requiredText } from "../../services/admin/admin.service";
+import { getAdminLifecycle, requestAdminDeletion, requestAdminRecovery, reviewAdminDeletion, reviewAdminRecovery, verifyAdminDeletion, type RecoveryApproval } from "../../services/admin/account-lifecycle.service";
 
 export const adminLifecycleRoutes = new Hono<AuthorizedEnv>();
 adminLifecycleRoutes.onError((error, c) => {

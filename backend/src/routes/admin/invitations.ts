@@ -8,6 +8,6 @@
  * The Hono router is intentionally empty — no routes are registered here.
  */
 import { Hono } from "hono";
-import type { AuthorizedEnv } from "../middleware/authorization";
+import type { AuthorizedEnv } from "../../middleware/authorization";
 
 export const invitationRoutes = new Hono<AuthorizedEnv>();

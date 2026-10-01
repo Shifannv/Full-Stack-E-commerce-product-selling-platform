@@ -20,8 +20,10 @@ import { createReview, listPublishedReviews, moderateReview } from "../src/servi
 import { authorizeRefund, decideReturn, getReturn, inspectReturn, markReturnReceived, requestReturn } from "../src/services/returns/return.service";
 import { getOrderTracking, ingestShiprocketWebhook } from "../src/services/shipping/shipping.service";
 import { ingestCashfreeWebhook } from "../src/services/payment.service";
+import { assertLocalOrOptedIn } from "./local-db-guard";
 
 config({ path: ".env", quiet: true });
+assertLocalOrOptedIn("verify:workflows");
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
 const { client, db } = createDb(process.env.DATABASE_URL);
 type Db = typeof db;

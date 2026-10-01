@@ -1,9 +1,9 @@
 import { Hono } from "hono";
-import { createDb } from "../db";
-import { type AuthorizedEnv, requireAuth } from "../middleware/authorization";
-import { DomainError } from "../services/admin/admin.service";
-import { listAdmins } from "../services/admin/admins-list.service";
-import { getSuperAdminSummary } from "../services/admin/summary.service";
+import { createDb } from "../../db";
+import { type AuthorizedEnv, requireAuth } from "../../middleware/authorization";
+import { DomainError } from "../../services/admin/admin.service";
+import { listAdmins } from "../../services/admin/admins-list.service";
+import { getSuperAdminSummary } from "../../services/admin/summary.service";
 
 export const superAdminDashboardRoutes = new Hono<AuthorizedEnv>();
 superAdminDashboardRoutes.use("*", requireAuth);

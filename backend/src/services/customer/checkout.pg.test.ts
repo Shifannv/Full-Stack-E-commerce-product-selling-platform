@@ -23,7 +23,7 @@ import { adminSettlements, payoutRequests, payoutSettlementItems } from "../../d
 import { authorizeRefund, requestReturn, decideReturn, markReturnReceived, inspectReturn, submitRefund } from "../returns/return.service";
 import { CashfreeRefundAdapter } from "../returns/cashfree-refund.adapter";
 import { cancelUnpaidOrderInTransaction, listUnresolvedRefundObligations } from "../reservation.service";
-import { getAdminFinance, requestPayout, reviewPayout, markPayoutPaid } from "../admin/finance.service";
+import { getAdminFinance, getFinanceSettings, requestPayout, reviewPayout, markPayoutPaid } from "../admin/finance.service";
 import { applyVerifiedPayment, cancelUnpaidOrder, expireUnpaidOrder, expireUnpaidOrderInTransaction, markRefundResolved, recordDefinitivePaymentFailure, recordVerifiedPayment, releaseUnpaidOrder } from "../reservation.service";
 import { requireFulfillmentEligible } from "../order-eligibility";
 import { createSettlement } from "../admin/finance.service";
@@ -1534,14 +1534,31 @@ async function partialRefundFinanceFixture(c: Awaited<ReturnType<typeof createFi
   return { ...sale, refund };
 }
 
+async function expectedSettlementAmounts(db: ReturnType<typeof createDb>["db"], gross: string, refundAdjustment = "0.00") {
+  const { commissionBps, gatewayFeeBps } = await getFinanceSettings(db);
+  const toPaise = (value: string) => Math.round(Number(value) * 100);
+  const fromPaise = (value: number) => `${Math.floor(value / 100)}.${String(value % 100).padStart(2, "0")}`;
+  const grossPaise = toPaise(gross), refundPaise = toPaise(refundAdjustment);
+  const commissionPaise = Math.round(grossPaise * commissionBps / 10000);
+  const gatewayPaise = Math.round(grossPaise * gatewayFeeBps / 10000);
+  return {
+    grossAmount: fromPaise(grossPaise),
+    commissionAmount: fromPaise(commissionPaise),
+    gatewayFeeAmount: fromPaise(gatewayPaise),
+    refundAdjustmentAmount: fromPaise(refundPaise),
+    netPayable: fromPaise(grossPaise - commissionPaise - gatewayPaise - refundPaise),
+  };
+}
+
 test("finance successful refund adjustment is applied once from historical purchase", { skip: !testUrl }, async () => fixture(async (c) => {
   const { item, returnId } = await partialRefundFinanceFixture(c);
   await c.db.update(products).set({ price: "9000.00" }).where(eq(products.id, item.productId));
   await submitRefund(c.db, returnId, refundResponse(c, returnId), c.customers[0]);
   await assert.rejects(createSettlement(c.db, item.id, "0.00", c.customers[0]), /REFUND_ADJUSTMENT_REQUIRED/);
+  const expected = await expectedSettlementAmounts(c.db, "1000.00", "500.00");
   const settlement = await createSettlement(c.db, item.id, "500.00", c.customers[0]);
-  assert.equal(settlement.netPayable, "380.00"); assert.equal(settlement.refundAdjustmentAmount, "500.00");
-  assert.equal((await requestPayout(c.db, c.adminId)).amount, "380.00");
+  for (const field of ["grossAmount", "commissionAmount", "gatewayFeeAmount", "refundAdjustmentAmount", "netPayable"] as const) assert.equal(settlement[field], expected[field]);
+  assert.equal((await requestPayout(c.db, c.adminId)).amount, expected.netPayable);
   await assert.rejects(requestPayout(c.db, c.adminId), /No payable balance/);
   await financeInvariants(c);
 }));
@@ -1611,7 +1628,7 @@ test("finance exact selected IDs exclude settlement committed during payout allo
         await started.promise; await waitForFinanceLock(c.db, pid);
         inserted = await createSettlement(c.db, later.item.id, "0.00", c.customers[0]);
       } finally { release.resolve(); await blocker; }
-      const payout = await allocating; assert.equal(payout.amount, "440.00");
+      const payout = await allocating; assert.equal(payout.amount, selected.netPayable);
       const links = await c.db.select().from(payoutSettlementItems).where(eq(payoutSettlementItems.payoutRequestId, payout.id));
       assert.deepEqual(links.map((row) => row.settlementId), [selected.id]);
       const [untouched] = await c.db.select().from(adminSettlements).where(eq(adminSettlements.id, inserted!.id));
@@ -1740,12 +1757,12 @@ test("finance refund-required payment cannot settle", { skip: !testUrl }, async 
 test("finance elapsed window uses historical purchase amount and exact fee formula", { skip: !testUrl }, async () => fixture(async (c) => {
   const { item } = await financeSale(c);
   await c.db.update(products).set({ price: "999.00" }).where(eq(products.id, item.productId));
+  const expected = await expectedSettlementAmounts(c.db, "500.00", "10.00");
   const settlement = await createSettlement(c.db, item.id, "10.00", c.customers[0]);
-  assert.equal(settlement.status, "AVAILABLE"); assert.equal(settlement.grossAmount, "500.00");
-  assert.equal(settlement.commissionAmount, "50.00"); assert.equal(settlement.gatewayFeeAmount, "10.00");
-  assert.equal(settlement.refundAdjustmentAmount, "10.00"); assert.equal(settlement.netPayable, "430.00");
+  assert.equal(settlement.status, "AVAILABLE");
+  for (const field of ["grossAmount", "commissionAmount", "gatewayFeeAmount", "refundAdjustmentAmount", "netPayable"] as const) assert.equal(settlement[field], expected[field]);
   await assert.rejects(createSettlement(c.db, item.id, "10.00", c.customers[0]));
-  const payout = await requestPayout(c.db, c.adminId); assert.equal(payout.amount, "430.00");
+  const payout = await requestPayout(c.db, c.adminId); assert.equal(payout.amount, expected.netPayable);
   await financeInvariants(c);
 }));
 
@@ -1774,8 +1791,9 @@ test("finance return hold is item scoped even within the same order", { skip: !t
   await requestReturn(c.db, c.customers[0], affected.id, 1, "Affected item", null, 5);
   await c.db.update(orders).set({ deliveredAt: sql`clock_timestamp() - interval '6 days'` }).where(eq(orders.id, orderId));
   await assert.rejects(createSettlement(c.db, affected.id, "0.00", c.customers[0]), /RETURN_REFUND_UNRESOLVED/);
+  const expected = await expectedSettlementAmounts(c.db, "100.00");
   const settlement = await createSettlement(c.db, unaffected.id, "0.00", c.customers[0]);
-  assert.equal(settlement.netPayable, "88.00"); assert.equal((await requestPayout(c.db, c.adminId)).amount, "88.00");
+  assert.equal(settlement.netPayable, expected.netPayable); assert.equal((await requestPayout(c.db, c.adminId)).amount, expected.netPayable);
   await financeInvariants(c);
 }));
 
@@ -1853,7 +1871,7 @@ test("finance payout revalidates legacy AVAILABLE and does not block unrelated e
   const bad = await createSettlement(c.db, first.item.id, "0.00", c.customers[0]);
   const good = await createSettlement(c.db, second.item.id, "0.00", c.customers[0]);
   await c.db.update(orders).set({ deliveredAt: sql`clock_timestamp() - interval '1 day'` }).where(eq(orders.id, first.orderId));
-  const payout = await requestPayout(c.db, c.adminId); assert.equal(payout.amount, "440.00");
+  const payout = await requestPayout(c.db, c.adminId); assert.equal(payout.amount, good.netPayable);
   const [held] = await c.db.select().from(adminSettlements).where(eq(adminSettlements.id, bad.id)); assert.equal(held.status, "HELD");
   const links = await c.db.select().from(payoutSettlementItems).where(eq(payoutSettlementItems.payoutRequestId, payout.id));
   assert.deepEqual(links.map((row) => row.settlementId), [good.id]);
@@ -1887,7 +1905,7 @@ test("finance sale owner is preserved when a different Admin manages the product
     await assert.rejects(requestPayout(c.db, manager), /No payable balance/);
     const [untouched] = await c.db.select().from(adminSettlements).where(eq(adminSettlements.id, settlement.id));
     assert.equal(untouched.status, "AVAILABLE");
-    assert.equal((await requestPayout(c.db, c.adminId)).amount, "440.00");
+    assert.equal((await requestPayout(c.db, c.adminId)).amount, settlement.netPayable);
     await financeInvariants(c);
   } finally {
     await c.db.delete(productAdmins).where(eq(productAdmins.adminId, manager));
@@ -1897,7 +1915,8 @@ test("finance sale owner is preserved when a different Admin manages the product
 
 test("finance zero balance creates no payout and rejected payout is revalidated", { skip: !testUrl }, async () => fixture(async (c) => {
   const { item } = await financeSale(c);
-  const settlement = await createSettlement(c.db, item.id, "440.00", c.customers[0]);
+  const availableBeforeRefund = await expectedSettlementAmounts(c.db, "500.00");
+  const settlement = await createSettlement(c.db, item.id, availableBeforeRefund.netPayable, c.customers[0]);
   await assert.rejects(requestPayout(c.db, c.adminId), /No payable balance/);
   assert.equal((await c.db.select().from(payoutRequests).where(eq(payoutRequests.adminId, c.adminId))).length, 0);
   await c.db.update(adminSettlements).set({ commissionAmount: "0.00", gatewayFeeAmount: "0.00", refundAdjustmentAmount: "0.00", netPayable: "500.00" }).where(eq(adminSettlements.id, settlement.id));
@@ -2477,4 +2496,79 @@ test("failed delivery can recover, while RTO cannot move to delivered", { skip: 
   assert.equal(shipment.status, "RTO"); assert.equal(shipment.deliveredAt, null);
   assert.equal(order.status, "CONFIRMED"); assert.equal(order.deliveredAt, null);
   assert.equal((await listShipmentReconciliationCandidates(c.db)).find((row) => row.id === shipmentId)?.reason, "CONFLICTING_TERMINAL_EVENT");
+}));
+
+test("scheduler 16 a locked due order is contention, not an empty expiry queue", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { orderId } = await checkoutCart(c.db, c.customers[0], await intent(c));
+  await makeDue(c, orderId);
+  const cron = createDb(testUrl!), holder = createDb(testUrl!);
+  const rollback = new Error("ROLLBACK_CONTENDED_ORDER_LOCK");
+  const failures: (string | null)[] = [];
+  try {
+    // Deterministic contention: the holder owns the due order's row for the whole
+    // batch call, so the SKIP LOCKED scan cannot see it. The batch must report a
+    // contended slot instead of concluding that nothing is due.
+    await assert.rejects(holder.db.transaction(async (tx) => {
+      await tx.select({ id: orders.id }).from(orders).where(eq(orders.id, orderId)).limit(1).for("update");
+      assert.deepEqual(await runDueOrderExpiryBatch(cron.db, { onFailure: (id) => failures.push(id) }), { attempted: 0, expired: 0, failed: 1 });
+      const held = await lifecycleState(c, orderId);
+      assert.equal(held.order.status, "CREATED"); assert.equal(held.order.stockState, "RESERVED");
+      throw rollback;
+    }), (error: unknown) => error === rollback);
+    assert.deepEqual(failures, [null]);
+    // The holder abandoned the order, so the next invocation must still expire it
+    // and release the reservation exactly once.
+    assert.deepEqual(await runDueOrderExpiryBatch(cron.db), { attempted: 1, expired: 1, failed: 0 });
+    const state = await lifecycleState(c, orderId);
+    assert.equal(state.order.status, "EXPIRED"); assert.equal(state.order.stockState, "RELEASED");
+    assert.equal(state.order.paymentStatus, "EXPIRED"); assert.equal(state.payment.status, "EXPIRED");
+    assert.equal(state.stock.version, 2); assert.equal(state.stock.reservedQuantity, 0);
+    await assertInventoryInvariant(c);
+    // Duplicate scheduler processing stays safe.
+    assert.deepEqual(await runDueOrderExpiryBatch(cron.db), { attempted: 0, expired: 0, failed: 0 });
+    const settled = await lifecycleState(c, orderId);
+    assert.equal(settled.stock.version, 2); assert.equal(settled.stock.availableQuantity, state.stock.availableQuantity);
+    await assertInventoryInvariant(c);
+  } finally { await Promise.all([cron, holder].map((handle) => handle.client.end({ timeout: 1 }))); }
+}));
+
+test("scheduler 17 a cancellation refused for an elapsed window cannot strand the order as CREATED", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { orderId } = await checkoutCart(c.db, c.customers[0], await intent(c));
+  await makeDue(c, orderId);
+  const cron = createDb(testUrl!), buyer = createDb(testUrl!);
+  try {
+    // The reported race: the buyer's refusal holds the row while the scan runs,
+    // then rolls back. Whichever side locks first, the order must end terminal
+    // with the reservation released exactly once.
+    const [scheduled, cancelled] = await Promise.allSettled([
+      runDueOrderExpiryBatch(cron.db, { onFailure: () => {} }),
+      cancelUnpaidOrder(buyer.db, orderId, c.customers[0]),
+    ]);
+    assert.equal(scheduled.status, "fulfilled");
+    assert.equal(cancelled.status, "rejected");
+    assert.match(String((cancelled as PromiseRejectedResult).reason), /UNPAID_CANCELLATION_(UNAVAILABLE|WINDOW_ELAPSED)/);
+    const state = await lifecycleState(c, orderId);
+    assert.equal(state.order.status, "EXPIRED"); assert.equal(state.order.stockState, "RELEASED");
+    assert.equal(state.payment.status, "EXPIRED");
+    assert.equal(state.stock.version, 2); assert.equal(state.stock.reservedQuantity, 0);
+    await assertInventoryInvariant(c);
+    // Duplicate cancellation and duplicate expiry remain safe after the race.
+    await assert.rejects(cancelUnpaidOrder(buyer.db, orderId, c.customers[0]), /UNPAID_CANCELLATION_UNAVAILABLE/);
+    assert.deepEqual(await runDueOrderExpiryBatch(cron.db), { attempted: 0, expired: 0, failed: 0 });
+    assert.equal((await lifecycleState(c, orderId)).stock.version, 2);
+    await assertInventoryInvariant(c);
+  } finally { await Promise.all([cron, buyer].map((handle) => handle.client.end({ timeout: 1 }))); }
+}));
+
+test("scheduler 18 an open payment window keeps customer cancellation authoritative", { skip: !testUrl }, async () => fixture(async (c) => {
+  const { orderId } = await checkoutCart(c.db, c.customers[0], await intent(c));
+  const cancelled = await cancelUnpaidOrder(c.db, orderId, c.customers[0]);
+  assert.equal(cancelled.status, "CANCELLED"); assert.equal(cancelled.stockState, "RELEASED");
+  assert.deepEqual(await runDueOrderExpiryBatch(c.db), { attempted: 0, expired: 0, failed: 0 });
+  const state = await lifecycleState(c, orderId);
+  assert.equal(state.order.status, "CANCELLED"); assert.equal(state.payment.status, "PENDING");
+  assert.equal(state.stock.version, 2);
+  assert.equal((await cancelUnpaidOrder(c.db, orderId, c.customers[0])).replayed, true);
+  assert.equal((await lifecycleState(c, orderId)).stock.version, 2);
+  await assertInventoryInvariant(c);
 }));

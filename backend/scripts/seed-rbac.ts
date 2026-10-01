@@ -2,8 +2,10 @@ import { config } from "dotenv";
 import { inArray } from "drizzle-orm";
 import { createDb } from "../src/db";
 import { permissions, rolePermissions, roles } from "../src/db/schema/rbac";
+import { assertLocalOrOptedIn } from "./local-db-guard";
 
 config({ path: ".env", quiet: true });
+assertLocalOrOptedIn("seed:rbac");
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
 
 const permissionKeys = [

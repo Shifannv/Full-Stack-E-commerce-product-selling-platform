@@ -19,7 +19,11 @@ export const shippingProviderLocations = pgTable("shipping_provider_locations", 
   adminId: uuid("admin_id").notNull().references(() => admins.id),
   adminAddressId: uuid("admin_address_id").notNull(),
   addressType: text("address_type").notNull().default("SHIPPING_ORIGIN"),
-  providerKey: text("provider_key").notNull().references(() => shippingProviderConfigs.providerKey),
+  // FK named explicitly: the auto-generated name
+  // (shipping_provider_locations_provider_key_shipping_provider_configs_provider_key_fk) is 82 bytes
+  // and was silently truncated by PostgreSQL to 63 bytes when migration 0001 was applied to Aiven.
+  // This explicit foreignKey() uses the exact 63-byte truncated name that PostgreSQL stored.
+  providerKey: text("provider_key").notNull(),
   providerLocationRef: text("provider_location_ref").notNull(),
   locationName: text("location_name").notNull(),
   status: text("status").notNull().default("ACTIVE"),
@@ -27,6 +31,8 @@ export const shippingProviderLocations = pgTable("shipping_provider_locations", 
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
   foreignKey({ columns: [table.adminAddressId, table.adminId, table.addressType], foreignColumns: [adminAddresses.id, adminAddresses.adminId, adminAddresses.addressType], name: "shipping_locations_origin_fk" }),
+  // FK: 63-byte truncated name matching what Aiven/PostgreSQL stored from migration 0001.
+  foreignKey({ columns: [table.providerKey], foreignColumns: [shippingProviderConfigs.providerKey], name: "shipping_provider_locations_provider_key_shipping_provider_conf" }),
   unique("shipping_locations_provider_address_unique").on(table.providerKey, table.adminAddressId),
   check("shipping_locations_type_check", sql`${table.addressType} = 'SHIPPING_ORIGIN'`),
   check("shipping_locations_status_check", sql`${table.status} in ('ACTIVE','INACTIVE')`),
@@ -36,7 +42,10 @@ export const shipments = pgTable("shipments", {
   id: uuid("id").defaultRandom().primaryKey(),
   orderId: uuid("order_id").notNull().references(() => orders.id),
   adminId: uuid("admin_id").notNull().references(() => admins.id),
-  providerKey: text("provider_key").notNull().references(() => shippingProviderConfigs.providerKey),
+  // FK named explicitly: the auto-generated name (shipments_provider_key_shipping_provider_configs_provider_key_fk)
+  // is 64 bytes and was silently truncated by PostgreSQL to 63 bytes when migration 0001 was applied to Aiven.
+  // This explicit foreignKey() uses the exact 63-byte truncated name that PostgreSQL stored.
+  providerKey: text("provider_key").notNull(),
   providerOrderId: text("provider_order_id"),
   providerShipmentId: text("provider_shipment_id"),
   awbNumber: text("awb_number"),
@@ -56,6 +65,8 @@ export const shipments = pgTable("shipments", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
+  // FK: 63-byte truncated name matching what Aiven/PostgreSQL stored from migration 0001.
+  foreignKey({ columns: [table.providerKey], foreignColumns: [shippingProviderConfigs.providerKey], name: "shipments_provider_key_shipping_provider_configs_provider_key_f" }),
   index("shipments_order_admin_idx").on(table.orderId, table.adminId),
   unique("shipments_id_order_admin_unique").on(table.id, table.orderId, table.adminId),
   uniqueIndex("shipments_provider_shipment_unique").on(table.providerKey, table.providerShipmentId).where(sql`${table.providerShipmentId} is not null`),
