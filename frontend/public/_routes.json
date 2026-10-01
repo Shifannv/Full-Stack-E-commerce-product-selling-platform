@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "description": "Route /api/* through Pages Functions (same-origin API proxy); all other paths resolve to static assets from the Next.js export.",
+  "include": ["/api/*"],
+  "exclude": []
+}

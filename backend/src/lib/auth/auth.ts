@@ -34,6 +34,15 @@ export type AuthBindings = {
   FRONTEND_ORIGIN: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
+  /**
+   * Direct Worker origin used for server-to-server callbacks that must reach
+   * the Worker without the Pages proxy (e.g. Cashfree `notify_url`). Optional:
+   * when unset it falls back to BETTER_AUTH_URL, which is correct in dev where
+   * both resolve to the same loopback origin. In production BETTER_AUTH_URL
+   * becomes the Pages origin for same-origin cookies, so PUBLIC_WORKER_URL
+   * must be set to the Worker's own URL.
+   */
+  PUBLIC_WORKER_URL?: string;
 };
 
 export function createAuth(env: AuthBindings) {
