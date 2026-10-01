@@ -31,9 +31,17 @@ if (!["postgres:", "postgresql:"].includes(toolingUrl.protocol)) {
 }
 // Commands that read or change the live database must not reach a remote host by accident.
 // Production migrations need an explicit, deliberate opt-in: ALLOW_REMOTE_MIGRATION=1.
-const touchesDatabase = process.argv.some((arg) => ["migrate", "push", "pull", "studio"].includes(arg));
-const isLocalHost = ["localhost", "127.0.0.1", "::1", "[::1]"].includes(toolingUrl.hostname);
-if (touchesDatabase && !isLocalHost && process.env.ALLOW_REMOTE_MIGRATION !== "1") {
+const touchesDatabase = process.argv.some((arg) =>
+  ["migrate", "push", "pull", "studio"].includes(arg),
+);
+const isLocalHost = ["localhost", "127.0.0.1", "::1", "[::1]"].includes(
+  toolingUrl.hostname,
+);
+if (
+  touchesDatabase &&
+  !isLocalHost &&
+  process.env.ALLOW_REMOTE_MIGRATION !== "1"
+) {
   throw new Error(
     `Refusing to run against remote host "${toolingUrl.hostname}". ` +
       "Point DATABASE_URL at a local database, or set ALLOW_REMOTE_MIGRATION=1 for an approved production run.",

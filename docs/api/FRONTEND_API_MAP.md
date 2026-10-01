@@ -1,16 +1,80 @@
-# Phase 11b API mapping — current checkpoint and historical evidence
+# Frontend API Map
 
-> **Location/structure note (2026-10-01):** this file moved from `docs/FRONTEND_API_MAPPING.md`. The browser API code now lives in `frontend/src/lib/api/` (`client.ts`, `types.ts`, `auth.ts`, `customer.ts`, `admin.ts`, `super-admin.ts`, re-exported by `index.ts`); mentions of `src/lib/api.ts` below are historical. Endpoint paths, methods and payloads are unchanged. Server route list: [API_ROUTE_MAP.md](API_ROUTE_MAP.md).
+## CURRENT frontend API contract (verified against code 2026-10-01)
 
-## CURRENT CHECKPOINT — Phase 11b-3B authenticated continuation — 2026-09-29
+Source: `frontend/src/lib/api/` (`client.ts` `api()` adds `credentials: "include"`, `cache: "no-store"`, JSON content-type unless FormData, throws `ApiError(status, message)` using the response `error` field). `:id` is URL-encoded by `id()`. Every path below was matched to a registered Worker route in [API_ROUTE_MAP.md](API_ROUTE_MAP.md) (method + path pattern); no mismatches.
+
+| API object | Function | Method | Path |
+|---|---|---|---|
+| `authApi` | `me` | GET | `/api/me` |
+| `authApi` | `signIn` | POST | `/api/auth/sign-in/email` |
+| `authApi` | `signOut` | POST | `/api/auth/sign-out` |
+| `customerApi` | `products` | GET | `/api/products?…` |
+| `customerApi` | `product` | GET | `/api/products/:id` |
+| `customerApi` | `reviews` | GET | `/api/products/:id/reviews` |
+| `customerApi` | `cart` | GET | `/api/customer/cart` |
+| `customerApi` | `checkoutQuote` | GET | `/api/customer/checkout/quote?addressId=:id` |
+| `customerApi` | `wishlist` | GET | `/api/customer/wishlist` |
+| `customerApi` | `setWishlist` | PUT | `/api/customer/wishlist/:id` |
+| `customerApi` | `removeCartItem` | DELETE | `/api/customer/cart/items/:id` |
+| `customerApi` | `addresses` | GET | `/api/customer/addresses` |
+| `customerApi` | `saveAddress` | PUT / POST | `/api/customer/addresses/:addressId (PUT when addressId given) or /api/customer/addresses (POST)` |
+| `customerApi` | `deleteAddress` | DELETE | `/api/customer/addresses/:id` |
+| `customerApi` | `order` | GET | `/api/orders/:id` |
+| `customerApi` | `setCartItem` | PUT | `/api/customer/cart/items/:id` |
+| `customerApi` | `checkout` | POST | `/api/checkout` |
+| `customerApi` | `paymentSession` | POST | `/api/orders/:id/payment-session` |
+| `customerApi` | `orders` | GET | `/api/orders` |
+| `customerApi` | `tracking` | GET | `/api/orders/:id/tracking` |
+| `customerApi` | `review` | POST | `/api/reviews` |
+| `customerApi` | `requestReturn` | POST | `/api/returns` |
+| `customerApi` | `returnStatus` | GET | `/api/returns/:id` |
+| `adminApi` | `summary` | GET | `/api/admin/summary` |
+| `adminApi` | `products` | GET | `/api/admin/products?…` |
+| `adminApi` | `onboarding` | GET | `/api/admin/onboarding` |
+| `adminApi` | `categories` | GET | `/api/admin/categories` |
+| `adminApi` | `createProduct` | POST | `/api/admin/products` |
+| `adminApi` | `updateProduct` | PATCH | `/api/admin/products/:id` |
+| `adminApi` | `inventory` | PUT | `/api/admin/products/:id/inventory` |
+| `adminApi` | `orders` | GET | `/api/admin/orders` |
+| `adminApi` | `tracking` | GET | `/api/admin/orders/:id/tracking` |
+| `adminApi` | `finance` | GET | `/api/admin/finance` |
+| `adminApi` | `requestPayout` | POST | `/api/admin/payouts` |
+| `adminApi` | `returnStatus` | GET | `/api/admin/returns/:id` |
+| `adminApi` | `decideReturn` | POST | `/api/admin/returns/:id/decision` |
+| `adminApi` | `receivedReturn` | POST | `/api/admin/returns/:id/received` |
+| `adminApi` | `inspectReturn` | POST | `/api/admin/returns/:id/inspection` |
+| `superAdminApi` | `summary` | GET | `/api/super-admin/summary` |
+| `superAdminApi` | `admins` | GET | `/api/super-admin/admins?…` |
+| `superAdminApi` | `reviewAdmin` | GET | `/api/admin/review/:id` |
+| `superAdminApi` | `decideAdmin` | POST | `/api/admin/review/:id/decision` |
+| `superAdminApi` | `moderateReview` | POST | `/api/super-admin/reviews/:id/moderate` |
+| `superAdminApi` | `authorizeRefund` | POST | `/api/super-admin/returns/:id/refund/authorize` |
+
+Direct `api()` use outside the four API objects: `components/auth/invitation-setup.tsx` calls `POST /api/admin/activate` (same client, same credentials behavior).
+
+Build-time public reads (`frontend/src/lib/public-catalog.ts`, no credentials; origin `CATALOG_BUILD_API_URL` or `NEXT_PUBLIC_API_URL`): `GET /api/categories`, `GET /api/products?…`, `GET /api/products/:slug`, `GET /api/products/:productId/reviews`.
+
+Auth client: `lib/auth-client.ts` (Better Auth browser client) talks to `/api/auth/*`; `authApi.signIn/signOut` also call `/api/auth/sign-in/email` and `/api/auth/sign-out`.
+
+Many Worker routes have no `lib/api` function yet (admin onboarding/KYC, catalog management, finance settings and settlements, shipping operator and shipment creation, reconciliation, account lifecycle). They exist only on the Worker; see [API_ROUTE_MAP.md](API_ROUTE_MAP.md).
+
+---
+
+# Historical evidence (Phase 11b checkpoints) — SUPERSEDED
+
+Everything below this line is preserved history from 2026-09-28/29. Statements marked "CURRENT CHECKPOINT" below were current on their date only; the present state is in [CURRENT_STATUS.md](../CURRENT_STATUS.md).
+
+
+## HISTORICAL CHECKPOINT — SUPERSEDED (was "current" on its date): Phase 11b-3B authenticated continuation — 2026-09-29
 
 **Authenticated customer browser mapping remains BLOCKED.** The operator reports successful Google login in Chrome, and read-only database counts show 1 Google account and 1 unexpired CUSTOMER session. The isolated Chrome profile accessible on debugging port 9222 remained signed out: Better Auth returned no session, `/api/me` returned 401, and account UI showed the sign-in gate. The signed-in operator profile could not be attached. Signed-out wishlist, cart, addresses, quote, Admin, and Super Admin API reads returned 401. Static export scanning found no embedded local Google, Better Auth, Cashfree, database, Resend, or Redis secrets. No authenticated wishlist/cart/address/quote or customer UI behavior, refresh, or logout is claimed. No frontend API source changed. See `docs/BACKEND_VERIFICATION.md` for exact next task and test results.
 
-## CURRENT CHECKPOINT — Phase 11b-3B — 2026-09-29
+## HISTORICAL CHECKPOINT — SUPERSEDED (was "current" on its date): Phase 11b-3B — 2026-09-29
 
 **Google customer OAuth: BLOCKED before authenticated consent/callback.** Real Chrome clicked the storefront's **Continue with Google** button and reached Google's rendered account-entry page without `redirect_uri_mismatch`. The generated redirect URI is exactly `http://127.0.0.1:8787/api/auth/callback/google`; provider `google`, `response_type=code`, `email profile openid` scopes, and `state` were observed. Frontend `signIn.social` uses `/account` as the return page; browser API requests include credentials and the Worker permits the exact `http://127.0.0.1:3000` origin. The intended Test user and registered redirect URI require Google Cloud Console confirmation. No Google account was entered, so authenticated `/api/me`, customer wishlist/cart/address/quote mapping, session persistence and logout remain unverified. Signed-out `/api/me` returned 401. No frontend API or auth code changed in 11b-3B. See `docs/BACKEND_VERIFICATION.md` for checks and the next task.
 
-## CURRENT CHECKPOINT — Phase 11b-3A — 2026-09-29
+## HISTORICAL CHECKPOINT — SUPERSEDED (was "current" on its date): Phase 11b-3A — 2026-09-29
 
 **Phase 11b: OPEN. NOT DEPLOYED. NOT SAFE TO DEPLOY.** These statements describe the current local changes; earlier Worker deployment evidence is historical. This checkpoint supersedes all older status, “current”, “latest”, and next-task statements below. Retained historical evidence is not a claim about today's environment.
 

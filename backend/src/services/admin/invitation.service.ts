@@ -65,7 +65,8 @@ export async function createInvitation(
 ): Promise<{ rawToken: string; expiresAt: Date; adminId: string }> {
   const email = requiredText(input.email, "email", 320).toLowerCase();
   const name = requiredText(input.name, "name", 200);
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new DomainError("Invalid email", 422);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    throw new DomainError("Invalid email", 422);
 
   return db.transaction(async (tx) => {
     const [existing] = await tx
@@ -73,7 +74,8 @@ export async function createInvitation(
       .from(users)
       .where(eq(users.email, email))
       .limit(1);
-    if (existing) throw new DomainError("Email already belongs to an account", 409);
+    if (existing)
+      throw new DomainError("Email already belongs to an account", 409);
 
     const [role] = await tx
       .select({ id: roles.id })
@@ -98,7 +100,8 @@ export async function createInvitation(
       .values({ userId, status: "DRAFT" })
       .returning({ id: admins.id });
 
-    await tx.insert(adminAuditEvents).values({ entityId: admin.id,
+    await tx.insert(adminAuditEvents).values({
+      entityId: admin.id,
       adminId: admin.id,
       actorUserId: input.invitedByUserId,
       action: "ADMIN_INVITED",
@@ -137,13 +140,18 @@ export async function reissueInvitation(
 
   return db.transaction(async (tx) => {
     const [user] = await tx
-      .select({ id: users.id, status: users.status, deletedAt: users.deletedAt })
+      .select({
+        id: users.id,
+        status: users.status,
+        deletedAt: users.deletedAt,
+      })
       .from(users)
       .where(eq(users.email, email))
       .limit(1)
       .for("update");
     if (!user) throw new DomainError("Invited user unavailable", 404);
-    if (user.status !== "PENDING" || user.deletedAt) throw new DomainError("Account is already active", 409);
+    if (user.status !== "PENDING" || user.deletedAt)
+      throw new DomainError("Account is already active", 409);
 
     const [admin] = await tx
       .select({ id: admins.id, deletedAt: admins.deletedAt })
@@ -151,14 +159,21 @@ export async function reissueInvitation(
       .where(eq(admins.userId, user.id))
       .limit(1)
       .for("update");
-    if (!admin || admin.deletedAt) throw new DomainError("Admin record unavailable", 404);
+    if (!admin || admin.deletedAt)
+      throw new DomainError("Admin record unavailable", 404);
 
     // Revoke only this Admin's prior invitations; other Admins' links remain valid.
     await tx
       .delete(verifications)
-      .where(and(like(verifications.identifier, `${INVITE_PREFIX}%`), sql`${verifications.value}::jsonb ->> 'adminId' = ${admin.id}`));
+      .where(
+        and(
+          like(verifications.identifier, `${INVITE_PREFIX}%`),
+          sql`${verifications.value}::jsonb ->> 'adminId' = ${admin.id}`,
+        ),
+      );
 
-    await tx.insert(adminAuditEvents).values({ entityId: admin.id,
+    await tx.insert(adminAuditEvents).values({
+      entityId: admin.id,
       adminId: admin.id,
       actorUserId: input.invitedByUserId,
       action: "ADMIN_REINVITED",
@@ -193,8 +208,13 @@ export async function activateAdminAccount(
   db: Db,
   input: { rawToken: string; password: string },
 ): Promise<{ userId: string; email: string; adminId: string }> {
-  if (typeof input.rawToken !== "string" || !input.rawToken) throw new DomainError("Invalid token", 422);
-  if (typeof input.password !== "string" || input.password.length < 12 || input.password.length > 256) {
+  if (typeof input.rawToken !== "string" || !input.rawToken)
+    throw new DomainError("Invalid token", 422);
+  if (
+    typeof input.password !== "string" ||
+    input.password.length < 12 ||
+    input.password.length > 256
+  ) {
     throw new DomainError("Password must be 12 to 256 characters", 422);
   }
 
@@ -208,9 +228,12 @@ export async function activateAdminAccount(
       .where(eq(verifications.identifier, identifier))
       .limit(1);
 
-    if (!verification) throw new DomainError("Invitation token is invalid", 404);
+    if (!verification)
+      throw new DomainError("Invitation token is invalid", 404);
     if (verification.expiresAt < new Date()) {
-      await tx.delete(verifications).where(eq(verifications.id, verification.id));
+      await tx
+        .delete(verifications)
+        .where(eq(verifications.id, verification.id));
       throw new DomainError("Invitation token has expired", 422);
     }
 
@@ -222,14 +245,19 @@ export async function activateAdminAccount(
     }
 
     const [user] = await tx
-      .select({ id: users.id, status: users.status, deletedAt: users.deletedAt })
+      .select({
+        id: users.id,
+        status: users.status,
+        deletedAt: users.deletedAt,
+      })
       .from(users)
       .where(eq(users.email, payload.email))
       .limit(1)
       .for("update");
 
     if (!user) throw new DomainError("Invited user unavailable", 404);
-    if (user.status !== "PENDING" || user.deletedAt) throw new DomainError("Account is already active", 409);
+    if (user.status !== "PENDING" || user.deletedAt)
+      throw new DomainError("Account is already active", 409);
 
     const [admin] = await tx
       .select({ id: admins.id, deletedAt: admins.deletedAt })
@@ -237,14 +265,21 @@ export async function activateAdminAccount(
       .where(eq(admins.userId, user.id))
       .limit(1)
       .for("update");
-    if (!admin || admin.deletedAt) throw new DomainError("Admin record unavailable", 404);
+    if (!admin || admin.deletedAt)
+      throw new DomainError("Admin record unavailable", 404);
 
     // Reissue holds the user and Admin locks before removing old tokens.
     // Recheck this token after taking those same locks.
-    const [currentToken] = await tx.select({ id: verifications.id, expiresAt: verifications.expiresAt })
-      .from(verifications).where(eq(verifications.identifier, identifier)).limit(1).for("update");
-    if (!currentToken || currentToken.id !== verification.id) throw new DomainError("Invitation token is invalid", 404);
-    if (currentToken.expiresAt < new Date()) throw new DomainError("Invitation token has expired", 422);
+    const [currentToken] = await tx
+      .select({ id: verifications.id, expiresAt: verifications.expiresAt })
+      .from(verifications)
+      .where(eq(verifications.identifier, identifier))
+      .limit(1)
+      .for("update");
+    if (!currentToken || currentToken.id !== verification.id)
+      throw new DomainError("Invitation token is invalid", 404);
+    if (currentToken.expiresAt < new Date())
+      throw new DomainError("Invitation token has expired", 422);
 
     const hashed = await hashPassword(input.password);
 
@@ -264,7 +299,8 @@ export async function activateAdminAccount(
     // Consume the token — one-time use.
     await tx.delete(verifications).where(eq(verifications.id, verification.id));
 
-    await tx.insert(adminAuditEvents).values({ entityId: admin.id,
+    await tx.insert(adminAuditEvents).values({
+      entityId: admin.id,
       adminId: admin.id,
       actorUserId: user.id,
       action: "ADMIN_ACTIVATED",
@@ -283,7 +319,8 @@ export async function peekInvitation(
   db: Db,
   rawToken: string,
 ): Promise<{ email: string; expiresAt: Date; adminId?: string }> {
-  if (typeof rawToken !== "string" || !rawToken) throw new DomainError("Invalid token", 422);
+  if (typeof rawToken !== "string" || !rawToken)
+    throw new DomainError("Invalid token", 422);
 
   const tokenHash = await hashToken(rawToken);
   const identifier = `${INVITE_PREFIX}${tokenHash}`;
@@ -291,10 +328,16 @@ export async function peekInvitation(
   const [verification] = await db
     .select()
     .from(verifications)
-    .where(and(eq(verifications.identifier, identifier), gt(verifications.expiresAt, new Date())))
+    .where(
+      and(
+        eq(verifications.identifier, identifier),
+        gt(verifications.expiresAt, new Date()),
+      ),
+    )
     .limit(1);
 
-  if (!verification) throw new DomainError("Invitation token is invalid or has expired", 404);
+  if (!verification)
+    throw new DomainError("Invitation token is invalid or has expired", 404);
 
   let payload: InvitationPayload;
   try {
@@ -303,5 +346,9 @@ export async function peekInvitation(
     throw new DomainError("Invitation payload is corrupt", 503);
   }
 
-  return { email: payload.email, expiresAt: verification.expiresAt, adminId: payload.adminId };
+  return {
+    email: payload.email,
+    expiresAt: verification.expiresAt,
+    adminId: payload.adminId,
+  };
 }

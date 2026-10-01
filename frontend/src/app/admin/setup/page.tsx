@@ -8,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function SetupPage() {
-  return <div className="max-w-lg"><h1 className="type-page">Set up your seller account</h1><InvitationSetup /></div>;
+  return (
+    <div className="max-w-lg">
+      <h1 className="type-page">Set up your seller account</h1>
+      <InvitationSetup />
+    </div>
+  );
 }

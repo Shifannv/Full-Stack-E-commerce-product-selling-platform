@@ -8,7 +8,7 @@ app.ts                    new Hono; CORS + mutationOrigin on /api/*; registerRou
 app-env.ts                AppEnv / App types
 scheduler.ts              scheduled(): Promise.allSettled of 3 batches, then client.end
 routes/
-  index.ts                registerRoutes(): auth, health, /api/me, then 17 mounts in the original order
+  index.ts                registerRoutes(): auth, health, /api/me, then 16 `app.route` mounts in the pre-refactor order
   health.ts               GET /health, GET /health/db
   auth/auth.routes.ts     ALL /api/auth/* (Better Auth), GET /api/me
   customer/               customer.ts (public catalog + /api/customer/*), orders.ts (customer + admin orders),
@@ -16,13 +16,14 @@ routes/
                           returns.ts (customer, admin, super-admin return/refund)
   admin/                  index.ts (adminRoutes: requireAuth + onError + register* in original order),
                           activation.ts (unauthenticated, rate-limited), onboarding.ts, review.ts, products.ts,
-                          catalog.ts, shipping.ts (provider config), shared.ts (helpers), admin-lifecycle.ts,
-                          invitations.ts (deprecated, empty router)
+                          catalog.ts, shipping.ts (provider config), shared.ts (helpers), admin-lifecycle.ts
   super-admin/            dashboard.ts, reconciliation.ts, finance.ts (admin + super-admin finance),
                           shipping.ts (operator + seller shipping)
   webhooks/               shipping.webhook.ts, payments.webhook.ts (+ shipping.test.ts)
-middleware/ services/ db/ lib/   unchanged
+middleware/ services/ db/ lib/ scripts/   not restructured
 ```
+
+Also present: `security.pg.test.ts` (Worker-level security tests). `src/scripts/` holds only `local-db-guard.test.ts`. There is no `modules/`, `admin/`, `super-admin/`, `validators/` or `types/` directory under `backend/src/`.
 
 ## Rules for routes
 
@@ -32,3 +33,5 @@ middleware/ services/ db/ lib/   unchanged
 - Webhook routers keep their own `onError` and are mounted at `/webhooks` after the same routers as before.
 
 Full HTTP surface: [API_ROUTE_MAP](../api/API_ROUTE_MAP.md).
+
+Removed 2026-10-01: `routes/admin/invitations.ts` (deprecated empty router; no routes, no importers besides `routes/index.ts`, route table unchanged by its removal). Invitation/activation endpoints are `GET/POST /api/admin/activate` and `/api/admin/review/invite|reinvite` in `routes/admin/`.

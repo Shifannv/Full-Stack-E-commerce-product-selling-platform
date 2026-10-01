@@ -1,7 +1,10 @@
 import type { HTMLAttributes } from "react";
 import { cn } from "cn";
 
-export function SiteContainer({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function SiteContainer({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("site-container", className)} {...props} />;
 }
 

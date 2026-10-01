@@ -9,5 +9,10 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "scripts/**/*.ts", "auth.config.ts", "drizzle.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "scripts/**/*.ts",
+    "auth.config.ts",
+    "drizzle.config.ts"
+  ]
 }

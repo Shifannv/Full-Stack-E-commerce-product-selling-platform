@@ -16,8 +16,12 @@ export const adminRoutes = new Hono<AdminEnv>();
 adminRoutes.use("*", requireAuth);
 
 adminRoutes.onError((error, c) => {
-  if (error instanceof DomainError) return c.json({ error: error.message }, error.status);
-  console.error("Admin API failed", { name: error.name, code: (error as { code?: string }).code });
+  if (error instanceof DomainError)
+    return c.json({ error: error.message }, error.status);
+  console.error("Admin API failed", {
+    name: error.name,
+    code: (error as { code?: string }).code,
+  });
   return c.json({ error: "Admin operation unavailable" }, 503);
 });
 

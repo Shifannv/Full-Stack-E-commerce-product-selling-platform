@@ -48,7 +48,7 @@ const VALID_DOMAINS = ["PAYMENT", "REFUND", "FINANCE"] as const;
 
 export type DiscoveredItem = {
   itemKey: string;
-  domain: typeof VALID_DOMAINS[number];
+  domain: (typeof VALID_DOMAINS)[number];
   type: string;
   entityId: string;
   providerReference: string | null;
@@ -62,7 +62,9 @@ export type DiscoveredItem = {
  * 2. Payments with providerOrderId but no providerPaymentId and order still
  *    CREATED → UNKNOWN_OUTCOME (session created, outcome unknown)
  */
-export async function discoverPaymentDiscrepancies(db: Db): Promise<DiscoveredItem[]> {
+export async function discoverPaymentDiscrepancies(
+  db: Db,
+): Promise<DiscoveredItem[]> {
   const items: DiscoveredItem[] = [];
 
   // Late payment requiring refund but no refund record
@@ -100,7 +102,11 @@ export async function discoverPaymentDiscrepancies(db: Db): Promise<DiscoveredIt
         type: "LATE_PAYMENT_UNRESOLVED",
         entityId: row.orderId,
         providerReference: row.providerPaymentId,
-        evidence: { amount: row.amount, currency: row.currency, orderStatus: row.orderStatus },
+        evidence: {
+          amount: row.amount,
+          currency: row.currency,
+          orderStatus: row.orderStatus,
+        },
       });
     }
   }
@@ -146,7 +152,9 @@ export async function discoverPaymentDiscrepancies(db: Db): Promise<DiscoveredIt
  * 1. Refunds stuck in PENDING_PROVIDER for too long → STALE_PROCESSING
  * 2. Late-payment refunds marked INTERNAL_RECORDED but resolution not RESOLVED → RESOLUTION_MISMATCH
  */
-export async function discoverRefundDiscrepancies(db: Db): Promise<DiscoveredItem[]> {
+export async function discoverRefundDiscrepancies(
+  db: Db,
+): Promise<DiscoveredItem[]> {
   const items: DiscoveredItem[] = [];
 
   // Stale PENDING_PROVIDER refunds
@@ -176,7 +184,12 @@ export async function discoverRefundDiscrepancies(db: Db): Promise<DiscoveredIte
       type: "STALE_PROCESSING",
       entityId: row.refundId,
       providerReference: row.providerReference,
-      evidence: { orderId: row.orderId, amount: row.amount, currency: row.currency, reason: row.reason },
+      evidence: {
+        orderId: row.orderId,
+        amount: row.amount,
+        currency: row.currency,
+        reason: row.reason,
+      },
     });
   }
 
@@ -206,7 +219,11 @@ export async function discoverRefundDiscrepancies(db: Db): Promise<DiscoveredIte
       type: "RESOLUTION_MISMATCH",
       entityId: row.refundId,
       providerReference: null,
-      evidence: { orderId: row.orderId, paymentId: row.paymentId, resolutionStatus: row.resolutionStatus },
+      evidence: {
+        orderId: row.orderId,
+        paymentId: row.paymentId,
+        resolutionStatus: row.resolutionStatus,
+      },
     });
   }
 
@@ -218,7 +235,9 @@ export async function discoverRefundDiscrepancies(db: Db): Promise<DiscoveredIte
  * 1. Settlements on orders that have been cancelled/expired/have unresolved
  *    refunds but settlement is still AVAILABLE → SETTLEMENT_DISCREPANCY
  */
-export async function discoverFinanceDiscrepancies(db: Db): Promise<DiscoveredItem[]> {
+export async function discoverFinanceDiscrepancies(
+  db: Db,
+): Promise<DiscoveredItem[]> {
   const items: DiscoveredItem[] = [];
 
   // Settlements on expired/cancelled orders that shouldn't be payable
@@ -248,7 +267,12 @@ export async function discoverFinanceDiscrepancies(db: Db): Promise<DiscoveredIt
       type: "SETTLEMENT_DISCREPANCY",
       entityId: row.settlementId,
       providerReference: null,
-      evidence: { orderId: row.orderId, settlementStatus: row.status, orderStatus: row.orderStatus, paymentResolution: row.paymentResolution },
+      evidence: {
+        orderId: row.orderId,
+        settlementStatus: row.status,
+        orderStatus: row.orderStatus,
+        paymentResolution: row.paymentResolution,
+      },
     });
   }
 
@@ -259,7 +283,9 @@ export async function discoverFinanceDiscrepancies(db: Db): Promise<DiscoveredIt
  * Unified discovery: runs all domain-specific discovery and upserts new items.
  * Returns only newly created items (deduplication by itemKey).
  */
-export async function discoverAllDiscrepancies(db: Db): Promise<{ discovered: number; duplicates: number }> {
+export async function discoverAllDiscrepancies(
+  db: Db,
+): Promise<{ discovered: number; duplicates: number }> {
   const [paymentItems, refundItems, financeItems] = await Promise.all([
     discoverPaymentDiscrepancies(db),
     discoverRefundDiscrepancies(db),
@@ -267,7 +293,8 @@ export async function discoverAllDiscrepancies(db: Db): Promise<{ discovered: nu
   ]);
 
   const all = [...paymentItems, ...refundItems, ...financeItems];
-  let discovered = 0, duplicates = 0;
+  let discovered = 0,
+    duplicates = 0;
 
   for (const item of all) {
     const [inserted] = await db
@@ -304,7 +331,10 @@ export async function discoverAllDiscrepancies(db: Db): Promise<{ discovered: nu
  *  - REFUND: checks resolution mismatch, never overwrites terminal states
  *  - FINANCE: holds ineligible settlements, never makes them payable
  */
-async function attemptAutomatedResolution(db: Db, item: typeof reconciliationItems.$inferSelect): Promise<boolean> {
+async function attemptAutomatedResolution(
+  db: Db,
+  item: typeof reconciliationItems.$inferSelect,
+): Promise<boolean> {
   if (item.domain === "PAYMENT" && item.type === "LATE_PAYMENT_UNRESOLVED") {
     // Attempt to resolve the late-payment obligation internally
     try {
@@ -321,8 +351,11 @@ async function attemptAutomatedResolution(db: Db, item: typeof reconciliationIte
     const evidence = item.evidence as Record<string, unknown> | null;
     const paymentId = evidence?.paymentId as string | undefined;
     if (!paymentId) return false;
-    const [payment] = await db.select({ resolutionStatus: payments.resolutionStatus })
-      .from(payments).where(eq(payments.id, paymentId)).limit(1);
+    const [payment] = await db
+      .select({ resolutionStatus: payments.resolutionStatus })
+      .from(payments)
+      .where(eq(payments.id, paymentId))
+      .limit(1);
     return payment?.resolutionStatus === "RESOLVED";
   }
 
@@ -331,7 +364,12 @@ async function attemptAutomatedResolution(db: Db, item: typeof reconciliationIte
     const [updated] = await db
       .update(adminSettlements)
       .set({ status: "HELD", updatedAt: new Date() })
-      .where(and(eq(adminSettlements.id, item.entityId), eq(adminSettlements.status, "AVAILABLE")))
+      .where(
+        and(
+          eq(adminSettlements.id, item.entityId),
+          eq(adminSettlements.status, "AVAILABLE"),
+        ),
+      )
       .returning({ id: adminSettlements.id });
     return !!updated;
   }
@@ -356,8 +394,17 @@ export async function runReconciliationBatch(
   db: Db,
   limit = MAX_RECONCILIATION_BATCH,
   now = new Date(),
-): Promise<{ processed: number; resolved: number; escalated: number; failed: number }> {
-  if (!Number.isInteger(limit) || limit < 1 || limit > MAX_RECONCILIATION_BATCH) {
+): Promise<{
+  processed: number;
+  resolved: number;
+  escalated: number;
+  failed: number;
+}> {
+  if (
+    !Number.isInteger(limit) ||
+    limit < 1 ||
+    limit > MAX_RECONCILIATION_BATCH
+  ) {
     throw new DomainError("Invalid reconciliation batch size", 422);
   }
 
@@ -382,7 +429,12 @@ export async function runReconciliationBatch(
         // Escalate to REVIEW
         await tx
           .update(reconciliationItems)
-          .set({ state: "REVIEW", nextRetryAt: null, lastError: "RETRY_LIMIT", updatedAt: now })
+          .set({
+            state: "REVIEW",
+            nextRetryAt: null,
+            lastError: "RETRY_LIMIT",
+            updatedAt: now,
+          })
           .where(eq(reconciliationItems.id, row.id));
         continue;
       }
@@ -402,7 +454,9 @@ export async function runReconciliationBatch(
     return result;
   });
 
-  let resolved = 0, escalated = 0, failed = 0;
+  let resolved = 0,
+    escalated = 0,
+    failed = 0;
 
   for (const item of claimed) {
     try {
@@ -446,13 +500,17 @@ export async function runReconciliationBatch(
       }
     } catch (error) {
       failed++;
-      const lastError = error instanceof Error ? error.message.slice(0, 500) : "UNKNOWN";
+      const lastError =
+        error instanceof Error ? error.message.slice(0, 500) : "UNKNOWN";
       await db
         .update(reconciliationItems)
         .set({
           state: item.retryCount >= MAX_RETRY_COUNT ? "REVIEW" : "RETRYABLE",
           lastError,
-          nextRetryAt: item.retryCount >= MAX_RETRY_COUNT ? null : new Date(now.getTime() + RETRY_INTERVAL_MS),
+          nextRetryAt:
+            item.retryCount >= MAX_RETRY_COUNT
+              ? null
+              : new Date(now.getTime() + RETRY_INTERVAL_MS),
           updatedAt: now,
         })
         .where(
@@ -487,7 +545,9 @@ export async function listUnresolvedItems(
 
   const conditions = [ne(reconciliationItems.state, "RESOLVED")];
   if (options.domain) {
-    if (!VALID_DOMAINS.includes(options.domain as typeof VALID_DOMAINS[number])) {
+    if (
+      !VALID_DOMAINS.includes(options.domain as (typeof VALID_DOMAINS)[number])
+    ) {
       throw new DomainError("Invalid domain filter", 422);
     }
     conditions.push(eq(reconciliationItems.domain, options.domain));
@@ -578,13 +638,20 @@ export async function resolveReconciliationItem(
     if (!resolved) throw new DomainError("Concurrent resolution conflict", 409);
 
     // Atomic audit
-    await recordSensitiveAction(tx, actorUserId, "RECONCILIATION_RESOLVED", item.domain, item.entityId, {
-      reconciliationItemId: id,
-      previousState,
-      newState: "RESOLVED",
-      type: item.type,
-      note: note.trim().slice(0, 500),
-    });
+    await recordSensitiveAction(
+      tx,
+      actorUserId,
+      "RECONCILIATION_RESOLVED",
+      item.domain,
+      item.entityId,
+      {
+        reconciliationItemId: id,
+        previousState,
+        newState: "RESOLVED",
+        type: item.type,
+        note: note.trim().slice(0, 500),
+      },
+    );
 
     return resolved;
   });
@@ -637,15 +704,23 @@ export async function escalateToReview(
       )
       .returning();
 
-    if (!escalated) throw new DomainError("Concurrent escalation conflict", 409);
+    if (!escalated)
+      throw new DomainError("Concurrent escalation conflict", 409);
 
-    await recordSensitiveAction(tx, actorUserId, "RECONCILIATION_ESCALATED", item.domain, item.entityId, {
-      reconciliationItemId: id,
-      previousState,
-      newState: "REVIEW",
-      type: item.type,
-      note: note.trim().slice(0, 500),
-    });
+    await recordSensitiveAction(
+      tx,
+      actorUserId,
+      "RECONCILIATION_ESCALATED",
+      item.domain,
+      item.entityId,
+      {
+        reconciliationItemId: id,
+        previousState,
+        newState: "REVIEW",
+        type: item.type,
+        note: note.trim().slice(0, 500),
+      },
+    );
 
     return escalated;
   });

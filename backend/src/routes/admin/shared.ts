@@ -13,23 +13,44 @@ export type AdminEnv = AuthorizedEnv & {
 };
 export type AdminRouter = Hono<AdminEnv>;
 
-export async function withDb<T>(connectionString: string, action: (db: ReturnType<typeof createDb>["db"]) => Promise<T>): Promise<T> {
+export async function withDb<T>(
+  connectionString: string,
+  action: (db: ReturnType<typeof createDb>["db"]) => Promise<T>,
+): Promise<T> {
   const { client, db } = createDb(connectionString);
-  try { return await action(db); } finally { await client.end({ timeout: 1 }); }
+  try {
+    return await action(db);
+  } finally {
+    await client.end({ timeout: 1 });
+  }
 }
 
-export async function withDbPublic(connectionString: string, action: (db: ReturnType<typeof createDb>["db"]) => Promise<Response>, c: { json: (body: unknown, status?: number) => Response }): Promise<Response> {
+export async function withDbPublic(
+  connectionString: string,
+  action: (db: ReturnType<typeof createDb>["db"]) => Promise<Response>,
+  c: { json: (body: unknown, status?: number) => Response },
+): Promise<Response> {
   const { client, db } = createDb(connectionString);
-  try { return await action(db); } catch (error) {
-    if (error instanceof DomainError) return c.json({ error: error.message }, error.status);
-    console.error("Activation request failed", { name: error instanceof Error ? error.name : "UnknownError" });
+  try {
+    return await action(db);
+  } catch (error) {
+    if (error instanceof DomainError)
+      return c.json({ error: error.message }, error.status);
+    console.error("Activation request failed", {
+      name: error instanceof Error ? error.name : "UnknownError",
+    });
     return c.json({ error: "Activation unavailable" }, 503);
-  } finally { await client.end({ timeout: 1 }); }
+  } finally {
+    await client.end({ timeout: 1 });
+  }
 }
 
-export async function bodyPublic(c: { req: { json: () => Promise<unknown> } }): Promise<Record<string, unknown>> {
+export async function bodyPublic(c: {
+  req: { json: () => Promise<unknown> };
+}): Promise<Record<string, unknown>> {
   const value = await c.req.json().catch(() => null);
-  if (!value || typeof value !== "object" || Array.isArray(value)) throw new DomainError("Invalid JSON body", 422);
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw new DomainError("Invalid JSON body", 422);
   return value as Record<string, unknown>;
 }
 
@@ -37,15 +58,26 @@ export function ownAdmin(actor: { roles: string[] }) {
   if (!actor.roles.includes("ADMIN")) throw new DomainError("Forbidden", 403);
 }
 export function superAdmin(actor: { roles: string[] }) {
-  if (!actor.roles.includes("SUPER_ADMIN")) throw new DomainError("Forbidden", 403);
+  if (!actor.roles.includes("SUPER_ADMIN"))
+    throw new DomainError("Forbidden", 403);
 }
 export function requireSetupUrl(value: string | undefined): string {
-  if (!value) throw new DomainError("Admin invitation delivery is not configured", 409);
-  try { return invitationSetupUrl(value).toString(); }
-  catch { throw new DomainError("Admin setup URL must use HTTPS or the exact local development origin", 409); }
+  if (!value)
+    throw new DomainError("Admin invitation delivery is not configured", 409);
+  try {
+    return invitationSetupUrl(value).toString();
+  } catch {
+    throw new DomainError(
+      "Admin setup URL must use HTTPS or the exact local development origin",
+      409,
+    );
+  }
 }
-export async function body(c: { req: { json: () => Promise<unknown> } }): Promise<Record<string, unknown>> {
+export async function body(c: {
+  req: { json: () => Promise<unknown> };
+}): Promise<Record<string, unknown>> {
   const value = await c.req.json().catch(() => null);
-  if (!value || typeof value !== "object" || Array.isArray(value)) throw new DomainError("Invalid JSON body", 422);
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw new DomainError("Invalid JSON body", 422);
   return value as Record<string, unknown>;
 }

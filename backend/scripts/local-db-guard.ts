@@ -45,7 +45,9 @@ export function isLocalHost(rawUrl: string): boolean {
 
   // An empty hostname after parsing indicates a malformed or relative URL.
   if (!host || host.trim() === "") {
-    throw new Error(`DATABASE_URL has an empty or missing hostname: "${rawUrl}"`);
+    throw new Error(
+      `DATABASE_URL has an empty or missing hostname: "${rawUrl}"`,
+    );
   }
 
   // Userinfo spoof guard: detect raw "@" sequences in the authority beyond what

@@ -20,27 +20,42 @@
 
 import assert from "node:assert/strict";
 import test from "node:test";
-import { assertLocalOrOptedIn, isLocalHost } from "../../scripts/local-db-guard";
+import {
+  assertLocalOrOptedIn,
+  isLocalHost,
+} from "../../scripts/local-db-guard";
 
 // ---------------------------------------------------------------------------
 // isLocalHost() — predicate tests (no process.env mutation needed)
 // ---------------------------------------------------------------------------
 
 test("1. localhost is accepted", () => {
-  assert.equal(isLocalHost("postgresql://postgres:pass@localhost:5432/ownline_dev"), true);
+  assert.equal(
+    isLocalHost("postgresql://postgres:pass@localhost:5432/ownline_dev"),
+    true,
+  );
 });
 
 test("2. 127.0.0.1 is accepted", () => {
-  assert.equal(isLocalHost("postgresql://postgres:pass@127.0.0.1:5432/ownline_dev"), true);
+  assert.equal(
+    isLocalHost("postgresql://postgres:pass@127.0.0.1:5432/ownline_dev"),
+    true,
+  );
 });
 
 test("3. ::1 is accepted", () => {
   // WHATWG URL represents IPv6 as [::1] in hostname
-  assert.equal(isLocalHost("postgresql://postgres:pass@[::1]:5432/ownline_dev"), true);
+  assert.equal(
+    isLocalHost("postgresql://postgres:pass@[::1]:5432/ownline_dev"),
+    true,
+  );
 });
 
 test("4. arbitrary remote host is rejected", () => {
-  assert.equal(isLocalHost("postgresql://user:pass@db.example.com:5432/mydb"), false);
+  assert.equal(
+    isLocalHost("postgresql://user:pass@db.example.com:5432/mydb"),
+    false,
+  );
 });
 
 test("5. Aiven host is rejected", () => {
@@ -54,21 +69,30 @@ test("5. Aiven host is rejected", () => {
 });
 
 test("6. lookalike hostname is rejected (localhost.evil.com)", () => {
-  assert.equal(isLocalHost("postgresql://user:pass@localhost.evil.com:5432/db"), false);
+  assert.equal(
+    isLocalHost("postgresql://user:pass@localhost.evil.com:5432/db"),
+    false,
+  );
 });
 
 test("7. userinfo/URL spoof with multiple @ chars is rejected", () => {
   // Attacker tries: user@remote-host@localhost/db — the WHATWG parser resolves
   // the true host as "localhost" but we detect the extra "@" in authority.
   assert.throws(
-    () => isLocalHost("postgresql://user@remote.db.example.com@localhost:5432/ownline"),
+    () =>
+      isLocalHost(
+        "postgresql://user@remote.db.example.com@localhost:5432/ownline",
+      ),
     /multiple "@" characters/,
   );
 });
 
 test("8. empty host is rejected", () => {
   // "postgresql:///db" has an empty authority; hostname is ""
-  assert.throws(() => isLocalHost("postgresql:///ownline_dev"), /empty or missing hostname/);
+  assert.throws(
+    () => isLocalHost("postgresql:///ownline_dev"),
+    /empty or missing hostname/,
+  );
 });
 
 test("9. invalid URL is rejected", () => {
@@ -123,7 +147,10 @@ test("11. missing DATABASE_URL: assertLocalOrOptedIn returns without error", () 
 });
 
 test("local host (127.0.0.1): assertLocalOrOptedIn permits without opt-in flag", () => {
-  const restore = withEnv("DATABASE_URL", "postgresql://postgres:pass@127.0.0.1:5432/ownline_dev");
+  const restore = withEnv(
+    "DATABASE_URL",
+    "postgresql://postgres:pass@127.0.0.1:5432/ownline_dev",
+  );
   const restoreFlag = withEnv("ALLOW_REMOTE_FIXTURES", undefined);
   try {
     assert.doesNotThrow(() => assertLocalOrOptedIn("test-script"));
@@ -167,7 +194,8 @@ test("12. explicit DATABASE_URL in process.env survives dotenv non-override load
   // Simulate: process already has DATABASE_URL set (e.g. shell export or CI).
   // dotenv with override:false (the default and our corrected drizzle.config.ts
   // behavior) must NOT overwrite it.
-  const explicitUrl = "postgresql://postgres:pass@127.0.0.1:5432/explicit_test_db";
+  const explicitUrl =
+    "postgresql://postgres:pass@127.0.0.1:5432/explicit_test_db";
   const restore = withEnv("DATABASE_URL", explicitUrl);
   try {
     // Confirm the guard correctly sees the explicit local URL.
@@ -187,10 +215,7 @@ test("12b. Aiven URL in process.env is correctly blocked without opt-in", () => 
   const restore = withEnv("DATABASE_URL", aivenUrl);
   const restoreFlag = withEnv("ALLOW_REMOTE_FIXTURES", undefined);
   try {
-    assert.throws(
-      () => assertLocalOrOptedIn("test-precedence"),
-      /remote host/,
-    );
+    assert.throws(() => assertLocalOrOptedIn("test-precedence"), /remote host/);
   } finally {
     restore();
     restoreFlag();

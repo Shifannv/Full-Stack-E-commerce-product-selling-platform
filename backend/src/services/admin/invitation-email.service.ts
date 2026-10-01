@@ -16,8 +16,7 @@
 import { invitationLink } from "./invitation-url";
 
 export type InvitationEmailResult =
-  | { delivered: true; id: string }
-  | { delivered: false; reason: string };
+  { delivered: true; id: string } | { delivered: false; reason: string };
 
 export type InvitationEmailInput = {
   toEmail: string;
@@ -33,10 +32,21 @@ export type InvitationEmailInput = {
 export async function sendInvitationEmail(
   input: InvitationEmailInput,
 ): Promise<InvitationEmailResult> {
-  const { toEmail, toName, rawToken, expiresAt, setupPageUrl, fromEmail, resendApiKey } = input;
+  const {
+    toEmail,
+    toName,
+    rawToken,
+    expiresAt,
+    setupPageUrl,
+    fromEmail,
+    resendApiKey,
+  } = input;
 
   if (!resendApiKey || !fromEmail) {
-    return { delivered: false, reason: "RESEND_API_KEY or RESEND_FROM_EMAIL is not configured" };
+    return {
+      delivered: false,
+      reason: "RESEND_API_KEY or RESEND_FROM_EMAIL is not configured",
+    };
   }
 
   const setupUrl = invitationLink(setupPageUrl, rawToken);
@@ -80,23 +90,33 @@ export async function sendInvitationEmail(
     });
   } catch (err) {
     // Network error — do NOT expose details.
-    return { delivered: false, reason: "Email delivery failed (network error)" };
+    return {
+      delivered: false,
+      reason: "Email delivery failed (network error)",
+    };
   }
 
   if (!response.ok) {
     // Log only safe diagnostics.
     console.error("Resend delivery failed", { status: response.status });
-    return { delivered: false, reason: `Email delivery failed (provider status ${response.status})` };
+    return {
+      delivered: false,
+      reason: `Email delivery failed (provider status ${response.status})`,
+    };
   }
 
   let body: { id?: string };
   try {
     body = (await response.json()) as { id?: string };
   } catch {
-    return { delivered: false, reason: "Email delivery response was unreadable" };
+    return {
+      delivered: false,
+      reason: "Email delivery response was unreadable",
+    };
   }
 
-  if (!body.id) return { delivered: false, reason: "Resend did not return a message ID" };
+  if (!body.id)
+    return { delivered: false, reason: "Resend did not return a message ID" };
   return { delivered: true, id: body.id };
 }
 
