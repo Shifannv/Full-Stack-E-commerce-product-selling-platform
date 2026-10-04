@@ -1,0 +1,550 @@
+{
+  "date": "2026-10-04",
+  "checks": "PASS",
+  "operatorForms": 76,
+  "activeOperatorForms": 69,
+  "gatedOperatorForms": 7,
+  "routeCoverage": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "status": "DIAGNOSTIC"
+    },
+    {
+      "method": "GET",
+      "path": "/health/db",
+      "status": "DIAGNOSTIC"
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/products",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/products/:slug",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/images/*",
+      "status": "MEDIA"
+    },
+    {
+      "method": "GET",
+      "path": "/api/products/:productId/reviews",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/activate",
+      "status": "NO_ACTIVE_UI"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/activate",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/account/lifecycle",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/account/deletion-requests",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/account/deletion-requests/:requestId/verify",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/account/recovery-requests",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/review/:adminId/lifecycle",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/review/:adminId/deletion-requests/:requestId/decision",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/review/:adminId/recovery-requests/:requestId/decision",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/customer/addresses",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/customer/addresses",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/customer/addresses/:addressId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/customer/addresses/:addressId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/customer/cart",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/customer/checkout/quote",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/customer/cart/items/:productId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/customer/cart/items/:itemId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/customer/wishlist",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/customer/wishlist/:productId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/checkout",
+      "status": "GATED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/:orderId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/:orderId/cancel",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/orders",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/orders/:orderId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/reviews",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/super-admin/reviews/pending",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/super-admin/reviews/:reviewId/moderate",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/finance",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/payouts",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/super-admin/finance-settings",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/super-admin/finance-settings/commission",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/super-admin/finance-settings/payment-gateway-fee",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/super-admin/settlements",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/super-admin/payouts/:payoutId/decision",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/super-admin/payouts/:payoutId/paid",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/:orderId/payment-session",
+      "status": "GATED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/onboarding",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/onboarding/kyc",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/onboarding/kyc/documents",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/onboarding/addresses/:type",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/onboarding/categories/:categoryId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/onboarding/submit",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/review/:adminId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/review/provision",
+      "status": "RETIRED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/review/invite",
+      "status": "GATED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/review/reinvite",
+      "status": "GATED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/review/:adminId/documents/:documentId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/review/:adminId/kyc",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/review/:adminId/addresses/:type",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/review/:adminId/decision",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/review/:adminId/status",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/review/:adminId/categories/:categoryId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/products/:productId/inventory",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/categories",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/summary",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/products",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/subcategories",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/products",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/products/:productId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/products/:productId/variants",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/products/:productId/images",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/products/:productId/images/upload",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/products/:productId/inventory",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/catalog/categories",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/catalog/categories/:categoryId/status",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/catalog/subcategories",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/catalog/subcategories/:subcategoryId/status",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/catalog/products/:productId/status",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/catalog/products/:productId/featured",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/catalog/fields",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/shipping/providers/shiprocket",
+      "status": "GATED"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/shipping/pickup-locations",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/shipping/provider-pickups",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/shipping/serviceability",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/super-admin/summary",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/super-admin/admins",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/super-admin/reconciliation",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/super-admin/reconciliation/:id",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/super-admin/reconciliation/:id/resolve",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/super-admin/reconciliation/:id/escalate",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/super-admin/shipping/operations",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/super-admin/shipping/reconcile",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/super-admin/shipping/operations/:id/retry",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/super-admin/shipping/operations/:id/evidence",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/:orderId/tracking",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/orders/:orderId/tracking",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/orders/:orderId/shipments",
+      "status": "GATED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/shipments/:shipmentId/awb",
+      "status": "GATED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/shipments/:shipmentId/pickup",
+      "status": "GATED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/returns",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/returns/:returnId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/returns/:returnId",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/returns/:returnId/decision",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/returns/:returnId/received",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/returns/:returnId/inspection",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/super-admin/returns/:returnId/refund/authorize",
+      "status": "UI_CONNECTED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/super-admin/returns/:returnId/refund/submit",
+      "status": "GATED"
+    },
+    {
+      "method": "POST",
+      "path": "/webhooks/shipping/events",
+      "status": "SERVER_TO_SERVER"
+    },
+    {
+      "method": "POST",
+      "path": "/webhooks/payments/cashfree",
+      "status": "SERVER_TO_SERVER"
+    }
+  ],
+  "limits": "Read-only source/serialization audit. Does not prove authenticated backend mutations or provider readiness."
+}

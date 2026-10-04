@@ -36,7 +36,8 @@
     {
       "binding": "PRODUCT_IMAGES_BUCKET",
       "bucket_name": "shop-product-images",
-      "remote": true,
+      // remote: true is only for accessing real R2 during local development.
+      // Deployment binds this bucket without remote: true.
     },
   ],
 }

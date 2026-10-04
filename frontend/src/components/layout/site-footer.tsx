@@ -1,25 +1,18 @@
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-border bg-secondary/40">
-      <div className="site-container grid gap-8 py-12 sm:grid-cols-[1fr_auto] sm:items-end">
-        <div>
-          <p className="text-lg font-semibold tracking-tight">
-            OWNLINE DROPSHIP
-          </p>
-          <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-            Thoughtfully presented goods, made easy to discover.
-          </p>
+    <footer className="store-footer mt-auto">
+      <div className="site-container">
+        <div className="footer-main">
+          <div className="footer-story"><h2>Find your<br /><em>everyday.</em></h2><p>Pieces to wear. Finds to make your own.</p><Link href="/clothing" className="editorial-link">Explore the Dress edit <ArrowUpRight size={18} aria-hidden="true" /></Link></div>
+          <div className="footer-navigation">
+            <nav aria-label="Footer collections"><h3>The collection</h3><Link href="/search">Shop all</Link><Link href="/clothing">Dress & clothing</Link><Link href="/search?sort=newest">New arrivals</Link><Link href="/wishlist">Your favourites</Link></nav>
+            <nav aria-label="Footer account"><h3>Here for you</h3><Link href="/account">Your account</Link><Link href="/account/addresses">Delivery addresses</Link><Link href="/orders">Orders & tracking</Link><Link href="/returns">Returns & refunds</Link><Link href="/cart">Shopping bag</Link></nav>
+          </div>
         </div>
-        <nav
-          aria-label="Footer navigation"
-          className="flex flex-wrap gap-x-6 gap-y-2 text-sm"
-        >
-          <Link href="/search">Shop</Link>
-          <Link href="/orders">Orders</Link>
-          <Link href="/account">Account</Link>
-        </nav>
+        <div className="footer-bottom"><Link href="/" className="store-wordmark" aria-label="Ownline Dropship home">OWNLINE<span>DROPSHIP</span></Link><p>Considered finds for the everyday.</p><a href="#main-content">Back to top <ArrowUpRight size={16} aria-hidden="true" /></a></div>
       </div>
     </footer>
   );

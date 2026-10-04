@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { RatingDisplay } from "@/components/catalog/rating-display";
 import { ProductActions } from "@/components/storefront/product-actions";
@@ -36,10 +37,11 @@ export default async function ProductPage({ params }: Props) {
   const product = await getPublicProduct(slug).catch(() => notFound());
   const reviews = await getPublicReviews(product.id);
   return (
-    <div className="site-container section-space">
-      <div className="grid gap-10 md:grid-cols-2 md:gap-16">
+    <div className="site-container pb-20 pt-6 sm:pt-10">
+      <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-xs text-muted-foreground"><Link href="/search" className="hover:text-foreground">Shop</Link><span aria-hidden="true">/</span><span aria-current="page">{product.name}</span></nav>
+      <div className="grid gap-10 md:grid-cols-2 md:gap-14 lg:gap-20">
         <ProductGallery images={product.images} name={product.name} />
-        <div>
+        <div className="md:sticky md:top-8 md:self-start">
           <h1 className="type-page">{product.name}</h1>
           <div className="mt-5">
             <RatingDisplay
@@ -94,7 +96,7 @@ export default async function ProductPage({ params }: Props) {
             {reviews.map((review) => (
               <article
                 key={review.id}
-                className="rounded-lg border border-border bg-card p-6"
+                className="commerce-panel"
               >
                 <RatingDisplay rating={review.rating} />
                 <h3 className="mt-3 font-semibold">{review.title}</h3>

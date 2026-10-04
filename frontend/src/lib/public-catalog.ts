@@ -116,5 +116,7 @@ export async function getPublishedProductSlugs(): Promise<{ slug: string }[]> {
 export async function withFirstImage(
   products: PublicProduct[],
 ): Promise<ProductCardData[]> {
+  // List responses already carry primary images. Optional hover media must
+  // never add a detail request per product to the critical catalog path.
   return products;
 }

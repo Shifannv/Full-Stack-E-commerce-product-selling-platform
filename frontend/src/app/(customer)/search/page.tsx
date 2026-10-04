@@ -1,23 +1,21 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { CatalogBrowser } from "@/components/storefront/catalog-browser";
+import { PageHeading } from "@/components/storefront/page-heading";
 import { LoadingState } from "@/components/states/loading-state";
+import { catalogQuery, getPublicProducts } from "@/lib/public-catalog";
 
 export const metadata: Metadata = {
   title: "Search",
   robots: { index: false, follow: false },
 };
-export default function SearchPage() {
+export default async function SearchPage() {
+  const products = await getPublicProducts(catalogQuery({ limit: 12 }));
   return (
     <div className="site-container section-space">
-      <div className="mb-10">
-        <h1 className="type-page">Search the collection</h1>
-        <p className="mt-4 text-muted-foreground">
-          Find products by name or description.
-        </p>
-      </div>
+      <PageHeading title="The collection" description="Find your everyday. Browse by name, price or the details that matter to you." action={{ href: "/clothing", label: "The Dress edit" }} />
       <Suspense fallback={<LoadingState />}>
-        <CatalogBrowser searchMode />
+        <CatalogBrowser searchMode initialProducts={products} />
       </Suspense>
     </div>
   );

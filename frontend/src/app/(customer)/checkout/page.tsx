@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PriceDisplay } from "@/components/catalog/price-display";
 import { CustomerGate } from "@/components/storefront/customer-gate";
+import { PageHeading } from "@/components/storefront/page-heading";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { LoadingState } from "@/components/states/loading-state";
@@ -149,7 +150,7 @@ function CheckoutContent() {
           ))}
         </div>
       </div>
-      <aside className="h-fit rounded-xl bg-card p-6">
+      <aside className="commerce-panel h-fit">
         <h2 className="text-lg font-semibold">Checkout review</h2>
         {quoteLoading && (
           <p className="mt-5 text-sm text-muted-foreground">
@@ -209,9 +210,8 @@ function CheckoutContent() {
         <div className="mt-7 rounded-lg bg-secondary p-4">
           <p className="font-semibold">Payment is not available yet</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Order placement is paused while the Cashfree sandbox connection is
-            unresolved. No payment or unpaid order will be created from this
-            page.
+            You can review your items and delivery address. Order placement
+            will be available when payments are ready.
           </p>
         </div>
         <Link
@@ -228,7 +228,7 @@ function CheckoutContent() {
 export default function CheckoutPage() {
   return (
     <div className="site-container section-space">
-      <h1 className="type-page mb-10">Review checkout</h1>
+      <PageHeading title="Review your order" description="Choose your delivery address and check the latest prices and availability." action={{ href: "/cart", label: "Back to your bag" }} />
       <CustomerGate>
         <CheckoutContent />
       </CustomerGate>

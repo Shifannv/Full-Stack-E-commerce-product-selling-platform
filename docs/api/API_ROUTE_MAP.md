@@ -1,6 +1,6 @@
 # API Route Map
 
-Generated from the route sources on 2026-10-01 (after the structure refactor). Mount order lives in `backend/src/routes/index.ts`; **order is behavior** (see [REFACTORING_GUIDE](../development/REFACTORING_GUIDE.md)). Handler registrations below: 103 (excluding middleware).
+Reconciled against route sources on 2026-10-04. Mount order lives in `backend/src/routes/index.ts`; **order is behavior** (see [REFACTORING_GUIDE](../development/REFACTORING_GUIDE.md)). The read-only audit enumerates 108 distinct method/path handlers including the three direct GETs, excluding Better Auth ALL and middleware; see [FRONTEND_CONNECTION_AUDIT.json](../verification/FRONTEND_CONNECTION_AUDIT.json). Current UI connections and gates: [FRONTEND_INTEGRATION_STATUS](FRONTEND_INTEGRATION_STATUS.md).
 
 Authentication/role enforcement lives in each handler or router middleware (`requireAuth`, role/permission checks), not in this table; this table is the HTTP surface only. Provider-authenticated routes (webhooks) use provider secrets/signatures, not sessions. Several routers mix audiences under one `use("*", requireAuth)` (orders, returns, finance, reviews, shipping); they are filed under their primary domain, not split.
 
@@ -117,8 +117,10 @@ Global: for `/api/*`, CORS (origin must equal `FRONTEND_ORIGIN`, credentials on)
 | PATCH | `/api/admin/products/:productId` | `backend/src/routes/admin/products.ts` |
 | POST | `/api/admin/products/:productId/variants` | `backend/src/routes/admin/products.ts` |
 | POST | `/api/admin/products/:productId/images` | `backend/src/routes/admin/products.ts` |
+| GET | `/api/admin/products/:productId/images` | `backend/src/routes/admin/products.ts` |
 | POST | `/api/admin/products/:productId/images/upload` | `backend/src/routes/admin/products.ts` |
 | PUT | `/api/admin/products/:productId/inventory` | `backend/src/routes/admin/products.ts` |
+| GET | `/api/admin/products/:productId/inventory` | `backend/src/routes/admin/products.ts` |
 | GET | `/api/admin/review/:adminId` | `backend/src/routes/admin/review.ts` |
 | POST | `/api/admin/review/provision` | `backend/src/routes/admin/review.ts` |
 | POST | `/api/admin/review/invite` | `backend/src/routes/admin/review.ts` |

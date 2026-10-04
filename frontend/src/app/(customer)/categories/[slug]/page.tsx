@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { CatalogBrowser } from "@/components/storefront/catalog-browser";
+import { PageHeading } from "@/components/storefront/page-heading";
 import { LoadingState } from "@/components/states/loading-state";
 import {
   catalogQuery,
@@ -43,15 +44,7 @@ export default async function CategoryPage({ params }: Props) {
   );
   return (
     <div className="site-container section-space">
-      <div className="mb-12 max-w-3xl">
-        <p className="type-meta mb-4 text-primary">Collection</p>
-        <h1 className="type-page">{category.name}</h1>
-        {category.description && (
-          <p className="mt-5 text-lg text-muted-foreground">
-            {category.description}
-          </p>
-        )}
-      </div>
+      <PageHeading title={category.name} description={category.description ?? `Explore ${category.name.toLowerCase()} and find what feels like you.`} action={{ href: "/search", label: "All collections" }} />
       <Suspense fallback={<LoadingState />}>
         <CatalogBrowser
           categorySlug={slug}

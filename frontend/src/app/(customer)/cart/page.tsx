@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PriceDisplay } from "@/components/catalog/price-display";
 import { CustomerGate } from "@/components/storefront/customer-gate";
+import { PageHeading } from "@/components/storefront/page-heading";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { LoadingState } from "@/components/states/loading-state";
@@ -156,7 +157,7 @@ function CartContent() {
               </div>
             ))}
           </div>
-          <aside className="h-fit rounded-xl bg-card p-6">
+          <aside className="commerce-panel h-fit">
             <h2 className="text-lg font-semibold">Cart summary</h2>
             <div className="mt-5 flex justify-between text-sm">
               <span>Subtotal</span>
@@ -185,7 +186,7 @@ function CartContent() {
 export default function CartPage() {
   return (
     <div className="site-container section-space">
-      <h1 className="type-page mb-10">Your cart</h1>
+      <PageHeading title="Your shopping bag" description="Review your pieces before moving to checkout." action={{ href: "/search", label: "Keep exploring" }} />
       <CustomerGate>
         <CartContent />
       </CustomerGate>

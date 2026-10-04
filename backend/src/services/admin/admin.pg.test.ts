@@ -21,7 +21,7 @@ import {
 } from "../../db/schema/catalog";
 import { admins } from "../../db/schema/rbac";
 import { reviewApplication, setCategoryAssignment } from "./admin.service";
-import { setProductInventory, updateProduct } from "./catalog.service";
+import { getProductInventory, setProductInventory, updateProduct } from "./catalog.service";
 import { transitionAdminStatus } from "./account-state.service";
 import {
   activateAdminAccount,
@@ -47,6 +47,23 @@ if (testUrl) {
       throw new Error("Checkout tests require a dedicated database");
   }
 }
+
+test("inventory read returns current version and rejects foreign ownership and revoked scope", { skip: !testUrl }, async () => {
+  await fixture(async (c) => {
+    const before = await getProductInventory(c.db, c.adminId, c.productId);
+    assert.equal(before.length, 1);
+    assert.equal(before[0].version, 0);
+    assert.equal(before[0].availableQuantity, 10);
+    assert.equal(before[0].reservedQuantity, 0);
+    await setProductInventory(c.db, c.adminId, c.productId, 7, undefined, before[0].version);
+    const after = await getProductInventory(c.db, c.adminId, c.productId);
+    assert.equal(after[0].version, 1);
+    assert.equal(after[0].availableQuantity, 7);
+    await assert.rejects(getProductInventory(c.db, randomUUID(), c.productId), (error: unknown) => (error as {status:number}).status === 404);
+    await c.db.update(adminCategoryAssignments).set({status:"REVOKED"}).where(and(eq(adminCategoryAssignments.adminId,c.adminId),eq(adminCategoryAssignments.categoryId,c.categoryId)));
+    await assert.rejects(getProductInventory(c.db, c.adminId, c.productId));
+  });
+});
 
 async function fixture(
   run: (c: Awaited<ReturnType<typeof makeFixture>>) => Promise<void>,

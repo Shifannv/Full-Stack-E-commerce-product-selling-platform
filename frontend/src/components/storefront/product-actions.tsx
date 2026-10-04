@@ -81,12 +81,10 @@ export function ProductActions({ product }: { product: PublicProductDetail }) {
   }
 
   return (
-    <div className="mt-7 space-y-6">
+    <div className="mt-7 space-y-7">
       {product.variants.length > 0 && (
         <fieldset>
-          <legend className="mb-3 text-sm font-semibold">
-            Choose a variant
-          </legend>
+          <legend className="mb-3 text-xs font-semibold uppercase tracking-[0.12em]">Choose an option</legend>
           <div className="flex flex-wrap gap-2">
             {product.variants.map((item) => (
               <button
@@ -94,7 +92,7 @@ export function ProductActions({ product }: { product: PublicProductDetail }) {
                 key={item.id}
                 aria-pressed={item.id === variantId}
                 onClick={() => setVariantId(item.id)}
-                className="rounded-md border border-border px-4 py-2 text-sm aria-pressed:border-primary aria-pressed:bg-secondary"
+                className="min-w-12 border border-border px-4 py-2.5 text-sm aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground"
               >
                 {item.title}
               </button>
@@ -133,12 +131,14 @@ export function ProductActions({ product }: { product: PublicProductDetail }) {
       </div>
       <div className="flex flex-wrap gap-2">
         <Button
+          className="min-w-40 flex-1"
           disabled={busy || !product.available}
           onClick={() => void addToCart(false)}
         >
           Add to cart
         </Button>
         <Button
+          className="min-w-32 flex-1"
           disabled={busy || !product.available}
           variant="outline"
           onClick={() => void addToCart(true)}

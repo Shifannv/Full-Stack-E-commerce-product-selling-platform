@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { CustomerGate } from "@/components/storefront/customer-gate";
-import { PriceDisplay } from "@/components/catalog/price-display";
+import { PageHeading } from "@/components/storefront/page-heading";
+import { ProductCard } from "@/components/catalog/product-card";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { LoadingState } from "@/components/states/loading-state";
@@ -16,6 +16,9 @@ type SavedProduct = {
   slug: string;
   price: string;
   currency: string;
+  image?: { objectKey: string; altText: string | null } | null;
+  secondImage?: { objectKey: string; altText: string | null } | null;
+  available?: boolean;
 };
 
 function WishlistContent() {
@@ -27,8 +30,16 @@ function WishlistContent() {
     let active = true;
     customerApi
       .wishlist()
-      .then((result) => {
-        if (active) setProducts(result.products);
+      .then(async (result) => {
+        const enriched = await Promise.all(result.products.map(async (item) => {
+          try {
+            const detail = await customerApi.product(item.slug);
+            return { ...item, image: detail.images[0] ?? null, secondImage: detail.images[1] ?? null, available: detail.available };
+          } catch {
+            return item;
+          }
+        }));
+        if (active) setProducts(enriched);
       })
       .catch((reason: unknown) => {
         if (active)
@@ -69,29 +80,17 @@ function WishlistContent() {
         </p>
       )}
       {products.length ? (
-        <div className="divide-y divide-border border-y border-border">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-8">
           {products.map((product) => (
             <div
               key={product.productId}
-              className="flex flex-wrap items-center justify-between gap-4 py-5"
+              className="min-w-0"
             >
-              <div>
-                <Link
-                  href={`/products/${encodeURIComponent(product.slug)}`}
-                  className="font-medium hover:underline"
-                >
-                  {product.name}
-                </Link>
-                <p className="mt-1">
-                  <PriceDisplay
-                    amount={product.price}
-                    currency={product.currency}
-                  />
-                </p>
-              </div>
+              <ProductCard showWishlist={false} product={{ id: product.productId, slug: product.slug, name: product.name, price: product.price, currency: product.currency, image: product.image, secondImage: product.secondImage, available: product.available }} />
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
+                className="mt-2 -ml-3"
                 disabled={busyId === product.productId}
                 onClick={() => void remove(product.productId)}
               >
@@ -114,7 +113,7 @@ function WishlistContent() {
 export default function WishlistPage() {
   return (
     <div className="site-container section-space">
-      <h1 className="type-page mb-10">Wishlist</h1>
+      <PageHeading title="Your favourites" description="Keep the pieces that caught your eye, ready for another look." action={{ href: "/search", label: "Find something new" }} />
       <CustomerGate>
         <WishlistContent />
       </CustomerGate>

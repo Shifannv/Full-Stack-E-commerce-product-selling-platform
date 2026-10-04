@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, Search, ShoppingBag, UserRound } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Heart, Menu, Search, ShoppingBag, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -14,27 +15,31 @@ import {
 
 const links = [
   { href: "/search", label: "Shop" },
-  { href: "/wishlist", label: "Wishlist" },
+  { href: "/clothing", label: "Clothing" },
+  { href: "/search?sort=newest", label: "New arrivals" },
+  { href: "/wishlist", label: "Saved" },
+  { href: "/account", label: "Account" },
   { href: "/orders", label: "Orders" },
 ];
 
 export function SiteHeader() {
+  const home = usePathname() === "/";
   return (
-    <header className="border-b border-border bg-background">
-      <div className="site-container flex h-18 items-center justify-between gap-4">
+    <header className={`store-header border-b ${home ? "store-header-home border-white/20 text-white" : "border-border bg-background"}`}>
+      <div className="site-container flex h-17 items-center justify-between gap-3 md:h-21">
         <div className="flex items-center gap-3">
           <Sheet>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden"
+                className="lg:hidden"
                 aria-label="Open navigation"
               >
                 <Menu aria-hidden="true" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="bg-background">
+            <SheetContent side="left" className="bg-background text-foreground" data-lenis-prevent>
               <SheetHeader>
                 <SheetTitle className="font-semibold tracking-tight">
                   Ownline Dropship
@@ -59,17 +64,17 @@ export function SiteHeader() {
           </Sheet>
           <Link
             href="/"
-            className="text-lg font-semibold tracking-[-0.025em] sm:text-xl"
+            className="store-wordmark text-xl font-semibold tracking-[-0.035em] sm:text-2xl"
             aria-label="Ownline Dropship home"
           >
-            OWNLINE <span className="font-normal">DROPSHIP</span>
+            OWNLINE<span className="ml-1.5 align-top text-[9px] font-medium tracking-[0.11em] sm:text-[10px]">DROPSHIP</span>
           </Link>
         </div>
         <nav
           aria-label="Primary navigation"
-          className="hidden items-center gap-8 text-sm font-medium md:flex"
+          className="hidden items-center gap-9 text-xs font-medium uppercase tracking-[0.13em] lg:flex"
         >
-          {links.map((link) => (
+          {links.slice(0, 4).map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -90,7 +95,12 @@ export function SiteHeader() {
               <Search aria-hidden="true" />
             </Link>
           </Button>
-          <Button asChild variant="ghost" size="icon" aria-label="Account">
+          <Button asChild variant="ghost" size="icon" aria-label="Wishlist" className="hidden sm:inline-flex">
+            <Link href="/wishlist">
+              <Heart aria-hidden="true" />
+            </Link>
+          </Button>
+          <Button asChild variant="ghost" size="icon" aria-label="Account" className="hidden sm:inline-flex">
             <Link href="/account">
               <UserRound aria-hidden="true" />
             </Link>

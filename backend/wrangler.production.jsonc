@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ecommerce-api",
+  "account_id": "5b6fbec4849a7a164f4c61c6edfb0fc9",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-02-04",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  // Infrastructure baseline only: preserve the live disabled scheduler.
+  // Enabling commerce jobs requires a separate provider/database readiness task.
+  "triggers": { "crons": [] },
+  "keep_vars": true,
+  "vars": {
+    "BETTER_AUTH_URL": "https://ownline-ecommerce.pages.dev",
+    "FRONTEND_ORIGIN": "https://ownline-ecommerce.pages.dev",
+    "PUBLIC_WORKER_URL": "https://ecommerce-api.ownlinedropshipping.workers.dev",
+    "ADMIN_SETUP_URL": "https://ownline-ecommerce.pages.dev/admin/setup"
+  },
+  "hyperdrive": [
+    { "binding": "HYPERDRIVE", "id": "0c6bae39855446449b1276eecf3dd4d3" }
+  ],
+  "r2_buckets": [
+    { "binding": "KYC_BUCKET", "bucket_name": "ecommerce-admin-kyc-private" },
+    { "binding": "PRODUCT_IMAGES_BUCKET", "bucket_name": "shop-product-images" }
+  ]
+}

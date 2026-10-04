@@ -113,6 +113,37 @@ publicCatalogRoutes.get("/products/:slug", async (c) =>
   ),
 );
 
+// Serves product images from the R2 bucket for local dev (in production, images are served
+// directly from the R2 public custom domain without going through the Worker).
+const ALLOWED_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+  "image/gif",
+]);
+publicCatalogRoutes.get("/images/*", async (c) => {
+  if (!c.env.PRODUCT_IMAGES_BUCKET) return c.notFound();
+  // Extract object key from the URL path: /api/images/{objectKey}
+  const objectKey = new URL(c.req.url).pathname.replace(/^\/api\/images\//, "");
+  if (!objectKey || !/^products\/[0-9a-f-]{36}\/[A-Za-z0-9._-]+$/.test(objectKey))
+    return c.notFound();
+  const obj = await c.env.PRODUCT_IMAGES_BUCKET.get(objectKey);
+  if (!obj) return c.notFound();
+  // Pin Content-Type to an allowlist — never echo stored SVG/HTML which could XSS on this origin.
+  const stored = obj.httpMetadata?.contentType ?? "";
+  const contentType = ALLOWED_IMAGE_TYPES.has(stored) ? stored : "application/octet-stream";
+  const filename = encodeURIComponent(objectKey.split("/").pop() ?? "image");
+  return new Response(obj.body, {
+    headers: {
+      "Content-Type": contentType,
+      "Content-Disposition": `inline; filename="${filename}"`,
+      "X-Content-Type-Options": "nosniff",
+      "Cache-Control": "public, max-age=3600",
+    },
+  });
+});
+
 customerRoutes.use("*", requireAuth);
 customerRoutes.use("*", async (c, next) => {
   if (!c.get("actor").roles.includes("CUSTOMER"))

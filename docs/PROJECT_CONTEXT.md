@@ -1,5 +1,7 @@
 # ECOMMERCE PROJECT - MASTER SOURCE OF TRUTH
 
+**Frontend continuation, 2026-10-04:** customer pages and both dashboards now share the homepage brand theme. The footer, operator task workspace and customer order actions are implemented locally. Current API connections, gated workflows and proposed missing APIs are recorded in [FRONTEND_INTEGRATION_STATUS.md](api/FRONTEND_INTEGRATION_STATUS.md); [CURRENT_STATUS.md](CURRENT_STATUS.md) remains the current-status authority. This update does not approve production commerce or replace the business/security rules below.
+
 > **HOW TO READ THIS FILE (reconciled 2026-10-01).**
 > - **Permanent rules** (business rules, security invariants, role/data isolation, workflows) are the numbered sections and remain authoritative unless a section says otherwise.
 > - **Current implementation status** lives only in [CURRENT_STATUS.md](CURRENT_STATUS.md). Every "CURRENT CHECKPOINT" below was current only on its date and is now **historical evidence**.

@@ -1,5 +1,17 @@
 # Ownline Dropship frontend design system
 
+## Current continuation — 2026-10-04
+
+Customer pages and both dashboards share the cream/forest identity and Instrument Serif/DM Sans typography. Reusable page headings, flat bordered commerce panels and a forest footer extend the homepage theme. Dashboard layouts remain practical, with sand Admin and forest Super Admin sidebars, responsive task navigation, labelled forms, accessible status/error states and review-before-confirm mutations. Cinematic intro/section reveals remain storefront-only. Tablet header switches to collapsed navigation below 1024px. All footer links target existing routes.
+
+API integration and current verification are recorded in [FRONTEND_INTEGRATION_STATUS](../api/FRONTEND_INTEGRATION_STATUS.md). All older checkpoints below are historical; they do not supersede [CURRENT_STATUS](../CURRENT_STATUS.md).
+
+## Storefront motion continuation — 2026-10-04
+
+Customer-only addition: near-black Ownline intro, Instrument Serif brand text and DM Sans tagline; masked word reveals use 700ms exponential ease-out with a 90ms stagger. Minimum hold 2.4s, media-readiness cap 4s, curtain/hero handoff 800ms. Scroll locking coordinates native overflow and Lenis and cleans up on completion/unmount. Editorial section reveals use 650ms; image crop reveal uses 900ms with a 1100ms scale settling. Product grids remain outside reveal wrappers. Reduced motion skips the intro and reveals; server HTML is visible without JavaScript.
+
+Dress preview uses at most nine real products, three columns from 768px and two on mobile. Audience/type buttons retain URL filtering, visible pressed states and 48px targets; other collection links follow the clothing browser. Existing campaign films/images and customer typography/palette are retained. Operators now share this brand palette in scoped utility layouts. See [campaign documentation](../catalog/STOREFRONT_CAMPAIGN.md) and [current status](../CURRENT_STATUS.md) for current verification; older checkpoint text below is historical.
+
 ## CURRENT CHECKPOINT — Phase 11b-3A — 2026-09-29
 
 **Phase 11b: OPEN. NOT DEPLOYED. NOT SAFE TO DEPLOY.** These statements describe the current local changes; earlier Worker deployment evidence is historical. This checkpoint supersedes all older status, “current”, “latest”, and next-task statements below. Retained historical evidence is not a claim about today's environment.

@@ -1,0 +1,392 @@
+{
+  "checkedAt": "2026-10-03T08:31:31.539Z",
+  "checks": [
+    {
+      "url": "https://ecommerce-api.ownlinedropshipping.workers.dev/health",
+      "status": 200
+    },
+    {
+      "url": "https://ecommerce-api.ownlinedropshipping.workers.dev/health/db",
+      "status": 200
+    },
+    {
+      "url": "https://ecommerce-api.ownlinedropshipping.workers.dev/api/products?limit=50",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products?limit=50",
+      "status": 200
+    },
+    {
+      "url": "https://ecommerce-api.ownlinedropshipping.workers.dev/api/categories",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/categories",
+      "status": 200
+    },
+    {
+      "url": "https://ecommerce-api.ownlinedropshipping.workers.dev/api/me",
+      "status": 401
+    },
+    {
+      "url": "https://ecommerce-api.ownlinedropshipping.workers.dev/api/admin/summary",
+      "status": 401
+    },
+    {
+      "url": "https://ecommerce-api.ownlinedropshipping.workers.dev/api/super-admin/summary",
+      "status": 401
+    },
+    {
+      "url": "https://ecommerce-api.ownlinedropshipping.workers.dev/api/auth/get-session",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 401
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/summary",
+      "status": 401
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/summary",
+      "status": 401
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200
+    }
+  ],
+  "browser": [
+    {
+      "path": "/",
+      "status": 200,
+      "heading": [
+        "A little more you, every day."
+      ]
+    },
+    {
+      "path": "/products/phase11b2-oos-no-image-730d72e64790",
+      "status": 200,
+      "heading": [
+        "TEST Ownline Out of Stock No Image"
+      ]
+    },
+    {
+      "path": "/admin",
+      "status": 200,
+      "heading": [
+        "Your workspace"
+      ]
+    },
+    {
+      "path": "/super-admin",
+      "status": 200,
+      "heading": [
+        "Platform at a glance"
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "name": "ADMIN_SETUP_URL",
+      "type": "plain_text",
+      "text": "https://ownline-ecommerce.pages.dev/admin/setup"
+    },
+    {
+      "name": "BETTER_AUTH_SECRET",
+      "type": "secret_text"
+    },
+    {
+      "name": "BETTER_AUTH_URL",
+      "type": "plain_text",
+      "text": "https://ownline-ecommerce.pages.dev"
+    },
+    {
+      "name": "CASHFREE_CLIENT_ID",
+      "type": "secret_text"
+    },
+    {
+      "name": "CASHFREE_CLIENT_SECRET",
+      "type": "secret_text"
+    },
+    {
+      "name": "FRONTEND_ORIGIN",
+      "type": "plain_text",
+      "text": "https://ownline-ecommerce.pages.dev"
+    },
+    {
+      "name": "GOOGLE_CLIENT_ID",
+      "type": "secret_text"
+    },
+    {
+      "name": "GOOGLE_CLIENT_SECRET",
+      "type": "secret_text"
+    },
+    {
+      "name": "HYPERDRIVE",
+      "type": "hyperdrive",
+      "id": "0c6bae39855446449b1276eecf3dd4d3"
+    },
+    {
+      "name": "KYC_BUCKET",
+      "type": "r2_bucket",
+      "bucket_name": "ecommerce-admin-kyc-private"
+    },
+    {
+      "name": "PRODUCT_IMAGES_BUCKET",
+      "type": "r2_bucket",
+      "bucket_name": "shop-product-images"
+    },
+    {
+      "name": "PUBLIC_WORKER_URL",
+      "type": "plain_text",
+      "text": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+    },
+    {
+      "name": "RETURN_WINDOW_DAYS",
+      "type": "secret_text"
+    },
+    {
+      "name": "SHIPROCKET_WEBHOOK_TOKEN",
+      "type": "secret_text"
+    }
+  ],
+  "schedules": [],
+  "workerDeployments": {
+    "deployments": [
+      {
+        "id": "ca909d7b-e1d9-462c-b280-71d29a943513",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ownlinedropshipping@gmail.com",
+        "annotations": {
+          "workers/message": "Cloudflare baseline: current Worker, explicit origins and R2 bindings, cron remains disabled",
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "24fef5d6-504f-4269-8e2f-da6a34040f2b",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-03T08:23:59.422914Z"
+      },
+      {
+        "id": "bbd87f73-3ad0-4604-8a97-cbbc466b6b1b",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ownlinedropshipping@gmail.com",
+        "annotations": {
+          "workers/message": "Infra-test deployment: current Worker, cron disabled",
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "675e46a3-93b8-4290-802b-2fc268f6f0bc",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-01T18:23:24.369127Z"
+      },
+      {
+        "id": "2911d936-0b07-4348-8771-21bcd1b57ba0",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ownlinedropshipping@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "7bf2c0f6-43cb-4991-a055-bcdf3e94071c",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-09-29T05:48:54.565262Z"
+      },
+      {
+        "id": "19ccac67-810a-4b8b-976f-12a199bf70e7",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ownlinedropshipping@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "secret"
+        },
+        "versions": [
+          {
+            "version_id": "218910b2-93bb-4012-8c2c-be766e1d7560",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-09-27T17:43:02.321599Z"
+      },
+      {
+        "id": "406f471d-9c01-41ab-9fe1-f3f82f25fe80",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ownlinedropshipping@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "secret"
+        },
+        "versions": [
+          {
+            "version_id": "c9eb40ca-30cd-457b-af2a-88bd6ed41b53",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-09-27T17:38:38.398098Z"
+      },
+      {
+        "id": "7a927cc9-d85b-459c-a87b-d6f72586a907",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ownlinedropshipping@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "6195abf3-d2a9-4423-a7ad-7d8484fbf06c",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-09-27T16:19:40.994729Z"
+      },
+      {
+        "id": "edf085ea-ec24-4fc7-b705-4e780a0210f8",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ownlinedropshipping@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "secret"
+        },
+        "versions": [
+          {
+            "version_id": "96d9341e-1769-48a3-bd8d-415429f795da",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-09-27T16:19:18.528097Z"
+      },
+      {
+        "id": "7f59b87e-015c-44fc-a294-45c503b5f29b",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ownlinedropshipping@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "secret"
+        },
+        "versions": [
+          {
+            "version_id": "b43a3824-64f6-490c-9584-739f80455861",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-09-27T16:19:00.537503Z"
+      },
+      {
+        "id": "bd1a44d9-8865-404c-b61a-1b7feeef7a4b",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ownlinedropshipping@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "secret"
+        },
+        "versions": [
+          {
+            "version_id": "17b19ef8-9e72-4a23-8b06-9c0c177ccf37",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-09-27T16:18:26.730952Z"
+      },
+      {
+        "id": "898379da-ba86-412a-99f0-0e490447dc97",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "ownlinedropshipping@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "secret"
+        },
+        "versions": [
+          {
+            "version_id": "fee40642-9a6c-4948-9671-9205ee9444ea",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-09-27T14:31:47.095819Z"
+      }
+    ]
+  },
+  "pagesDeployment": {
+    "id": "dabe2d07-817b-4aef-8bee-e7efb1283367",
+    "environment": "production",
+    "status": "success",
+    "usesFunctions": true
+  },
+  "pagesEnvironment": {
+    "CATALOG_BUILD_API_URL": "https://ecommerce-api.ownlinedropshipping.workers.dev",
+    "NEXT_PUBLIC_API_URL": "https://ownline-ecommerce.pages.dev",
+    "NEXT_PUBLIC_R2_PUBLIC_BASE_URL": "",
+    "NEXT_PUBLIC_SITE_URL": "https://ownline-ecommerce.pages.dev",
+    "PUBLIC_WORKER_URL": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+  },
+  "r2": {
+    "shop-product-images": {
+      "managed": {
+        "enabled": true,
+        "bucketId": "568301fa6e09442d9faf61b0274abb0c",
+        "domain": "pub-568301fa6e09442d9faf61b0274abb0c.r2.dev"
+      },
+      "custom": {
+        "domains": []
+      }
+    },
+    "ecommerce-admin-kyc-private": {
+      "managed": {
+        "enabled": false,
+        "bucketId": "0db783c5f8a146f1bb8b6e3e563ffffd",
+        "domain": "pub-0db783c5f8a146f1bb8b6e3e563ffffd.r2.dev"
+      },
+      "custom": {
+        "domains": []
+      }
+    },
+    "existingObjectRead": {
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 68
+    }
+  },
+  "availableZones": [],
+  "catalog": [
+    {
+      "slug": "phase11b2-oos-no-image-730d72e64790",
+      "price": "1.00",
+      "hasImage": false
+    },
+    {
+      "slug": "phase11b2-cotton-tote-730d72e64790",
+      "price": "349.00",
+      "hasImage": true
+    }
+  ],
+  "browserRuntimeErrors": [],
+  "browserApiResponses": [
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/products?limit=5",
+      "status": 401
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/summary",
+      "status": 401
+    }
+  ],
+  "result": "PASS: Worker/Pages baseline; R2 production custom domain remains unresolved"
+}

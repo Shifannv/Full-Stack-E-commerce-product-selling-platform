@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Filter, Search } from "lucide-react";
 import { ProductGrid } from "@/components/catalog/product-grid";
@@ -55,54 +56,28 @@ function CatalogBrowserContent({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const shouldFetch = searchMode
-    ? Boolean(searchParams.get("q")?.trim())
-    : Boolean(queryKey);
-  const [products, setProducts] = useState(shouldFetch ? [] : initialProducts);
-  const [loading, setLoading] = useState(shouldFetch);
-  const [error, setError] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(
-    !shouldFetch && initialProducts.length === PAGE_SIZE,
-  );
-  const [searchText, setSearchText] = useState(searchParams.get("q") ?? "");
-  const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") ?? "");
-  const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") ?? "");
-
-  const requestPage = useCallback(
-    async (offset: number) => {
+  const catalog = useInfiniteQuery({
+    queryKey: ["public-products", "browse", categorySlug ?? "all", queryKey],
+    queryFn: async ({ pageParam, signal }) => {
       const query = new URLSearchParams(queryKey);
       if (categorySlug) query.set("category", categorySlug);
       query.set("limit", String(PAGE_SIZE));
-      query.set("offset", String(offset));
-      const result = await customerApi.products(query);
-      return result.products satisfies ProductCardData[];
+      query.set("offset", String(pageParam));
+      return (await customerApi.products(query, signal)).products;
     },
-    [categorySlug, queryKey],
-  );
-
-  useEffect(() => {
-    if (!shouldFetch) return;
-    let active = true;
-    requestPage(0)
-      .then((rows) => {
-        if (active) {
-          setProducts(rows);
-          setHasMore(rows.length === PAGE_SIZE);
-        }
-      })
-      .catch((reason: unknown) => {
-        if (active)
-          setError(
-            reason instanceof Error ? reason.message : "Search is unavailable",
-          );
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, [requestPage, shouldFetch]);
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, pages) => lastPage.length === PAGE_SIZE ? pages.reduce((count, page) => count + page.length, 0) : undefined,
+    initialData: !queryKey ? { pages: [initialProducts], pageParams: [0] } : undefined,
+    initialDataUpdatedAt: 0,
+    refetchInterval: 60_000,
+  });
+  const products = catalog.data?.pages.flat() ?? [];
+  const loading = catalog.isPending || catalog.isFetchingNextPage;
+  const error = catalog.error?.message;
+  const hasMore = catalog.hasNextPage;
+  const [searchText, setSearchText] = useState(searchParams.get("q") ?? "");
+  const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") ?? "");
+  const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") ?? "");
 
   const setQuery = (updates: Record<string, string>) => {
     const next = new URLSearchParams(queryKey);
@@ -112,23 +87,7 @@ function CatalogBrowserContent({
     router.push(`${window.location.pathname}${next.size ? `?${next}` : ""}`);
   };
 
-  const loadMore = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const rows = await requestPage(products.length);
-      setProducts((current) => [...current, ...rows]);
-      setHasMore(rows.length === PAGE_SIZE);
-    } catch (reason) {
-      setError(
-        reason instanceof Error
-          ? reason.message
-          : "More products are unavailable",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loadMore = () => void catalog.fetchNextPage();
 
   return (
     <div>
@@ -265,22 +224,22 @@ function CatalogBrowserContent({
           </select>
         </div>
       </form>
-      {error ? (
-        <ErrorState description={error} />
+      {error && !products.length ? (
+        <><ErrorState description={error} /><Button variant="outline" onClick={() => void catalog.refetch()}>Try again</Button></>
       ) : loading && !products.length ? (
         <LoadingState />
       ) : products.length ? (
-        <ProductGrid products={products} />
+        <ProductGrid products={products} eagerCount={2} />
       ) : (
         <EmptyState
           title={
             searchMode && !searchParams.get("q")
-              ? "What are you looking for?"
+              ? "The collection is coming together"
               : "No products found"
           }
           description={
             searchMode && !searchParams.get("q")
-              ? "Search by name or description to explore the collection."
+              ? "Products will appear here when published."
               : "Try another search or adjust your price range."
           }
         />

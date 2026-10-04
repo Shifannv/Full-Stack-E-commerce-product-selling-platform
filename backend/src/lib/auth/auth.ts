@@ -21,6 +21,10 @@ export type AuthBindings = {
     delete: (key: string) => Promise<void>;
   };
   PRODUCT_IMAGES_BUCKET?: {
+    get: (key: string) => Promise<{
+      body: ReadableStream;
+      httpMetadata?: { contentType?: string };
+    } | null>;
     put: (
       key: string,
       value: ArrayBuffer,

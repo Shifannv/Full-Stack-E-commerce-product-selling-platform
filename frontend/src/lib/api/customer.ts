@@ -5,14 +5,15 @@ import type {
   CustomerAddress,
   Cart,
   CheckoutQuote,
+  CheckoutResult,
   Order,
   Shipment,
   ReturnStatus,
 } from "./types";
 
 export const customerApi = {
-  products: (query: URLSearchParams = new URLSearchParams()) =>
-    api<{ products: Product[] }>(`/api/products?${query}`),
+  products: (query: URLSearchParams = new URLSearchParams(), signal?: AbortSignal) =>
+    api<{ products: Product[] }>(`/api/products?${query}`, { signal }),
   product: (slug: string) => api<ProductDetail>(`/api/products/${id(slug)}`),
   reviews: (productId: string) =>
     api<{
@@ -67,10 +68,11 @@ export const customerApi = {
       method: "PUT",
       body: json({ quantity, variantId }),
     }),
-  checkout: (addressId: string) =>
-    api<{ order: Order }>("/api/checkout", {
+  checkout: (addressId: string, quote: Pick<CheckoutQuote, "cartVersion" | "lineFingerprint">, idempotencyKey: string) =>
+    api<CheckoutResult>("/api/checkout", {
       method: "POST",
-      body: json({ addressId }),
+      headers: { "Idempotency-Key": idempotencyKey },
+      body: json({ addressId, cartVersion: quote.cartVersion, lineFingerprint: quote.lineFingerprint }),
     }),
   paymentSession: (orderId: string) =>
     api<{ orderId: string; paymentSessionId: string }>(
@@ -78,6 +80,7 @@ export const customerApi = {
       { method: "POST", body: "{}" },
     ),
   orders: () => api<{ orders: Order[] }>("/api/orders"),
+  cancelOrder: (orderId: string) => api<{ orderId: string; status: string; paymentStatus: string }>(`/api/orders/${id(orderId)}/cancel`, { method: "POST", body: "{}" }),
   tracking: (orderId: string) =>
     api<{ shipments: Shipment[] }>(`/api/orders/${id(orderId)}/tracking`),
   review: (orderItemId: string, rating: number, title: string, body: string) =>

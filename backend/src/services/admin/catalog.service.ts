@@ -720,6 +720,19 @@ export async function setProductInventory(
   });
 }
 
+export async function getProductInventory(db: Db, adminId: string, productId: string) {
+  await assertProductAdmin(db, adminId, productId);
+  return db.select({
+    id: inventories.id,
+    productId: inventories.productId,
+    variantId: inventories.variantId,
+    availableQuantity: inventories.availableQuantity,
+    reservedQuantity: inventories.reservedQuantity,
+    version: inventories.version,
+    updatedAt: inventories.updatedAt,
+  }).from(inventories).where(eq(inventories.productId, productId));
+}
+
 // ---------------------------------------------------------------------------
 // GET /api/admin/products — Admin's own product list with category scope check.
 // Returns paginated list of products created by or assigned to this admin.

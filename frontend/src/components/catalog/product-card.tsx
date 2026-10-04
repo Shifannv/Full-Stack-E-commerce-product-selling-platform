@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { publicImageUrl } from "@/lib/images";
 import { PriceDisplay } from "./price-display";
 import { RatingDisplay } from "./rating-display";
+import { WishlistButton } from "./wishlist-button";
 
 export type ProductCardData = {
   id: string;
@@ -14,49 +14,60 @@ export type ProductCardData = {
   category?: string;
   featured?: boolean;
   image?: { objectKey: string; altText?: string | null } | null;
+  secondImage?: { objectKey: string; altText?: string | null } | null;
   available?: boolean;
   rating?: number | null;
   reviewCount?: number;
 };
 
-export function ProductCard({ product }: { product: ProductCardData }) {
+export function ProductCard({ product, showWishlist = true, eager = false }: { product: ProductCardData; showWishlist?: boolean; eager?: boolean }) {
   const imageUrl = publicImageUrl(product.image?.objectKey);
+  const secondImageUrl = publicImageUrl(product.secondImage?.objectKey);
   return (
-    <article className="group min-w-0">
+    <article className="group relative min-w-0">
       <Link
         href={`/products/${encodeURIComponent(product.slug)}`}
-        className="block rounded-lg focus-visible:outline-2 focus-visible:outline-ring"
+        className="block focus-visible:outline-2 focus-visible:outline-ring"
       >
-        <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-secondary">
+        <div className="product-image relative aspect-[4/5] overflow-hidden bg-secondary">
           {imageUrl ? (
             <Image
               src={imageUrl}
               alt={product.image?.altText || product.name}
               fill
+              loading={eager ? "eager" : "lazy"}
+              decoding="async"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover transition-transform duration-300 group-hover:scale-[1.025]"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
             />
           ) : (
             <span className="flex h-full items-center justify-center px-5 text-center text-sm text-muted-foreground">
               Image coming soon
             </span>
           )}
+          {secondImageUrl && (
+            <Image
+              src={secondImageUrl}
+              alt={product.secondImage?.altText || product.name}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="product-image-secondary object-cover"
+            />
+          )}
           {product.featured && (
-            <Badge className="absolute top-3 left-3">Featured</Badge>
+            <span className="absolute left-3 top-3 bg-background px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.16em]">Featured</span>
           )}
           {product.available === false && (
-            <Badge variant="secondary" className="absolute right-3 bottom-3">
-              Out of stock
-            </Badge>
+            <span className="absolute bottom-3 right-3 bg-background px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.16em]">Sold out</span>
           )}
         </div>
-        <div className="pt-4">
+        <div className="pt-3.5">
           {product.category && (
-            <p className="type-meta text-muted-foreground">
+            <p className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
               {product.category}
             </p>
           )}
-          <h3 className="mt-1 text-base font-medium leading-snug group-hover:underline group-hover:underline-offset-4">
+          <h3 className="mt-1 text-sm font-medium leading-snug sm:text-base">
             {product.name}
           </h3>
           {product.rating !== null && product.rating !== undefined && (
@@ -67,11 +78,12 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               />
             </div>
           )}
-          <p className="mt-2">
+          <p className="mt-1.5">
             <PriceDisplay amount={product.price} currency={product.currency} />
           </p>
         </div>
       </Link>
+      {showWishlist && <WishlistButton productId={product.id} productName={product.name} />}
     </article>
   );
 }

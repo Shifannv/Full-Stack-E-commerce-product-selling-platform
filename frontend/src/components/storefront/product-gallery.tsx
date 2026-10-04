@@ -18,7 +18,7 @@ export function ProductGallery({
   const url = publicImageUrl(selected?.objectKey);
   return (
     <div>
-      <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-secondary">
+      <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
         {url ? (
           <Image
             src={url}
@@ -48,7 +48,7 @@ export function ProductGallery({
                 aria-label={`View image ${imageIndex + 1}`}
                 aria-pressed={imageIndex === index}
                 onClick={() => setIndex(imageIndex)}
-                className="relative size-18 shrink-0 overflow-hidden rounded-md border border-border aria-pressed:border-primary"
+                className="relative size-18 shrink-0 overflow-hidden border border-border aria-pressed:border-primary"
               >
                 {thumb && (
                   <Image

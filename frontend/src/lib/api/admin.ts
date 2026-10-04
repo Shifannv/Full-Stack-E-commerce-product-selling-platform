@@ -16,10 +16,10 @@ export const adminApi = {
       method: "PATCH",
       body: json(input),
     }),
-  inventory: (productId: string, quantity: number, variantId?: string) =>
+  inventory: (productId: string, quantity: number, expectedVersion: number, variantId?: string) =>
     api<unknown>(`/api/admin/products/${id(productId)}/inventory`, {
       method: "PUT",
-      body: json({ quantity, variantId }),
+      body: json({ quantity, variantId, expectedVersion }),
     }),
   orders: () => api<unknown>("/api/admin/orders"),
   tracking: (orderId: string) =>

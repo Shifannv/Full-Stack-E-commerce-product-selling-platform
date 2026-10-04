@@ -50,7 +50,7 @@ export function CustomerGate({ children }: { children: React.ReactNode }) {
     return <LoadingState label="Checking your session" />;
   if (status === "signed-out")
     return (
-      <div className="rounded-xl border border-border bg-card px-6 py-12 text-center">
+      <div className="commerce-panel py-12 text-center">
         <h2 className="type-section">Sign in to continue</h2>
         <p className="mx-auto mt-3 max-w-md text-muted-foreground">
           Use your Google account to see your saved items and orders.

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CustomerGate } from "@/components/storefront/customer-gate";
+import { PageHeading } from "@/components/storefront/page-heading";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { LoadingState } from "@/components/states/loading-state";
@@ -149,7 +150,7 @@ function AddressContent() {
       </div>
       <form
         onSubmit={(event) => void save(event)}
-        className="h-fit rounded-xl bg-card p-6"
+        className="commerce-panel h-fit"
       >
         <h2 className="text-xl font-semibold">
           {editingId ? "Edit address" : "Add an address"}
@@ -223,7 +224,7 @@ function AddressContent() {
 export default function AddressesPage() {
   return (
     <div className="site-container section-space">
-      <h1 className="type-page mb-10">Addresses</h1>
+      <PageHeading title="Delivery addresses" description="Save the places your next everyday find should arrive." action={{ href: "/account", label: "Your account" }} />
       <CustomerGate>
         <AddressContent />
       </CustomerGate>

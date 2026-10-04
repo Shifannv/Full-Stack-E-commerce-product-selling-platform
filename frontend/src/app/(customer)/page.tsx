@@ -1,147 +1,48 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowDownRight, ArrowUpRight } from "lucide-react";
-import { CategoryCard } from "@/components/catalog/category-card";
-import { ProductGrid } from "@/components/catalog/product-grid";
-import { SectionHeading } from "@/components/catalog/section-heading";
-import { EmptyState } from "@/components/states/empty-state";
-import {
-  catalogQuery,
-  getPublicCategories,
-  getPublicProducts,
-  withFirstImage,
-} from "@/lib/public-catalog";
+import { ArrowUpRight, ArrowRight } from "lucide-react";
+import { CampaignHero } from "@/components/storefront/campaign-hero";
+import { HomeProductEdit } from "@/components/storefront/home-product-edit";
+import { ScrollReveal } from "@/components/storefront/scroll-reveal";
+import { clothingCategory } from "@/lib/clothing";
+import { catalogQuery, getPublicCategories, getPublicProducts } from "@/lib/public-catalog";
 
 export const metadata: Metadata = {
   title: "Ownline Dropship",
+  description: "Considered finds for the everyday. Explore the latest Ownline collection.",
   alternates: { canonical: "/" },
 };
 
 export default async function CustomerHomePage() {
-  const [categories, featuredRows, newestRows] = await Promise.all([
-    getPublicCategories(),
-    getPublicProducts(catalogQuery({ featured: true, limit: 8 })),
-    getPublicProducts(catalogQuery({ limit: 8 })),
-  ]);
-  const [featured, newest] = await Promise.all([
-    withFirstImage(featuredRows),
-    withFirstImage(newestRows),
-  ]);
-
-  return (
-    <>
-      <section className="border-b border-border bg-secondary">
-        <div className="site-container grid min-h-[35rem] gap-12 py-16 md:grid-cols-[minmax(0,1fr)_minmax(15rem,0.6fr)] md:items-end md:py-24">
-          <div>
-            <h1 className="type-display max-w-[10ch]">
-              A closer look at everyday finds.
-            </h1>
-            <p className="mt-8 max-w-lg text-lg text-muted-foreground">
-              Discover the Ownline Dropship collection, one good find at a time.
-            </p>
-            <Link
-              href="/search"
-              className="mt-10 inline-flex items-center gap-3 border-b border-foreground pb-2 text-sm font-semibold hover:gap-4"
-            >
-              Explore the collection{" "}
-              <ArrowUpRight aria-hidden="true" className="size-4" />
-            </Link>
-          </div>
-          <div className="flex items-end justify-between border-t border-foreground/25 pt-4 text-sm text-muted-foreground md:border-t-0 md:border-l md:pl-8">
-            <span>
-              Browse by category
-              <br />
-              or discover what is new.
-            </span>
-            <ArrowDownRight
-              aria-hidden="true"
-              className="size-8 text-foreground"
-            />
-          </div>
-        </div>
-      </section>
-      <section
-        className="site-container section-space"
-        aria-labelledby="category-heading"
-      >
-        <div id="category-heading">
-          <SectionHeading
-            title="Explore by category"
-            description="Find your way through the current collection."
-          />
-        </div>
-        {categories.length ? (
-          <div className="-mx-1 flex snap-x gap-5 overflow-x-auto px-1 pb-4 sm:gap-7">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className="w-[min(78vw,23rem)] shrink-0 snap-start"
-              >
-                <CategoryCard category={category} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            title="Categories are on their way"
-            description="The collection will appear here as soon as products are published."
-          />
-        )}
-      </section>
-      <section className="border-y border-border bg-card/70">
-        <div className="site-container section-space">
-          <SectionHeading
-            title="Featured pieces"
-            description="Selected products from the published collection."
-            href="/search"
-            linkLabel="Browse all"
-          />
-          {featured.length ? (
-            <ProductGrid products={featured} />
-          ) : (
-            <EmptyState
-              title="No featured pieces yet"
-              description="There are no featured products in the published catalog right now."
-            />
-          )}
-        </div>
-      </section>
-      <section className="site-container section-space">
-        <SectionHeading
-          title="Just arrived"
-          description="The newest products in the published collection."
-          href="/search"
-          linkLabel="View collection"
-        />
-        {newest.length ? (
-          <ProductGrid products={newest} />
-        ) : (
-          <EmptyState
-            title="The collection is coming together"
-            description="New arrivals will appear when products are published."
-          />
-        )}
-      </section>
-      <section className="border-t border-border bg-primary text-primary-foreground">
-        <div className="site-container grid gap-8 py-16 md:grid-cols-[1fr_auto] md:items-end">
-          <div>
-            <h2 className="type-section max-w-xl">
-              Find what belongs in your day.
-            </h2>
-            <p className="mt-4 max-w-md text-primary-foreground/80">
-              Browse the collection and save the products you want to come back
-              to.
-            </p>
-          </div>
-          <Link
-            href="/search"
-            className="inline-flex items-center gap-3 self-start border-b border-primary-foreground pb-2 text-sm font-semibold"
-          >
-            Explore products{" "}
-            <ArrowUpRight aria-hidden="true" className="size-4" />
-          </Link>
-        </div>
-      </section>
-    </>
-  );
+  const categories = await getPublicCategories();
+  const sections = await Promise.all(categories.map(async category => ({ category,
+    products: await getPublicProducts(catalogQuery({ category: category.slug, limit: 9 })),
+  })));
+  const dressCategories = categories.filter(clothingCategory);
+  const clothing = sections.filter(({ category }) => clothingCategory(category)).flatMap(({ products }) => products)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 9);
+  const otherSections = sections.filter(({ category }) => !clothingCategory(category));
+  return <>
+    <CampaignHero />
+    <div className="collection-ribbon"><span>Considered finds for the everyday</span><span aria-hidden="true">Discover your Ownline</span><span aria-hidden="true">Considered finds for the everyday</span></div>
+    <section id="selected-edit" className="site-container section-space collection-section" aria-labelledby="dress-heading">
+      <ScrollReveal><div className="collection-heading"><h2 id="dress-heading" className="type-section">The Dress edit</h2><Link href="/clothing">Explore all clothing <ArrowRight aria-hidden="true" size={17} /></Link></div></ScrollReveal>
+      <HomeProductEdit initialProducts={clothing} categorySlugs={dressCategories.map(category => category.slug)} clothing />
+      <ScrollReveal className="collection-more"><Link href="/clothing" className="editorial-link">See more Dress <ArrowUpRight aria-hidden="true" size={18} /></Link></ScrollReveal>
+    </section>
+    <section className="collection-story" aria-labelledby="story-heading">
+      <ScrollReveal image className="story-image"><Image src="/images/ownline-editorial.webp" alt="Relaxed clothing and natural textures in the Ownline campaign" fill sizes="(max-width: 767px) 100vw, 50vw" className="object-cover" /></ScrollReveal>
+      <ScrollReveal className="story-copy"><h2 id="story-heading" className="type-page">Small details.<br /><em>Everyday feeling.</em></h2><p>Pieces to wear. Things to carry. Finds to make your own. Explore the collection and find what feels like you.</p><Link href="/search" className="editorial-link">Find your everyday <ArrowUpRight aria-hidden="true" size={18} /></Link></ScrollReveal>
+    </section>
+    {otherSections.length ? otherSections.map(({ category, products }) => <section key={category.id} className="site-container section-space collection-section catalog-category-section" aria-labelledby={`category-${category.slug}`}>
+      <ScrollReveal><div className="collection-heading"><h2 id={`category-${category.slug}`} className="type-section">{category.name}</h2><Link href={`/categories/${encodeURIComponent(category.slug)}`}>Explore {category.name.toLowerCase()} <ArrowRight aria-hidden="true" size={17} /></Link></div></ScrollReveal>
+      <HomeProductEdit initialProducts={products} categorySlugs={[category.slug]} />
+      <ScrollReveal className="collection-more"><Link href={`/categories/${encodeURIComponent(category.slug)}`} className="editorial-link">See more <ArrowUpRight aria-hidden="true" size={18} /></Link></ScrollReveal>
+    </section>) : <section className="site-container section-space collection-section"><ScrollReveal><div className="collection-heading"><h2 className="type-section">More everyday finds</h2><Link href="/search">Explore all products <ArrowRight aria-hidden="true" size={17} /></Link></div></ScrollReveal><p className="text-sm text-muted-foreground">More products will appear here when published.</p></section>}
+    <section className="category-index" aria-labelledby="category-heading">
+      <div className="site-container category-layout"><ScrollReveal><h2 id="category-heading" className="type-page">Find your<br /><em>own way.</em></h2><p>Explore the current collection by category.</p></ScrollReveal><nav aria-label="Shop by category">{categories.length ? categories.map(category => <ScrollReveal key={category.id}><Link href={`/categories/${encodeURIComponent(category.slug)}`}><span>{category.name}</span><ArrowUpRight aria-hidden="true" size={24} /></Link></ScrollReveal>) : <ScrollReveal><Link href="/search"><span>Explore all products</span><ArrowUpRight aria-hidden="true" size={24} /></Link></ScrollReveal>}</nav></div>
+    </section>
+    <section className="site-container"><ScrollReveal className="store-closing"><h2 className="type-section">Good things are worth finding.</h2><Link href="/wishlist">Keep your favourites close <ArrowUpRight aria-hidden="true" size={18} /></Link></ScrollReveal></section>
+  </>;
 }

@@ -1,6 +1,10 @@
 # Frontend API Map
 
-## CURRENT frontend API contract (verified against code 2026-10-01)
+## CURRENT frontend API contract (source audit 2026-10-04)
+
+Current three-role UI coverage and validation limits: [FRONTEND_INTEGRATION_STATUS](FRONTEND_INTEGRATION_STATUS.md). The operator workspace uses `lib/api/operator-workflows.ts` in addition to the wrapper objects below: 76 tasks, 69 active, 7 gated. Registered-route coverage is in [FRONTEND_CONNECTION_AUDIT.json](../verification/FRONTEND_CONNECTION_AUDIT.json). This is source connection evidence, not exhaustive authenticated workflow verification.
+
+Corrected contracts: `customerApi.checkout(addressId, quotePreconditions, idempotencyKey)` sends `cartVersion`, `lineFingerprint` and `Idempotency-Key`; response is the order/status/amount/deadline envelope, not an order-detail object. UI payment creation stays gated. `adminApi.inventory(productId, quantity, expectedVersion, variantId?)` requires optimistic versioning; workspace inventory read uses `GET /api/admin/products/:productId/inventory`. Multipart image/KYC uploads and authenticated private document downloads are handled by the workflow module.
 
 Source: `frontend/src/lib/api/` (`client.ts` `api()` adds `credentials: "include"`, `cache: "no-store"`, JSON content-type unless FormData, throws `ApiError(status, message)` using the response `error` field). `:id` is URL-encoded by `id()`. Every path below was matched to a registered Worker route in [API_ROUTE_MAP.md](API_ROUTE_MAP.md) (method + path pattern); no mismatches.
 
@@ -10,7 +14,7 @@ Source: `frontend/src/lib/api/` (`client.ts` `api()` adds `credentials: "include
 | `authApi` | `signIn` | POST | `/api/auth/sign-in/email` |
 | `authApi` | `signOut` | POST | `/api/auth/sign-out` |
 | `customerApi` | `products` | GET | `/api/products?…` |
-| `customerApi` | `product` | GET | `/api/products/:id` |
+| `customerApi` | `product` | GET | `/api/products/:slug` |
 | `customerApi` | `reviews` | GET | `/api/products/:id/reviews` |
 | `customerApi` | `cart` | GET | `/api/customer/cart` |
 | `customerApi` | `checkoutQuote` | GET | `/api/customer/checkout/quote?addressId=:id` |
@@ -25,6 +29,7 @@ Source: `frontend/src/lib/api/` (`client.ts` `api()` adds `credentials: "include
 | `customerApi` | `checkout` | POST | `/api/checkout` |
 | `customerApi` | `paymentSession` | POST | `/api/orders/:id/payment-session` |
 | `customerApi` | `orders` | GET | `/api/orders` |
+| `customerApi` | `cancelOrder` | POST | `/api/orders/:id/cancel` |
 | `customerApi` | `tracking` | GET | `/api/orders/:id/tracking` |
 | `customerApi` | `review` | POST | `/api/reviews` |
 | `customerApi` | `requestReturn` | POST | `/api/returns` |
@@ -57,7 +62,7 @@ Build-time public reads (`frontend/src/lib/public-catalog.ts`, no credentials; o
 
 Auth client: `lib/auth-client.ts` (Better Auth browser client) talks to `/api/auth/*`; `authApi.signIn/signOut` also call `/api/auth/sign-in/email` and `/api/auth/sign-out`.
 
-Many Worker routes have no `lib/api` function yet (admin onboarding/KYC, catalog management, finance settings and settlements, shipping operator and shipment creation, reconciliation, account lifecycle). They exist only on the Worker; see [API_ROUTE_MAP.md](API_ROUTE_MAP.md).
+The operator workflow registry now covers onboarding/KYC, catalog management, finance settings/settlements, shipping, reconciliation and lifecycle routes. Provider submissions and invitations are deliberately gated. Existing wrapper functions may overlap registry requests; the current coverage report is the complete source map, while this table remains a map of the wrapper objects.
 
 ---
 

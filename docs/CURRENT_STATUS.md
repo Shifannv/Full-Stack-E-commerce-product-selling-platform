@@ -1,6 +1,6 @@
 # Ownline Dropship — Current Status
 
-**Last reconciled:** 2026-10-01 (after the same-origin Pages Function proxy was added for cross-site cookie safety)
+**Last reconciled:** 2026-10-04 (shared frontend theme and three-role API integration audit; local changes)
 **Purpose:** Single source of truth for the current implementation state. Historical checkpoints in `PROJECT_CONTEXT.md`, `verification/*` and the historical part of `api/FRONTEND_API_MAP.md` are evidence only; where they disagree with this file, this file wins.
 
 Labels: IMPLEMENTED, REFACTORED, TESTED, VERIFIED, BLOCKED, NOT VERIFIED, NOT TOUCHED, PRODUCTION VERIFIED.
@@ -9,13 +9,25 @@ Labels: IMPLEMENTED, REFACTORED, TESTED, VERIFIED, BLOCKED, NOT VERIFIED, NOT TO
 
 ## Headline
 
+**Customer, Admin and Super Admin frontend continuation IMPLEMENTED locally, 2026-10-04.** Shared cream/forest typography, customer page headings and redesigned footer; authenticated operator task workspace (76 tasks, 69 active, 7 gated); customer reviews, returns/status and unpaid-order cancellation. Checkout quote/idempotency and inventory version contracts corrected; added owner/category-scoped inventory GET with no migration. Frontend typecheck/lint, 85-route fixture export, 41 browser evidence entries, backend typecheck/83 unit tests and targeted local PG inventory test passed. Browser mutation checks use mocks; exhaustive live workflow verification and provider readiness are not claimed. Payment, invitations and courier gates stay paused; cron and production media/catalog gates remain. No deployment. Full connections, missing API proposals and verification limits: [FRONTEND_INTEGRATION_STATUS](api/FRONTEND_INTEGRATION_STATUS.md).
+
+Storefront cinematic continuation **IMPLEMENTED and VERIFIED locally, 2026-10-04**: completed the partial Claude intro work and wired poster/video readiness, word-by-word Ownline branding, bounded curtain exit, hero-copy handoff and native/Lenis scroll locking. Dress leads with up to nine published products in a three-column desktop/tablet preview; See more opens the existing audience/type clothing browser. Editorial framing and category links reveal once while product grids stay static. TypeScript, lint, design detector, static export against the isolated synthetic catalog (84 routes), desktop/mobile Chrome checks and reduced-motion/data-saving/failed-media/no-JavaScript fallbacks passed. No deployment, backend, database or media-asset change. Implementation and validation details: [catalog/STOREFRONT_CAMPAIGN.md](catalog/STOREFRONT_CAMPAIGN.md).
+
+Storefront homepage redesign implemented locally **2026-10-04**: USUL-inspired video-first layout, optimized desktop/mobile demo films, generated campaign poster/editorial image, mobile navigation improvements, Lenis and TanStack Query public catalog caching. TypeScript/lint and isolated synthetic-catalog static build passed; desktop/mobile browser playback, responsiveness, reduced motion, pagination and cache checks passed. Film text contrast finding corrected and independently reviewed. Configured local catalog is currently empty, so release export still requires real published category/product slugs. No deployment or database change in this task. Details and replacement instructions: [catalog/STOREFRONT_CAMPAIGN.md](catalog/STOREFRONT_CAMPAIGN.md).
+
+Cloudflare infrastructure baseline deployed **2026-10-03**: current Worker, explicit production origins, both existing R2 bindings, and Pages static export/Function configuration. Cron remains disabled. Production media custom domain remains unresolved (no account zones returned); this is not a commerce launch approval. See [verification/CLOUDFLARE_BASELINE.md](verification/CLOUDFLARE_BASELINE.md). No production database writes or provider configuration were performed.
+
+Authenticated local Admin/Super Admin frontend verification completed **2026-10-03: PASS**. Real Better Auth sessions, role recognition, API-to-UI metric/record matching, refresh/logout, and Admin denial of Super Admin data passed on `ownline_checkout_test`. Customer Tees regression and final frontend build passed. Temporary Super Admin removed; no production access or deployment. See [verification/AUTHENTICATED_DASHBOARDS_LOCAL.md](verification/AUTHENTICATED_DASHBOARDS_LOCAL.md) for evidence and limits.
+
 | Item | Status |
 |---|---|
 | Backend structure refactor | **REFACTORED, VERIFIED** |
 | Frontend API refactor (`lib/api/`) | **REFACTORED, VERIFIED** |
 | Documentation restructuring + reconciliation | **COMPLETE** |
-| Production deployment | **BLOCKED** (see Production blockers) |
+| Production infrastructure deployment | **DEPLOYED** (2026-10-03); production R2 custom domain unresolved; commerce launch gates remain separate |
 | Real-catalog static export | **VERIFIED** (2026-10-01, synthetic realistic fixture in the isolated test DB; not production data) |
+| Tees demo catalog seed + image upload | **VERIFIED** (2026-10-02, local `ownline_checkout_test` only, local R2 mock; not production data) |
+| Tees demo frontend rendering | **VERIFIED** (2026-10-02, product page + image + variants + homepage featured; see below) |
 
 ## Verification results (2026-10-01, current code)
 
@@ -55,6 +67,74 @@ Isolated test database: 17 migrations (`0000`–`0016`) applied. Aiven migration
 - **Source changes for this verification:** none.
 - This verifies the frontend static export against a realistic catalog; it is **not** production frontend verification (no production data, deployment, OAuth or provider flows).
 
+## Tees demo frontend verification — LOCAL DEV ONLY (2026-10-02)
+
+**FRONTEND DEMO STATUS: PASS**
+
+| Check | Result |
+|---|---|
+| Frontend URL | `http://127.0.0.1:3000` |
+| Worker URL | `http://127.0.0.1:8787` (wrangler dev, `ownline_checkout_test`) |
+| API URL used | `http://127.0.0.1:8787` (via `NEXT_PUBLIC_API_URL`) |
+| Product page `/products/tees` | HTTP 200 |
+| Product name | `Tees` ✓ |
+| Price | `₹249` ✓ |
+| Real image renders | `<img src="http://127.0.0.1:8787/api/images/products/cc2c96f0.../a58fca9f....jpg">` ✓ |
+| Image bytes served | 776005 bytes, `image/jpeg` from local R2 mock ✓ |
+| Variant M displayed | `aria-pressed="true"` (initially selected) ✓ |
+| Variant L displayed | `aria-pressed="false"` ✓ |
+| Variant selection maps to ID | ProductActions uses `variantId` (UUID) → `setCartItem(productId, qty, variantId)` ✓ |
+| Available state | `"Available"` text shown ✓ |
+| Return policy | `"Returns are not enabled for this product."` ✓ |
+| Homepage featured product | Tees card with ₹249 and image URL present ✓ |
+| Category page `/categories/mens-clothing` | HTTP 200, shows `t-shirts` subcategory ✓ |
+| Frontend TypeScript | PASS ✓ |
+| Frontend lint | 0 errors (4 warnings in auto-generated wrangler tmp files) ✓ |
+| Production build | PASS — `/products/tees` in static output ✓ |
+| Production safety | Local Worker + local R2 mock + `ownline_checkout_test`; Aiven/production NOT accessed ✓ |
+
+**Changes made for this verification:**
+1. `backend/src/lib/auth/auth.ts`: added `get` method to `PRODUCT_IMAGES_BUCKET` type (was missing; `put`/`head`/`delete` already existed)
+2. `backend/src/routes/customer/customer.ts`: added `GET /api/images/*` to `publicCatalogRoutes` — reads from `PRODUCT_IMAGES_BUCKET` and serves bytes; local dev only (production uses R2 public domain directly). Security hardened post-verification: Content-Type pinned to allowlist (jpeg/png/webp/avif/gif → else `application/octet-stream`), `X-Content-Type-Options: nosniff`, `Content-Disposition` header, and object key validated against `products/{uuid}/{filename}` pattern before any R2 lookup.
+3. `frontend/src/lib/images.ts`: `publicImageUrl` now allows `http://127.0.0.1` hostname in addition to `http://localhost`
+4. `frontend/.env.local`: `NEXT_PUBLIC_R2_PUBLIC_BASE_URL` changed from real r2.dev URL to `http://127.0.0.1:8787/api/images` for local dev
+5. Script TypeScript fixes (`upload-tees-demo-image.ts` Buffer cast, `verify-tees-demo-api.ts` ExecutionContext cast) — pre-existing errors from last session
+
+**Note on image serving:** In production, images are served directly from the R2 public domain (configured via `NEXT_PUBLIC_R2_PUBLIC_BASE_URL` in the real deployment env). The Worker `/api/images/*` route is a local dev convenience only. Before deploying, restore `NEXT_PUBLIC_R2_PUBLIC_BASE_URL` to the real production R2 URL.
+
+**Note on search page:** `/search` renders `CatalogBrowser` which fetches products client-side. Server-rendered HTML shows a loading state; product cards appear only after hydration/fetch. Not a bug.
+
+## Tees demo catalog — LOCAL DEV ONLY (2026-10-02)
+
+**Purpose:** Minimal PUBLISHED product with 2 size variants (M/L) and a real JPEG image, for exercising the full admin image-upload flow locally.
+
+**Scripts** (run from `ecommerce/backend/`):
+| Script | npm alias | Purpose |
+|---|---|---|
+| `tsx scripts/seed-tees-demo.ts` | `npm run seed:tees-demo` | Seed user/admin/category/product/variants into `ownline_checkout_test` |
+| `tsx scripts/seed-tees-demo.ts --cleanup` | `npm run seed:tees-demo:cleanup` | Remove all seeded rows by stable IDs |
+| `tsx scripts/setup-tees-demo-auth.ts` | — | Add email+password credentials + ADMIN role to demo user |
+| `tsx scripts/verify-tees-demo-api.ts` | `npm run verify:tees-demo` | In-process catalog API verification (no wrangler needed) |
+| `tsx scripts/upload-tees-demo-image.ts <path>` | — | Upload JPEG via authenticated admin API (Worker must be running) |
+
+**To re-run upload from scratch:**
+1. Restore `.env.dev.local` `DATABASE_URL` to `ownline_checkout_test`
+2. Start: `node scripts/dev.mjs` (uses `.env.dev.local`, sets correct Hyperdrive override)
+3. Run: `tsx scripts/upload-tees-demo-image.ts <path/to/image.jpg>`
+4. Restore `.env.dev.local` `DATABASE_URL` to `ownline_dev`
+
+**Known gotchas:**
+- `.env.dev.local` must point to `ownline_checkout_test` when running the Worker for this demo (dev.mjs reads it and passes it as `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE`).
+- Multiple previous wrangler dev instances (from prior sessions) can compete on port 8787 — kill all `workerd` processes and their parent node wrangler processes before starting a clean one.
+- `emailVerified: true` is required for Better Auth credential sign-in. The seed scripts now set this automatically.
+- `PRODUCT_IMAGES_BUCKET` in `wrangler.jsonc` has `"remote": true` commented out for local dev. Re-enable before deploying.
+
+**Verification outcome (2026-10-02):**
+- DB: `ownline_checkout_test` (local, 127.0.0.1:5432)
+- Worker: `http://127.0.0.1:8787` (wrangler dev, local R2 mock)
+- Uploaded key: `products/cc2c96f0-e1f0-4a53-8bf7-9e836a2e9c7a/a58fca9f-e130-4d3e-a521-28d5e8c9d3c0.jpg`
+- All 9 checks PASS: health, image load, sign-in, actor, category scope, placeholder cleanup, upload HTTP 201, product detail (1 image, correct objectKey), variant regression (M+L, available=true).
+
 ## Error handling audit
 
 Audit completed 2026-10-01: [development/ERROR_HANDLING.md](development/ERROR_HANDLING.md) (line references there predate the refactor). Zero critical findings; 5 informational observations (intentional design choices).
@@ -90,13 +170,14 @@ Audit completed 2026-10-01: [development/ERROR_HANDLING.md](development/ERROR_HA
 
 ## Production blockers
 
-Production deployment is **BLOCKED / NOT SAFE TO DEPLOY**:
-- Worker secrets are not set (names only; values must never be recorded in docs).
-- Hyperdrive-to-Aiven connection from the deployed Worker is NOT VERIFIED.
+Production infrastructure has been deployed; **commerce launch remains blocked**:
+- Existing Worker secret bindings were preserved. Presence does not verify provider credentials; missing provider setup stays outside this task.
+- Hyperdrive-to-Aiven reach verified through deployed `GET /health/db` (`SELECT 1` only) and read-only public catalog APIs. No Aiven configuration, schema or data changes.
 - Provider dashboard steps (Cashfree, Shiprocket, Resend, webhooks) are pending.
 - Google OAuth browser verification is incomplete (authenticated consent/callback not verified; production HTTPS OAuth unverified).
 - Authenticated customer browser flows (wishlist, cart, address, checkout quote) are NOT VERIFIED.
-- R2: development image uploaded; production custom domain not configured.
+- R2: existing `shop-product-images` bucket is bound to the deployed Worker. Production custom domain is missing and no account DNS zones were returned. The enabled `r2.dev` URL remains development only. Production build media base stays blank (honest missing-image state). `remote: true` controls remote access during local development; it is not required for deployment. Tees image remains local only.
+- Production cron remains disabled intentionally; enable it only in a separately authorized operational readiness task.
 - ~~Cashfree payment return URL pointed to non-existent `/orders/<id>` route~~ — **RESOLVED 2026-10-01**: return URL changed to `/orders` (the existing valid route; static export cannot serve dynamic authenticated routes). See Cashfree payment return below.
 - ~~Cross-site session cookies broken between `*.pages.dev` frontend and `*.workers.dev` Worker (Better Auth default `SameSite=Lax` not sent on cross-site `fetch`)~~ — **RESOLVED 2026-10-01**: same-origin Pages Function proxy added at `frontend/functions/api/[[path]].ts` so the browser only ever talks to the Pages origin; Better Auth cookies remain first-party `SameSite=Lax`. See Same-origin API proxy below.
 
@@ -104,12 +185,12 @@ Production deployment is **BLOCKED / NOT SAFE TO DEPLOY**:
 
 | Service | Status |
 |---|---|
-| Aiven PostgreSQL | **NOT TOUCHED** by this work |
+| Aiven PostgreSQL | Read-only production catalog/health verification; no data, schema or configuration changes |
 | Cashfree (payment/refund) | **PARKED** — no live calls made |
 | Shiprocket (shipping) | **PARKED** — no live calls made |
 | Resend (email) | **PARKED** — no live calls made |
 | Google OAuth | **BLOCKED** |
-| R2 | Development only |
+| R2 | Production Worker binding and existing object read verified; production custom domain unresolved; private KYC public access disabled |
 
 ## Same-origin API proxy — IMPLEMENTED (2026-10-01)
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CustomerGate } from "@/components/storefront/customer-gate";
+import { PageHeading } from "@/components/storefront/page-heading";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { useCustomerSession } from "@/lib/use-customer-session";
@@ -46,7 +47,7 @@ function AccountContent() {
       </div>
       <nav
         aria-label="Account sections"
-        className="flex h-fit flex-col gap-1 rounded-xl bg-card p-4"
+        className="commerce-panel flex h-fit flex-col gap-1"
       >
         <Link
           href="/account/addresses"
@@ -66,6 +67,7 @@ function AccountContent() {
         >
           Wishlist
         </Link>
+        <Link href="/returns" className="px-3 py-3 hover:bg-secondary">Returns & refunds</Link>
       </nav>
     </div>
   );
@@ -73,7 +75,7 @@ function AccountContent() {
 export default function AccountPage() {
   return (
     <div className="site-container section-space">
-      <h1 className="type-page mb-10">Your account</h1>
+      <PageHeading title="Your Ownline" description="Your details, saved pieces and purchases, together in one place." action={{ href: "/search", label: "Explore the collection" }} />
       <CustomerGate>
         <AccountContent />
       </CustomerGate>

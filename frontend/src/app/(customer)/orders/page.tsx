@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { PriceDisplay } from "@/components/catalog/price-display";
 import { CustomerGate } from "@/components/storefront/customer-gate";
+import { PageHeading } from "@/components/storefront/page-heading";
+import { CancelOrder, OrderItemActions } from "@/components/storefront/order-item-actions";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { LoadingState } from "@/components/states/loading-state";
@@ -157,7 +159,7 @@ function OrdersContent() {
       {orders.map((order) => (
         <article
           key={order.id}
-          className="rounded-xl border border-border bg-card p-5 sm:p-7"
+          className="commerce-panel"
         >
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -192,7 +194,7 @@ function OrdersContent() {
                   {order.items?.map((item) => (
                     <div
                       key={item.id}
-                      className="flex justify-between gap-3 text-sm"
+                      className="text-sm"
                     >
                       <div>
                         <p>
@@ -213,6 +215,7 @@ function OrdersContent() {
                         amount={item.totalAmount}
                         currency={order.currency}
                       />
+                      {order.status === "DELIVERED" && <OrderItemActions item={item} />}
                     </div>
                   ))}
                 </div>
@@ -237,6 +240,7 @@ function OrdersContent() {
             </div>
             <Tracking orderId={order.id} />
           </details>
+          <CancelOrder order={order} onCancelled={(status, paymentStatus) => setOrders(current => current.map(value => value.id === order.id ? { ...value, status, paymentStatus } : value))} />
         </article>
       ))}
     </div>
@@ -252,7 +256,7 @@ function OrdersContent() {
 export default function OrdersPage() {
   return (
     <div className="site-container section-space">
-      <h1 className="type-page mb-10">Orders</h1>
+      <PageHeading title="Your purchases" description="Follow your deliveries, revisit the details and look after your pieces." action={{ href: "/returns", label: "Returns & refunds" }} />
       <CustomerGate>
         <OrdersContent />
       </CustomerGate>

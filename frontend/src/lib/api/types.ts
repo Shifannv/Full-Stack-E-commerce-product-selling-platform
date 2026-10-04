@@ -13,6 +13,9 @@ export type Product = {
   price: string;
   currency: string;
   categorySlug: string;
+  category?: string;
+  subcategory?: string;
+  subcategorySlug?: string;
   returnEnabled: boolean;
   featured?: boolean;
   image: { objectKey: string; altText: string | null } | null;
@@ -70,6 +73,8 @@ export type CartItem = {
 };
 export type Cart = { items: CartItem[]; subtotal: string };
 export type CheckoutQuote = {
+  cartVersion: number;
+  lineFingerprint: string;
   items: Array<{
     productId: string;
     variantId: string | null;
@@ -88,6 +93,7 @@ export type CheckoutQuote = {
   valid: boolean;
   problems: string[];
 };
+export type CheckoutResult = { orderId: string; status: string; paymentStatus: string; stockState: string; totalAmount: string; currency: string; paymentDeadline: string; replayed: boolean };
 export type Order = {
   id: string;
   orderNumber: string;

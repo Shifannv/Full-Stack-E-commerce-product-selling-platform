@@ -13,7 +13,10 @@ export function publicImageUrl(
     const origin = new URL(base);
     if (
       origin.protocol !== "https:" &&
-      !(origin.protocol === "http:" && origin.hostname === "localhost")
+      !(
+        origin.protocol === "http:" &&
+        (origin.hostname === "localhost" || origin.hostname === "127.0.0.1")
+      )
     )
       return null;
     return new URL(

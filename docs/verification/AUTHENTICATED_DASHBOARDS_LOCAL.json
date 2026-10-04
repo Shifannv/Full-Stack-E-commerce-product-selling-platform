@@ -1,0 +1,50 @@
+{
+  "environment": "127.0.0.1/ownline_checkout_test",
+  "admin": {
+    "authentication": "PASS",
+    "roleRecognized": "ADMIN",
+    "refresh": "PASS",
+    "dashboardApi": [
+      200,
+      200
+    ],
+    "metricsMatchApi": true,
+    "recordsMatchApi": true,
+    "rendering": "PASS",
+    "consoleErrors": [],
+    "runtimeErrors": [],
+    "failedRequests": [],
+    "authorization": "PASS",
+    "superAdminAccess": "403 on both APIs; static page shell accessible, protected data absent",
+    "logout": "PASS"
+  },
+  "superAdmin": {
+    "authentication": "PASS",
+    "roleRecognized": "SUPER_ADMIN",
+    "refresh": "PASS",
+    "dashboardApi": [
+      200,
+      200
+    ],
+    "metricsMatchApi": true,
+    "recordsMatchApi": true,
+    "rendering": "PASS",
+    "consoleErrors": [],
+    "runtimeErrors": [],
+    "failedRequests": [],
+    "authorization": "PASS",
+    "logout": "PASS"
+  },
+  "customer": {
+    "result": "PASS",
+    "priceFromApi": "249.00",
+    "variantsFromApi": [
+      "M",
+      "L"
+    ],
+    "variantSelection": "PASS",
+    "realImage": "PASS",
+    "runtimeErrors": []
+  },
+  "hover": "IMPLEMENTED BUT NOT VISUALLY EXERCISED BECAUSE CURRENT TEST PRODUCT HAS ONE IMAGE."
+}

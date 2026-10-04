@@ -7,6 +7,18 @@ test("Worker exports HTTP and scheduled handlers", () => {
   assert.equal(typeof worker.scheduled, "function");
 });
 
+test("inventory read requires a session before database access", async () => {
+  const response = await app.request("/api/admin/products/00000000-0000-4000-8000-000000000001/inventory", {}, {
+    FRONTEND_ORIGIN: "http://localhost:3000",
+    BETTER_AUTH_SECRET: "test-secret-only-test-secret-only-test",
+    BETTER_AUTH_URL: "http://localhost:8787",
+    GOOGLE_CLIENT_ID: "test-client",
+    GOOGLE_CLIENT_SECRET: "test-secret",
+    HYPERDRIVE: { connectionString: "postgres://test:test@localhost:5432/test" },
+  } as never);
+  assert.equal(response.status, 401);
+});
+
 test("public catalog accepts only supported sort and availability filters", async () => {
   const invalidSort = await app.request("/api/products?sort=price;drop", {}, {
     FRONTEND_ORIGIN: "http://localhost:3000",
