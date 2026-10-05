@@ -12,9 +12,9 @@ const browser=await chromium.launch({channel:'chrome',headless:true});
 const evidence=[];
 const orderId='00000000-0000-4000-8000-000000000001';
 const returnId='00000000-0000-4000-8000-000000000003';
-const item={id:'item-fixture',productId:'fixture-0',productNameSnapshot:'Fixture shirt',variantTitleSnapshot:null,quantity:2,unitPrice:'500.00',totalAmount:'1000.00'};
+const item={id:'item-fixture',productId:'fixture-0',productNameSnapshot:'Fixture shirt',variantTitleSnapshot:null,quantity:2,unitPrice:'500.00',totalAmount:'1000.00',deliveredAt:'2026-10-04T00:00:00Z',reviewStatus:null,reviewEligible:true,reviewEligibilityReasons:[],returnEligible:true,returnEligibilityReasons:[],remainingReturnableQuantity:2,returnWindowEndsAt:'2026-10-09T00:00:00Z'};
 const address={contactName:'Fixture shopper',line1:'Fixture address',line2:null,city:'Fixture city',state:'Fixture state',postalCode:'600001',country:'IN',phone:'9000000000'};
-const order={id:orderId,orderNumber:'TEST-ORDER',status:'DELIVERED',paymentStatus:'PAID',createdAt:'2026-10-04T00:00:00Z',deliveredAt:'2026-10-04T00:00:00Z',currency:'INR',subtotal:'1000.00',shippingAmount:'0.00',discountAmount:'0.00',totalAmount:'1000.00',shippingAddressSnapshot:address,items:[item]};
+const order={id:orderId,orderNumber:'TEST-ORDER',status:'DELIVERED',paymentStatus:'PAID',createdAt:'2026-10-04T00:00:00Z',deliveredAt:'2026-10-04T00:00:00Z',currency:'INR',subtotal:'1000.00',shippingAmount:'0.00',discountAmount:'0.00',totalAmount:'1000.00',cancellationEligible:false,cancellationEligibilityReasons:['ORDER_NOT_CREATED'],cancellationDeadline:null,shippingAddressSnapshot:address,items:[item]};
 async function mockContext(role,width,height) {
   const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce'});
   const calls=[];
@@ -29,7 +29,7 @@ async function mockContext(role,width,height) {
     if(path.endsWith('/summary')) return json(path.includes('super-admin')?{admins:{active:1,pending:0,total:1},catalog:{publishedProducts:1},orders:{total:1},finance:{grossSettledSales:'1000.00',pendingPayoutRequests:0},onboarding:{pendingKycApplications:0}}:{products:{total:1},orders:{total:1,confirmedPaid:1},finance:{availableBalance:'1000.00',grossSettledSales:'1000.00',pendingPayoutRequests:0}});
     if(path==='/api/admin/products') return json({products:[],limit:5,offset:0});
     if(path==='/api/super-admin/admins') return json({admins:[],limit:5,offset:0});
-    if(path==='/api/orders') return json({orders:[order,{...order,id:'00000000-0000-4000-8000-000000000002',orderNumber:'TEST-UNPAID',status:'CREATED',paymentStatus:'PENDING'}]});
+    if(path==='/api/orders') return json({orders:[order,{...order,id:'00000000-0000-4000-8000-000000000002',orderNumber:'TEST-UNPAID',status:'CREATED',paymentStatus:'PENDING',cancellationEligible:true,cancellationEligibilityReasons:[],cancellationDeadline:'2026-10-04T00:15:00Z'}]});
     if(path.endsWith('/cancel')) return json({orderId:path.split('/')[3],status:'CANCELLED',paymentStatus:'PENDING'});
     if(path==='/api/reviews') return json({status:'PENDING'},201);
     if(path==='/api/returns') return json({id:returnId,status:'REQUESTED'},201);

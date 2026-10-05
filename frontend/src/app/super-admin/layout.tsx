@@ -12,7 +12,7 @@ export default function SuperAdminLayout({
   return (
     <DashboardShell
       title="Platform workspace"
-      subtitle="Ownline operations"
+      subtitle="Ownline Dropship operations"
       homeHref="/super-admin"
     >
       {children}

@@ -902,3 +902,169 @@ test("security invitations and reissue retain actor/entity without raw tokens", 
       await c.db.delete(users).where(eq(users.id, invited.id));
     }
   }, "SUPER_ADMIN"));
+
+// ---------------------------------------------------------------------------
+// Super Admin private catalog discovery — GET /api/super-admin/products
+// ---------------------------------------------------------------------------
+
+test(
+  "super-admin products: anonymous request returns 401",
+  async () => {
+    const response = await call("/api/super-admin/products", {});
+    assert.equal(response.status, 401);
+  },
+);
+
+test(
+  "super-admin products: CUSTOMER is denied with 403",
+  () =>
+    fixture(async (c) => {
+      const response = await call("/api/super-admin/products", {
+        headers: c.headers,
+      });
+      assert.equal(response.status, 403);
+    }),
+);
+
+test(
+  "super-admin products: ADMIN is denied with 403",
+  () =>
+    fixture(async (c) => {
+      const response = await call("/api/super-admin/products", {
+        headers: c.headers,
+      });
+      assert.equal(response.status, 403);
+    }, "ADMIN"),
+);
+
+test(
+  "super-admin products: SUPER_ADMIN receives 200 with products array",
+  () =>
+    fixture(async (c) => {
+      const response = await call("/api/super-admin/products", {
+        headers: c.headers,
+      });
+      assert.equal(response.status, 200);
+      const body = (await response.json()) as {
+        products: unknown[];
+        limit: number;
+        offset: number;
+      };
+      assert.ok(Array.isArray(body.products), "products must be an array");
+      assert.equal(typeof body.limit, "number");
+      assert.equal(typeof body.offset, "number");
+    }, "SUPER_ADMIN"),
+);
+
+test(
+  "super-admin products: invalid status query returns 422",
+  () =>
+    fixture(async (c) => {
+      const response = await call(
+        "/api/super-admin/products?status=INVALID_STATUS",
+        { headers: c.headers },
+      );
+      assert.equal(response.status, 422);
+    }, "SUPER_ADMIN"),
+);
+
+test(
+  "super-admin products: invalid adminId UUID returns 422",
+  () =>
+    fixture(async (c) => {
+      const response = await call(
+        "/api/super-admin/products?adminId=not-a-uuid",
+        { headers: c.headers },
+      );
+      assert.equal(response.status, 422);
+    }, "SUPER_ADMIN"),
+);
+
+test(
+  "super-admin products: invalid limit returns 422",
+  () =>
+    fixture(async (c) => {
+      const response = await call(
+        "/api/super-admin/products?limit=0",
+        { headers: c.headers },
+      );
+      assert.equal(response.status, 422);
+    }, "SUPER_ADMIN"),
+);
+
+// ---------------------------------------------------------------------------
+// Super Admin payout queue — GET /api/super-admin/payouts
+// ---------------------------------------------------------------------------
+
+test(
+  "super-admin payouts: anonymous request returns 401",
+  async () => {
+    const response = await call("/api/super-admin/payouts", {});
+    assert.equal(response.status, 401);
+  },
+);
+
+test(
+  "super-admin payouts: CUSTOMER is denied with 403",
+  () =>
+    fixture(async (c) => {
+      const response = await call("/api/super-admin/payouts", {
+        headers: c.headers,
+      });
+      assert.equal(response.status, 403);
+    }),
+);
+
+test(
+  "super-admin payouts: ADMIN is denied with 403",
+  () =>
+    fixture(async (c) => {
+      const response = await call("/api/super-admin/payouts", {
+        headers: c.headers,
+      });
+      assert.equal(response.status, 403);
+    }, "ADMIN"),
+);
+
+test(
+  "super-admin payouts: SUPER_ADMIN receives 200 with payouts array",
+  () =>
+    fixture(async (c) => {
+      const response = await call("/api/super-admin/payouts", {
+        headers: c.headers,
+      });
+      assert.equal(response.status, 200);
+      const body = (await response.json()) as {
+        payouts: unknown[];
+        limit: number;
+        offset: number;
+      };
+      assert.ok(Array.isArray(body.payouts), "payouts must be an array");
+      assert.equal(typeof body.limit, "number");
+      assert.equal(typeof body.offset, "number");
+    }, "SUPER_ADMIN"),
+);
+
+test(
+  "super-admin payouts: invalid status query returns 422",
+  () =>
+    fixture(async (c) => {
+      const response = await call(
+        "/api/super-admin/payouts?status=INVALID_STATUS",
+        { headers: c.headers },
+      );
+      assert.equal(response.status, 422);
+    }, "SUPER_ADMIN"),
+);
+
+test(
+  "super-admin payouts: invalid adminId UUID returns 422",
+  () =>
+    fixture(async (c) => {
+      const response = await call(
+        "/api/super-admin/payouts?adminId=not-a-uuid",
+        { headers: c.headers },
+      );
+      assert.equal(response.status, 422);
+    }, "SUPER_ADMIN"),
+);

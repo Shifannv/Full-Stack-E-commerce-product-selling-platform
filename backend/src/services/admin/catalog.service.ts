@@ -734,6 +734,63 @@ export async function getProductInventory(db: Db, adminId: string, productId: st
 }
 
 // ---------------------------------------------------------------------------
+// GET /api/super-admin/products — Super Admin private catalog discovery.
+// Returns all products across all admins including DRAFTs and ARCHIVED.
+// This endpoint is SUPER_ADMIN only and must never be exposed publicly.
+// Deterministic ordering: updatedAt DESC, id ASC for ties.
+// ---------------------------------------------------------------------------
+export async function listSuperAdminProducts(
+  db: Db,
+  opts: {
+    status?: string;
+    adminId?: string;
+    categoryId?: string;
+    q?: string;
+    limit: number;
+    offset: number;
+  },
+) {
+  const conditions = [];
+  if (opts.status) conditions.push(eq(products.status, opts.status));
+  if (opts.adminId) conditions.push(eq(productAdmins.adminId, opts.adminId));
+  if (opts.categoryId)
+    conditions.push(eq(products.categoryId, opts.categoryId));
+  if (opts.q) {
+    const pattern = `%${opts.q.trim().slice(0, 100)}%`;
+    // Use sql template for ILIKE on name (no ORM helper needed)
+    conditions.push(sql`${products.name} ilike ${pattern}`);
+  }
+
+  return db
+    .select({
+      id: products.id,
+      name: products.name,
+      slug: products.slug,
+      price: products.price,
+      currency: products.currency,
+      status: products.status,
+      featured: products.featured,
+      returnEnabled: products.returnEnabled,
+      category: categories.name,
+      categoryId: categories.id,
+      categorySlug: categories.slug,
+      subcategory: subcategories.name,
+      subcategorySlug: subcategories.slug,
+      ownerAdminId: productAdmins.adminId,
+      createdAt: products.createdAt,
+      updatedAt: products.updatedAt,
+    })
+    .from(products)
+    .innerJoin(productAdmins, eq(productAdmins.productId, products.id))
+    .innerJoin(categories, eq(products.categoryId, categories.id))
+    .innerJoin(subcategories, eq(products.subcategoryId, subcategories.id))
+    .where(conditions.length ? and(...conditions) : undefined)
+    .orderBy(desc(products.updatedAt), asc(products.id))
+    .limit(opts.limit)
+    .offset(opts.offset);
+}
+
+// ---------------------------------------------------------------------------
 // GET /api/admin/products — Admin's own product list with category scope check.
 // Returns paginated list of products created by or assigned to this admin.
 // ---------------------------------------------------------------------------

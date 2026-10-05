@@ -18,6 +18,7 @@
     "verify:shiprocket-auth": "tsx scripts/verify-shiprocket-auth.ts",
     "verify:phase11b3-r2-upload": "node scripts/verify-phase11b3-r2-upload.mjs",
     "bootstrap:super-admin": "tsx scripts/bootstrap-super-admin.ts",
+    "reset:super-admin:local": "tsx scripts/reset-super-admin-local.ts",
     "fixture:oos": "tsx scripts/create-out-of-stock-fixture.ts",
     "seed:tees-demo": "tsx scripts/seed-tees-demo.ts",
     "seed:tees-demo:cleanup": "tsx scripts/seed-tees-demo.ts --cleanup",

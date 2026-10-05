@@ -16,7 +16,10 @@ import {
 } from "../../services/reservation.service";
 import { recordSensitiveAction } from "../../services/security-audit";
 
-export const orderRoutes = new Hono<AuthorizedEnv>();
+type OrderEnv = AuthorizedEnv & {
+  Bindings: AuthorizedEnv["Bindings"] & { RETURN_WINDOW_DAYS?: string };
+};
+export const orderRoutes = new Hono<OrderEnv>();
 orderRoutes.use("*", requireAuth);
 async function withDb<T>(
   connectionString: string,
@@ -78,7 +81,12 @@ orderRoutes.get("/orders", async (c) => {
     throw new DomainError("Forbidden", 403);
   return c.json({
     orders: await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
-      getCustomerOrders(db, c.get("actor").userId),
+      getCustomerOrders(
+        db,
+        c.get("actor").userId,
+        undefined,
+        c.env.RETURN_WINDOW_DAYS,
+      ),
     ),
   });
 });
@@ -86,7 +94,12 @@ orderRoutes.get("/orders/:orderId", async (c) => {
   if (!c.get("actor").roles.includes("CUSTOMER"))
     throw new DomainError("Forbidden", 403);
   const [order] = await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
-    getCustomerOrders(db, c.get("actor").userId, c.req.param("orderId")),
+    getCustomerOrders(
+      db,
+      c.get("actor").userId,
+      c.req.param("orderId"),
+      c.env.RETURN_WINDOW_DAYS,
+    ),
   );
   return c.json(order);
 });

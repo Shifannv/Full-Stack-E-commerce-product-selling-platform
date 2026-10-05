@@ -1,6 +1,6 @@
 # Ownline Dropship — Current Status
 
-**Last reconciled:** 2026-10-04 (shared frontend theme and three-role API integration audit; local changes)
+**Last reconciled:** 2026-10-05 (authenticated customer mutation E2E verification; local checkout-test database only)
 **Purpose:** Single source of truth for the current implementation state. Historical checkpoints in `PROJECT_CONTEXT.md`, `verification/*` and the historical part of `api/FRONTEND_API_MAP.md` are evidence only; where they disagree with this file, this file wins.
 
 Labels: IMPLEMENTED, REFACTORED, TESTED, VERIFIED, BLOCKED, NOT VERIFIED, NOT TOUCHED, PRODUCTION VERIFIED.
@@ -8,6 +8,8 @@ Labels: IMPLEMENTED, REFACTORED, TESTED, VERIFIED, BLOCKED, NOT VERIFIED, NOT TO
 ---
 
 ## Headline
+
+**Authenticated CUSTOMER mutation verification completed locally, 2026-10-05: PASS.** Order cancellation, review submission and return-request submission passed through the exported frontend, real local Worker/API code, Better Auth sessions and `ownline_checkout_test`. Ownership, unauthenticated denial, eligibility, five-day delivered-at return deadline, replay/concurrency, cross-customer denial, database transitions and refreshed UI state were checked. Temporary `mut-e2e-` records were removed and a broad residue sweep returned zero. Frontend TypeScript/lint/build, backend TypeScript, 84/84 unit tests, 287/287 isolated PostgreSQL tests and `git diff --check` passed. No Aiven/production/provider/R2/deployment/migration operation occurred. Evidence: [CUSTOMER_MUTATIONS_LOCAL](verification/CUSTOMER_MUTATIONS_LOCAL.md).
 
 **Customer, Admin and Super Admin frontend continuation IMPLEMENTED locally, 2026-10-04.** Shared cream/forest typography, customer page headings and redesigned footer; authenticated operator task workspace (76 tasks, 69 active, 7 gated); customer reviews, returns/status and unpaid-order cancellation. Checkout quote/idempotency and inventory version contracts corrected; added owner/category-scoped inventory GET with no migration. Frontend typecheck/lint, 85-route fixture export, 41 browser evidence entries, backend typecheck/83 unit tests and targeted local PG inventory test passed. Browser mutation checks use mocks; exhaustive live workflow verification and provider readiness are not claimed. Payment, invitations and courier gates stay paused; cron and production media/catalog gates remain. No deployment. Full connections, missing API proposals and verification limits: [FRONTEND_INTEGRATION_STATUS](api/FRONTEND_INTEGRATION_STATUS.md).
 

@@ -639,7 +639,7 @@ export async function getReturn(
     grossRefundAmount: record.grossRefundAmount,
     deductionAmount: record.deductionAmount,
     netRefundAmount: record.netRefundAmount,
-    refund,
+    refund: refund ?? null,
     returnAddress: [
       "APPROVED",
       "RETURN_PENDING",

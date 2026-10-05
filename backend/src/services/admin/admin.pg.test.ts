@@ -23,6 +23,9 @@ import { admins } from "../../db/schema/rbac";
 import { reviewApplication, setCategoryAssignment } from "./admin.service";
 import { getProductInventory, setProductInventory, updateProduct } from "./catalog.service";
 import { transitionAdminStatus } from "./account-state.service";
+import { getSuperAdminSummary } from "./summary.service";
+import { listAdmins } from "./admins-list.service";
+import { isAdminStatusFilter } from "../../routes/super-admin/dashboard";
 import {
   activateAdminAccount,
   peekInvitation,
@@ -32,6 +35,21 @@ import {
 config({ path: ".env.checkout-test.local", quiet: true });
 config({ path: ".env", quiet: true });
 const testUrl = process.env.CHECKOUT_TEST_DATABASE_URL;
+
+test("submitted applications appear in the pending approval metric and status filter", { skip: !testUrl }, async () => {
+  assert.equal(isAdminStatusFilter("PENDING_SUPER_ADMIN_APPROVAL"), true);
+  assert.equal(isAdminStatusFilter("NOT_A_STATUS"), false);
+  await fixture(async (c) => {
+    const before = await getSuperAdminSummary(c.db);
+    await prepareReview(c);
+    const after = await getSuperAdminSummary(c.db);
+    assert.equal(after.admins.pending, before.admins.pending + 1);
+    const listed = await listAdmins(c.db, {
+      status: "PENDING_SUPER_ADMIN_APPROVAL", limit: 50, offset: 0,
+    });
+    assert.ok(listed.some((row) => row.id === c.adminId));
+  });
+});
 if (testUrl) {
   const target = new URL(testUrl);
   if (

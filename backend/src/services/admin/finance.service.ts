@@ -1,4 +1,4 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import type { createDb } from "../../db";
 import {
   adminSettlements,
@@ -176,7 +176,10 @@ export async function createSettlement(
       );
       return result;
     } catch (error) {
-      if ((error as { code?: string }).code === "23505")
+      const code =
+        (error as { code?: string }).code ??
+        ((error as { cause?: { code?: string } }).cause?.code);
+      if (code === "23505")
         throw new DomainError("Settlement already exists", 409);
       throw error;
     }
@@ -472,4 +475,58 @@ export async function markPayoutPaid(
     );
     return request;
   });
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/super-admin/payouts — Super Admin payout queue list.
+// Returns payout requests across all admins with optional status filter.
+// This endpoint is SUPER_ADMIN only. Finance values are read from stored rows;
+// no recalculation is performed here.
+// Deterministic ordering: requestedAt DESC, id ASC for ties.
+// ---------------------------------------------------------------------------
+export type PayoutStatusFilter =
+  | "REQUESTED"
+  | "APPROVED"
+  | "REJECTED"
+  | "PAID";
+
+export const VALID_PAYOUT_STATUSES: PayoutStatusFilter[] = [
+  "REQUESTED",
+  "APPROVED",
+  "REJECTED",
+  "PAID",
+];
+
+export async function listSuperAdminPayouts(
+  db: Db,
+  opts: {
+    status?: string;
+    adminId?: string;
+    limit: number;
+    offset: number;
+  },
+) {
+  const conditions = [];
+  if (opts.status) conditions.push(eq(payoutRequests.status, opts.status));
+  if (opts.adminId) conditions.push(eq(payoutRequests.adminId, opts.adminId));
+
+  return db
+    .select({
+      id: payoutRequests.id,
+      adminId: payoutRequests.adminId,
+      amount: payoutRequests.amount,
+      status: payoutRequests.status,
+      requestedAt: payoutRequests.requestedAt,
+      reviewedAt: payoutRequests.reviewedAt,
+      reviewNotes: payoutRequests.reviewNotes,
+      paidAt: payoutRequests.paidAt,
+      paymentReference: payoutRequests.paymentReference,
+      createdAt: payoutRequests.createdAt,
+      updatedAt: payoutRequests.updatedAt,
+    })
+    .from(payoutRequests)
+    .where(conditions.length ? and(...conditions) : undefined)
+    .orderBy(desc(payoutRequests.requestedAt), asc(payoutRequests.id))
+    .limit(opts.limit)
+    .offset(opts.offset);
 }

@@ -64,11 +64,10 @@ test("return status hides the seller address until approval and enforces ownersh
       }),
     } as unknown as Parameters<typeof getReturn>[0];
   };
-  assert.equal(
-    (await getReturn(fakeDb("REQUESTED"), "return-a", actor, "customer"))
-      .returnAddress,
-    null,
-  );
+  const requested = await getReturn(fakeDb("REQUESTED"), "return-a", actor, "customer");
+  assert.equal(requested.returnAddress, null);
+  assert.equal(requested.refund, null);
+  assert.equal(JSON.parse(JSON.stringify(requested)).refund, null);
   assert.deepEqual(
     (await getReturn(fakeDb("APPROVED"), "return-a", actor, "customer"))
       .returnAddress,

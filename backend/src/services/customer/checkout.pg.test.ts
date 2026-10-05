@@ -107,13 +107,47 @@ import {
 } from "../unpaid-expiry.service";
 import { setProductInventory } from "../admin/catalog.service";
 import { checkoutCart, getCustomerOrders, quoteCart } from "./order.service";
-import { setCartItem } from "./customer.service";
+import { getPublicProduct, setCartItem } from "./customer.service";
 import { canPurchaseProduct } from "./purchase-eligibility";
 import { createAuth, type AuthBindings } from "../../lib/auth/auth";
 
 config({ path: ".env.checkout-test.local", quiet: true });
 config({ path: ".env", quiet: true });
 const testUrl = process.env.CHECKOUT_TEST_DATABASE_URL;
+
+test("product detail reports each active variant's own stock availability", { skip: !testUrl }, async () => {
+  await fixture(async (c) => {
+    const [inStock, outOfStock] = await c.db.insert(productVariants).values([
+      { productId: c.productId, sku: `available-${randomUUID()}`, title: "Available", status: "ACTIVE" },
+      { productId: c.productId, sku: `unavailable-${randomUUID()}`, title: "Unavailable", status: "ACTIVE" },
+    ]).returning();
+    await c.db.insert(inventories).values([
+      { productId: c.productId, variantId: inStock.id, availableQuantity: 1 },
+      { productId: c.productId, variantId: outOfStock.id, availableQuantity: 0 },
+    ]);
+    const [product] = await c.db.select({ slug: products.slug }).from(products).where(eq(products.id, c.productId));
+    const detail = await getPublicProduct(c.db, product.slug);
+    assert.equal(detail.available, true);
+    assert.equal(detail.variants.find((v) => v.id === inStock.id)?.available, true);
+    assert.equal(detail.variants.find((v) => v.id === outOfStock.id)?.available, false);
+    assert.doesNotMatch(JSON.stringify(detail.variants), /availableQuantity|reservedQuantity/);
+  });
+});
+
+test("customer order action projection follows unpaid cancellation state", { skip: !testUrl }, async () => {
+  await fixture(async (c) => {
+    const { orderId } = await checkoutCart(c.db, c.customers[0], await intent(c));
+    const [before] = await getCustomerOrders(c.db, c.customers[0], orderId);
+    assert.equal(before.cancellationEligible, true);
+    assert.ok(before.cancellationDeadline instanceof Date);
+    assert.equal(before.items[0].reviewEligible, false);
+    assert.equal(before.items[0].returnEligible, false);
+    assert.equal(before.items[0].remainingReturnableQuantity, 0);
+    await cancelUnpaidOrder(c.db, orderId, c.customers[0]);
+    const [after] = await getCustomerOrders(c.db, c.customers[0], orderId);
+    assert.equal(after.cancellationEligible, false);
+  });
+});
 const customerApiEnv: AuthBindings = {
   HYPERDRIVE: {
     connectionString:
@@ -2974,6 +3008,28 @@ async function deliveredReturnFixture(
   }
   return { orderId, item, returnId: record.id };
 }
+
+test("delivered order projection reports review readiness and a prior return", { skip: !testUrl }, async () => {
+  await fixture(async (c) => {
+    const { orderId, returnId } = await deliveredReturnFixture(c, false, false);
+    const [order] = await getCustomerOrders(c.db, c.customers[0], orderId, "5");
+    assert.equal(order.items[0].reviewEligible, true);
+    assert.equal(order.items[0].reviewStatus, null);
+    assert.ok(order.items[0].deliveredAt instanceof Date);
+    assert.equal(order.items[0].returnEligible, false);
+    assert.ok(order.items[0].returnEligibilityReasons?.includes("ALREADY_RETURNED"));
+    assert.equal(order.items[0].remainingReturnableQuantity, 0);
+    assert.ok(order.items[0].returnWindowEndsAt instanceof Date);
+    await c.db.delete(returnItems).where(eq(returnItems.returnId, returnId));
+    await c.db.delete(returns).where(eq(returns.id, returnId));
+    const [available] = await getCustomerOrders(c.db, c.customers[0], orderId, "5");
+    assert.equal(available.items[0].returnEligible, true);
+    assert.equal(available.items[0].remainingReturnableQuantity, 1);
+    const [unconfigured] = await getCustomerOrders(c.db, c.customers[0], orderId);
+    assert.equal(unconfigured.items[0].returnEligible, false);
+    assert.ok(unconfigured.items[0].returnEligibilityReasons?.includes("RETURN_POLICY_UNAVAILABLE"));
+  });
+});
 
 for (const [name, check] of [
   [

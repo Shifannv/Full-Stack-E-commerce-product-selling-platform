@@ -3,6 +3,10 @@ import { createDb } from "../src/db";
 import { provisionCredentialUser } from "../src/services/admin/provision.service";
 import { assertLocalOrOptedIn } from "./local-db-guard";
 
+// .env.dev.local (gitignored) selects the local dev database and wins over .env,
+// consistent with dev.mjs. This prevents accidentally targeting the Aiven remote
+// DB when running bootstrap locally.
+config({ path: ".env.dev.local", quiet: true });
 config({ path: ".env", quiet: true });
 assertLocalOrOptedIn("bootstrap:super-admin");
 const url = process.env.DATABASE_URL;

@@ -66,6 +66,53 @@ test("customer order projection retains purchase snapshots and strips internal f
   );
 });
 
+test("customer order projection exposes action eligibility without internal state", () => {
+  const deliveredAt = new Date("2026-09-20T10:30:00.000Z");
+  const projected = customerOrderResponse(
+    {
+      id: "order",
+      orderNumber: "ORD-test",
+      status: "DELIVERED",
+      paymentStatus: "PAID",
+      paymentExpiresAt: null,
+      deliveredAt,
+      createdAt: deliveredAt,
+      currency: "INR",
+      subtotal: "10.00",
+      shippingAmount: "0.00",
+      discountAmount: "0.00",
+      totalAmount: "10.00",
+      shippingAddressSnapshot: {
+        contactName: "Buyer", phone: "123", line1: "Road", city: "City",
+        state: "State", postalCode: "123456", country: "IN",
+      },
+      customerId: "private-customer",
+    } as never,
+    [{
+      id: "item", productId: "product", variantId: null,
+      productNameSnapshot: "Purchase", variantTitleSnapshot: null,
+      quantity: 2, unitPrice: "5.00", totalAmount: "10.00",
+      skuSnapshot: "private-sku",
+    }] as never,
+    {
+      cancellationEligible: false,
+      cancellationEligibilityReasons: ["ORDER_NOT_CREATED"],
+      items: new Map([["item", {
+        deliveredAt, reviewStatus: null, reviewEligible: true,
+        reviewEligibilityReasons: [], returnEligible: true,
+        returnEligibilityReasons: [],
+        remainingReturnableQuantity: 2,
+        returnWindowEndsAt: new Date("2026-09-25T10:30:00.000Z"),
+      }]]),
+    },
+  );
+  assert.equal(projected.cancellationEligible, false);
+  assert.equal(projected.items[0].returnEligible, true);
+  assert.equal(projected.items[0].remainingReturnableQuantity, 2);
+  assert.equal(projected.items[0].reviewEligible, true);
+  assert.doesNotMatch(JSON.stringify(projected), /private-|skuSnapshot|stockState/);
+});
+
 test("customer order list and detail always constrain reads to the authenticated owner", async () => {
   const dialect = new PgDialect();
   const predicates: { sql: string; params: unknown[] }[] = [];

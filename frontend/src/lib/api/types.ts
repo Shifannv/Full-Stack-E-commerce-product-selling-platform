@@ -44,7 +44,12 @@ export type ProductDetail = Omit<Product, "categorySlug" | "image"> & {
   categoryId: string;
   description: string | null;
   attributes: Record<string, unknown>;
-  variants: Array<{ id: string; title: string; price: string }>;
+  variants: Array<{
+    id: string;
+    title: string;
+    price: string | null;
+    available: boolean;
+  }>;
   images: Array<{ id: string; objectKey: string; altText: string | null }>;
 };
 export type CustomerAddress = {
@@ -94,6 +99,23 @@ export type CheckoutQuote = {
   problems: string[];
 };
 export type CheckoutResult = { orderId: string; status: string; paymentStatus: string; stockState: string; totalAmount: string; currency: string; paymentDeadline: string; replayed: boolean };
+export type OrderItem = {
+  id: string;
+  productId: string;
+  productNameSnapshot: string;
+  variantTitleSnapshot: string | null;
+  quantity: number;
+  unitPrice: string;
+  totalAmount: string;
+  deliveredAt: string | null;
+  reviewStatus: string | null;
+  reviewEligible: boolean;
+  reviewEligibilityReasons: string[];
+  returnEligible: boolean;
+  returnEligibilityReasons: string[];
+  remainingReturnableQuantity: number;
+  returnWindowEndsAt: string | null;
+};
 export type Order = {
   id: string;
   orderNumber: string;
@@ -106,16 +128,11 @@ export type Order = {
   shippingAmount: string;
   discountAmount: string;
   totalAmount: string;
+  cancellationEligible: boolean;
+  cancellationEligibilityReasons: string[];
+  cancellationDeadline: string | null;
   shippingAddressSnapshot: Omit<CustomerAddress, "id" | "label" | "isDefault">;
-  items?: Array<{
-    id: string;
-    productId: string;
-    productNameSnapshot: string;
-    variantTitleSnapshot: string | null;
-    quantity: number;
-    unitPrice: string;
-    totalAmount: string;
-  }>;
+  items: OrderItem[];
 };
 export type Shipment = {
   id: string;
@@ -140,5 +157,9 @@ export type ReturnStatus = {
   grossRefundAmount: string | null;
   deductionAmount: string | null;
   netRefundAmount: string | null;
-  refund: { status: string; amount: string } | null;
+  refund: {
+    status: string;
+    amount: string;
+    providerReference: string | null;
+  } | null;
 };

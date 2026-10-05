@@ -58,7 +58,10 @@ export async function createReview(
       .returning();
     return review;
   } catch (error) {
-    if ((error as { code?: string }).code === "23505")
+    const code =
+      (error as { code?: string }).code ??
+      ((error as { cause?: { code?: string } }).cause?.code);
+    if (code === "23505")
       throw new DomainError("This order item already has a review", 409);
     throw error;
   }

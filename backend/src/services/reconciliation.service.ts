@@ -560,7 +560,7 @@ export async function listUnresolvedItems(
     .select()
     .from(reconciliationItems)
     .where(and(...conditions))
-    .orderBy(reconciliationItems.createdAt, reconciliationItems.id)
+    .orderBy(reconciliationItems.id)
     .limit(limit);
 }
 

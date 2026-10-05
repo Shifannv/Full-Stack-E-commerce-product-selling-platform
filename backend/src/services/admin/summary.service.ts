@@ -134,7 +134,7 @@ export async function getSuperAdminSummary(db: Db) {
         );
         return {
           active: byStatus["ACTIVE"] ?? 0,
-          pending: byStatus["PENDING"] ?? 0,
+          pending: byStatus["PENDING_SUPER_ADMIN_APPROVAL"] ?? 0,
           total: rows.reduce((sum, r) => sum + r.value, 0),
         };
       }),

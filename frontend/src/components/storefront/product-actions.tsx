@@ -12,12 +12,17 @@ import type { PublicProductDetail } from "@/lib/public-catalog";
 export function ProductActions({ product }: { product: PublicProductDetail }) {
   const router = useRouter();
   const { status } = useCustomerSession();
-  const [variantId, setVariantId] = useState(product.variants[0]?.id ?? "");
+  const [variantId, setVariantId] = useState(
+    product.variants.find((item) => item.available)?.id ??
+      product.variants[0]?.id ??
+      "",
+  );
   const [quantity, setQuantity] = useState(1);
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const variant = product.variants.find((item) => item.id === variantId);
+  const isAvailable = variant !== undefined ? variant.available : product.available;
 
   useEffect(() => {
     if (status !== "customer") return;
@@ -91,10 +96,14 @@ export function ProductActions({ product }: { product: PublicProductDetail }) {
                 type="button"
                 key={item.id}
                 aria-pressed={item.id === variantId}
+                disabled={!item.available}
                 onClick={() => setVariantId(item.id)}
-                className="min-w-12 border border-border px-4 py-2.5 text-sm aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+                className="min-w-12 border border-border px-4 py-2.5 text-sm aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground disabled:cursor-not-allowed disabled:opacity-55"
               >
-                {item.title}
+                <span>{item.title}</span>
+                {!item.available && (
+                  <span className="ml-2 text-xs">Out of stock</span>
+                )}
               </button>
             ))}
           </div>
@@ -106,7 +115,7 @@ export function ProductActions({ product }: { product: PublicProductDetail }) {
         className="text-xl"
       />
       <p className="text-sm text-muted-foreground">
-        {product.available ? "Available" : "Currently out of stock"}
+        {isAvailable ? "Available" : "Currently out of stock"}
       </p>
       <div>
         <label
@@ -132,14 +141,14 @@ export function ProductActions({ product }: { product: PublicProductDetail }) {
       <div className="flex flex-wrap gap-2">
         <Button
           className="min-w-40 flex-1"
-          disabled={busy || !product.available}
+          disabled={busy || !isAvailable}
           onClick={() => void addToCart(false)}
         >
           Add to cart
         </Button>
         <Button
           className="min-w-32 flex-1"
-          disabled={busy || !product.available}
+          disabled={busy || !isAvailable}
           variant="outline"
           onClick={() => void addToCart(true)}
         >

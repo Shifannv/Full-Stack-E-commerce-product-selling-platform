@@ -152,6 +152,27 @@ async function buildCtx() {
 }
 
 // Helper to fetch a reconciliation item fresh from DB
+test("unresolved reconciliation pages follow the same UUID order as after_id", { skip: !testUrl }, async () => {
+  await pg(async ({ db, insertItem }) => {
+    const prefix = randomUUID().slice(0, -4);
+    const lower = await insertItem({
+      id: `${prefix}0001`,
+      createdAt: new Date("2026-09-25T00:00:00Z"),
+    });
+    const higher = await insertItem({
+      id: `${prefix}0002`,
+      createdAt: new Date("2026-09-20T00:00:00Z"),
+    });
+    const page = await listUnresolvedItems(db, {
+      afterId: `${prefix}0000`,
+      limit: 2,
+    });
+    assert.deepEqual(page.map((row) => row.id), [lower.id, higher.id]);
+    const next = await listUnresolvedItems(db, { afterId: page[0].id, limit: 1 });
+    assert.equal(next[0].id, higher.id);
+  });
+});
+
 async function freshItem(db: ReturnType<typeof createDb>["db"], id: string) {
   const [row] = await db
     .select()

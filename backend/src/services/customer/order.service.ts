@@ -17,6 +17,9 @@ import {
   type AddressSnapshot,
 } from "../../db/schema/orders";
 import { admins } from "../../db/schema/rbac";
+import { reviews } from "../../db/schema/reviews";
+import { returnItems } from "../../db/schema/returns";
+import { shipmentItems, shipments } from "../../db/schema/shipping";
 import type { Actor } from "../../middleware/authorization";
 import { DomainError } from "../admin/admin.service";
 import { canPurchaseProduct } from "./purchase-eligibility";
@@ -452,6 +455,7 @@ export async function getCustomerOrders(
   db: Db,
   customerId: string,
   orderId?: string,
+  returnPolicyRaw?: string,
 ) {
   let rows = await db
     .select()
@@ -475,23 +479,123 @@ export async function getCustomerOrders(
       .where(and(eq(orders.id, orderId), eq(orders.customerId, customerId)))
       .orderBy(desc(orders.createdAt));
   }
+  if (!rows.length) return [];
+  // These are advisory projections. The mutation paths retain their own locked,
+  // database-clock checks so a stale page cannot authorize an action.
+  const eligibilityRows = await db
+    .select({
+      itemId: orderItems.id,
+      shipmentStatus: shipments.status,
+      itemDeliveredAt: shipments.deliveredAt,
+      reviewId: reviews.id,
+      reviewStatus: reviews.status,
+      returnId: returnItems.id,
+      paymentRecordStatus: payments.status,
+      returnEnabled: products.returnEnabled,
+      categorySlug: categories.slug,
+      returnWindowOpen: sql<boolean>`clock_timestamp() between ${orders.deliveredAt} and ${orders.deliveredAt} + interval '5 days'`,
+      cancellationWindowOpen: sql<boolean>`clock_timestamp() < ${orders.paymentExpiresAt}`,
+    })
+    .from(orderItems)
+    .innerJoin(orders, eq(orderItems.orderId, orders.id))
+    .leftJoin(payments, eq(payments.orderId, orders.id))
+    .innerJoin(products, eq(orderItems.productId, products.id))
+    .innerJoin(categories, eq(products.categoryId, categories.id))
+    .leftJoin(shipmentItems, eq(shipmentItems.orderItemId, orderItems.id))
+    .leftJoin(shipments, eq(shipments.id, shipmentItems.shipmentId))
+    .leftJoin(reviews, eq(reviews.orderItemId, orderItems.id))
+    .leftJoin(returnItems, eq(returnItems.orderItemId, orderItems.id))
+    .where(inArray(orderItems.orderId, rows.map((row) => row.id)));
+  const eligibilityByItem = new Map(
+    eligibilityRows.map((row) => [row.itemId, row]),
+  );
   return Promise.all(
-    rows.map(async (order) =>
-      customerOrderResponse(
-        order,
-        await db
-          .select()
-          .from(orderItems)
-          .where(eq(orderItems.orderId, order.id)),
-      ),
-    ),
+    rows.map(async (order) => {
+      const items = await db
+        .select()
+        .from(orderItems)
+        .where(eq(orderItems.orderId, order.id));
+      const cancellationState = eligibilityByItem.get(items[0]?.id);
+      const cancellationReasons = [
+        ...(order.status === "CREATED" ? [] : ["ORDER_NOT_CREATED"]),
+        ...(cancellationState?.paymentRecordStatus === "PENDING"
+          ? []
+          : ["PAYMENT_NOT_PENDING"]),
+        ...(order.stockState === "RESERVED" ? [] : ["STOCK_NOT_RESERVED"]),
+        ...(order.paymentExpiresAt ? [] : ["PAYMENT_DEADLINE_MISSING"]),
+        ...(cancellationState?.cancellationWindowOpen === true
+          ? []
+          : ["PAYMENT_WINDOW_CLOSED"]),
+      ];
+      return customerOrderResponse(order, items, {
+        cancellationEligible: cancellationReasons.length === 0,
+        cancellationEligibilityReasons: cancellationReasons,
+        items: new Map(
+          items.map((item) => {
+            const state = eligibilityByItem.get(item.id);
+            const delivered = state?.shipmentStatus === "DELIVERED";
+            const reviewReasons = [
+              ...(delivered ? [] : ["SHIPMENT_NOT_DELIVERED"]),
+              ...(state?.reviewId === null ? [] : ["ALREADY_REVIEWED"]),
+            ];
+            const returnReasons = [
+              ...(returnPolicyRaw === "5" ? [] : ["RETURN_POLICY_UNAVAILABLE"]),
+              ...(order.paymentStatus === "PAID" ? [] : ["ORDER_NOT_PAID"]),
+              ...(order.deliveredAt ? [] : ["ORDER_NOT_DELIVERED"]),
+              ...(delivered && state?.itemDeliveredAt
+                ? []
+                : ["SHIPMENT_NOT_DELIVERED"]),
+              ...(state?.returnEnabled === true && state.categorySlug === "dress"
+                ? []
+                : ["PRODUCT_NOT_RETURNABLE"]),
+              ...(state?.returnId === null ? [] : ["ALREADY_RETURNED"]),
+              ...(state?.returnWindowOpen === true ? [] : ["RETURN_WINDOW_CLOSED"]),
+            ];
+            const returnEligible = returnReasons.length === 0;
+            return [
+              item.id,
+              {
+                deliveredAt: delivered
+                  ? (state.itemDeliveredAt ?? null)
+                  : null,
+                reviewStatus: state?.reviewStatus ?? null,
+                reviewEligible: reviewReasons.length === 0,
+                reviewEligibilityReasons: reviewReasons,
+                returnEligible,
+                returnEligibilityReasons: returnReasons,
+                remainingReturnableQuantity: returnEligible ? item.quantity : 0,
+                returnWindowEndsAt: order.deliveredAt
+                  ? new Date(order.deliveredAt.getTime() + 5 * 86400000)
+                  : null,
+              },
+            ];
+          }),
+        ),
+      });
+    }),
   );
 }
+
+type ItemActionEligibility = {
+  deliveredAt: Date | null;
+  reviewStatus: string | null;
+  reviewEligible: boolean;
+  reviewEligibilityReasons: string[];
+  returnEligible: boolean;
+  returnEligibilityReasons: string[];
+  remainingReturnableQuantity: number;
+  returnWindowEndsAt: Date | null;
+};
 
 /** Explicit customer boundary: new database fields never become public implicitly. */
 export function customerOrderResponse(
   order: typeof orders.$inferSelect,
   items: (typeof orderItems.$inferSelect)[],
+  eligibility?: {
+    cancellationEligible: boolean;
+    cancellationEligibilityReasons: string[];
+    items: Map<string, ItemActionEligibility>;
+  },
 ) {
   const address = order.shippingAddressSnapshot;
   return {
@@ -500,6 +604,11 @@ export function customerOrderResponse(
     status: order.status,
     paymentStatus: order.paymentStatus,
     deliveredAt: order.deliveredAt,
+    ...(eligibility && {
+      cancellationEligible: eligibility.cancellationEligible,
+      cancellationEligibilityReasons: eligibility.cancellationEligibilityReasons,
+      cancellationDeadline: order.paymentExpiresAt,
+    }),
     createdAt: order.createdAt,
     currency: order.currency,
     subtotal: order.subtotal,
@@ -525,6 +634,7 @@ export function customerOrderResponse(
       quantity: item.quantity,
       unitPrice: item.unitPrice,
       totalAmount: item.totalAmount,
+      ...(eligibility?.items.get(item.id) ?? {}),
     })),
   };
 }

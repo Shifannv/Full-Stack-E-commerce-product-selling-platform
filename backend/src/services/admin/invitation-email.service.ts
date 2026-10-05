@@ -57,9 +57,9 @@ export async function sendInvitationEmail(
 <html lang="en">
 <head><meta charset="UTF-8"><title>Admin Account Setup</title></head>
 <body style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#1a1a1a">
-  <h1 style="font-size:22px;margin-bottom:8px">You have been invited as a seller admin</h1>
+  <h1 style="font-size:22px;margin-bottom:8px">You have been invited to Ownline Dropship</h1>
   <p>Hi ${escapeHtml(toName)},</p>
-  <p>A Super Admin has invited you to set up your seller account. Click the button below to set your password and activate your account.</p>
+  <p>A Super Admin has invited you to set up your seller account on <strong>Ownline Dropship</strong>. Click the button below to set your password and activate your account.</p>
   <p style="margin:32px 0">
     <a href="${escapeHtml(setupUrl)}"
        style="background:#4f46e5;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block">

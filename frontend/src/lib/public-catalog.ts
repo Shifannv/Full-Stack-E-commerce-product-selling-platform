@@ -45,8 +45,9 @@ export type PublicProductDetail = {
   variants: {
     id: string;
     title: string;
-    price: string;
+    price: string | null;
     attributes: Record<string, unknown>;
+    available: boolean;
   }[];
   images: {
     id: string;

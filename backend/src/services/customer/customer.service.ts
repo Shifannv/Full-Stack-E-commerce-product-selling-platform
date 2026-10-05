@@ -226,7 +226,12 @@ export async function getPublicProduct(db: Db, slug: string) {
   return {
     ...product,
     images,
-    variants,
+    variants: variants.map((variant) => ({
+      ...variant,
+      available: stock.some(
+        (row) => row.variantId === variant.id && row.availableQuantity > 0,
+      ),
+    })),
     available,
     rating: reviewSummary.rating,
     reviewCount: reviewSummary.reviewCount,

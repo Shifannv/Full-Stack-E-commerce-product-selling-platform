@@ -215,7 +215,7 @@ function OrdersContent() {
                         amount={item.totalAmount}
                         currency={order.currency}
                       />
-                      {order.status === "DELIVERED" && <OrderItemActions item={item} />}
+                      <OrderItemActions item={item} />
                     </div>
                   ))}
                 </div>
@@ -240,7 +240,7 @@ function OrdersContent() {
             </div>
             <Tracking orderId={order.id} />
           </details>
-          <CancelOrder order={order} onCancelled={(status, paymentStatus) => setOrders(current => current.map(value => value.id === order.id ? { ...value, status, paymentStatus } : value))} />
+          <CancelOrder order={order} onCancelled={(status, paymentStatus) => setOrders(current => current.map(value => value.id === order.id ? { ...value, status, paymentStatus, cancellationEligible: false, cancellationEligibilityReasons: ["ORDER_NOT_CREATED"] } : value))} />
         </article>
       ))}
     </div>

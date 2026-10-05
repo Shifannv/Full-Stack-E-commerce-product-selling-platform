@@ -10,7 +10,7 @@ import { catalogQuery, getPublicCategories, getPublicProducts } from "@/lib/publ
 
 export const metadata: Metadata = {
   title: "Ownline Dropship",
-  description: "Considered finds for the everyday. Explore the latest Ownline collection.",
+  description: "Considered finds for the everyday. Explore the latest Ownline Dropship collection.",
   alternates: { canonical: "/" },
 };
 

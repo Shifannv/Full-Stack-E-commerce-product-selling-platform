@@ -7,7 +7,7 @@ import { ClothingBrowser } from "@/components/storefront/clothing-browser";
 import { clothingCategory } from "@/lib/clothing";
 import { catalogQuery, getPublicCategories, getPublicProducts } from "@/lib/public-catalog";
 
-export const metadata: Metadata = { title: "Clothing", description: "Explore the Ownline clothing collection: shirts, pants and T-shirts.", alternates: { canonical: "/clothing" } };
+export const metadata: Metadata = { title: "Clothing", description: "Explore the Ownline Dropship clothing collection: shirts, pants and T-shirts.", alternates: { canonical: "/clothing" } };
 
 export default async function ClothingPage() {
   const allCategories = await getPublicCategories();

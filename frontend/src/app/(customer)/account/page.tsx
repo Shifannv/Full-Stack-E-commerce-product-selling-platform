@@ -75,7 +75,7 @@ function AccountContent() {
 export default function AccountPage() {
   return (
     <div className="site-container section-space">
-      <PageHeading title="Your Ownline" description="Your details, saved pieces and purchases, together in one place." action={{ href: "/search", label: "Explore the collection" }} />
+      <PageHeading title="Your Ownline Dropship" description="Your details, saved pieces and purchases, together in one place." action={{ href: "/search", label: "Explore the collection" }} />
       <CustomerGate>
         <AccountContent />
       </CustomerGate>
