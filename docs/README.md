@@ -2,6 +2,8 @@
 
 | Path | Purpose |
 |---|---|
+| [Admin seller lifecycle](architecture/ADMIN_SELLER_LIFECYCLE.md) | Authoritative 2026-10-05 lifecycle reconciliation and dependency gates; supersedes invitation-only provisioning |
+| [Local lifecycle verification](verification/ADMIN_SELLER_LIFECYCLE_LOCAL.md) | Implemented credential/bank contracts, Super Admin browser/build evidence and remaining recovery/Admin/customer gates |
 | [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | Permanent project/business/architecture rules (contains historical checkpoints marked SUPERSEDED) |
 | [CURRENT_STATUS.md](CURRENT_STATUS.md) | Current implementation truth |
 | [Frontend integration status](api/FRONTEND_INTEGRATION_STATUS.md) | Current customer/Admin/Super Admin UI connections, provider gates, missing APIs and validation limits (2026-10-04) |

@@ -120,6 +120,20 @@
       "when": 1790900000000,
       "tag": "0016_reconciliation_items",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1791220656127,
+      "tag": "0017_admin_initial_credentials",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1791221082316,
+      "tag": "0018_admin_bank_verification",
+      "breakpoints": true
     }
   ]
 }

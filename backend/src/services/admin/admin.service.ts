@@ -10,6 +10,7 @@ import {
 import { categories } from "../../db/schema/catalog";
 import { admins } from "../../db/schema/rbac";
 import { users } from "../../db/schema/auth";
+import { adminBankAccounts } from "../../db/schema/admin-bank";
 import { lockAdmin } from "./admin-lock";
 
 type Db = ReturnType<typeof createDb>["db"];
@@ -326,6 +327,8 @@ export async function submitApplication(
       .limit(1);
     if (!evidence)
       throw new DomainError("Private KYC evidence is required", 422);
+    const [bank] = await tx.select({ status: adminBankAccounts.status }).from(adminBankAccounts).where(eq(adminBankAccounts.adminId, adminId));
+    if (!bank || bank.status === "CHANGES_REQUIRED") throw new DomainError("Complete bank details before submission", 422);
     const [result] = await tx
       .update(adminKycSubmissions)
       .set({
@@ -369,6 +372,8 @@ export async function reviewApplication(
     if (!kyc || kyc.status !== "PENDING_SUPER_ADMIN_APPROVAL")
       throw new DomainError("Application is not pending review", 409);
     if (decision === "APPROVED") {
+      const [bank] = await tx.select({ status: adminBankAccounts.status }).from(adminBankAccounts).where(eq(adminBankAccounts.adminId, adminId));
+      if (bank?.status !== "VERIFIED") throw new DomainError("Super Admin bank verification is required before approval", 422);
       const addresses = await tx
         .select({ addressType: adminAddresses.addressType })
         .from(adminAddresses)

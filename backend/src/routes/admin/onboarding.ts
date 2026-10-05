@@ -19,13 +19,30 @@ import {
   submitApplication,
 } from "../../services/admin/admin.service";
 import { lockAdmin } from "../../services/admin/admin-lock";
+import { changeInitialAdminPassword } from "../../services/admin/provisioning.service";
+import { getBankSummary, saveBankDetails } from "../../services/admin/bank.service";
 import { readBoundedMultipart } from "../../lib/security/body";
 import type { AdminRouter } from "./shared";
 import { withDb, ownAdmin, body } from "./shared";
 
 export function registerOnboardingRoutes(adminRoutes: AdminRouter) {
+  adminRoutes.put("/onboarding/bank", async (c) => {
+    ownAdmin(c.get("actor"));
+    const input = await body(c);
+    c.header("Cache-Control", "private, no-store");
+    return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) => saveBankDetails(db, await getAdminId(db, c.get("actor").userId), c.get("actor").userId, input, c.env.ADMIN_BANK_ENCRYPTION_KEY)));
+  });
+  adminRoutes.post("/account/initial-password", async (c) => {
+    ownAdmin(c.get("actor"));
+    const input = await body(c);
+    c.header("Cache-Control", "no-store");
+    return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
+      changeInitialAdminPassword(db, c.get("actor").userId, input)));
+  });
+
   adminRoutes.get("/onboarding", async (c) => {
     ownAdmin(c.get("actor"));
+    c.header("Cache-Control", "private, no-store");
     return c.json(
       await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
         const adminId = await getAdminId(db, c.get("actor").userId);
@@ -57,7 +74,7 @@ export function registerOnboardingRoutes(adminRoutes: AdminRouter) {
           .select()
           .from(adminCategoryAssignments)
           .where(eq(adminCategoryAssignments.adminId, adminId));
-        return { profile, application, documents, addresses, categories: cats };
+        return { profile, application, documents, addresses, categories: cats, bank: await getBankSummary(db, adminId) };
       }),
     );
   });

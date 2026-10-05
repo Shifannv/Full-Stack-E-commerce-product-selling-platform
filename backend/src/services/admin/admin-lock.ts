@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import type { createDb } from "../../db";
 import { users } from "../../db/schema/auth";
 import { admins } from "../../db/schema/rbac";
+import { adminCredentials } from "../../db/schema/admin-credentials";
 import { DomainError } from "./admin.service";
 
 type Db = ReturnType<typeof createDb>["db"];
@@ -33,6 +34,9 @@ export async function lockAdmin(tx: AdminTx, adminId: string) {
   if (!user || user.status !== "ACTIVE" || user.deletedAt || admin.deletedAt) {
     throw new DomainError("Admin account unavailable", 403);
   }
+  const [credentialState] = await tx.select({ required: adminCredentials.mustChangePassword })
+    .from(adminCredentials).where(eq(adminCredentials.adminId, adminId)).limit(1);
+  if (credentialState?.required) throw new DomainError("ADMIN_PASSWORD_CHANGE_REQUIRED", 403);
   return admin;
 }
 

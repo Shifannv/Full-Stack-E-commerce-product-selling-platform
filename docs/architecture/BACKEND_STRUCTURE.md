@@ -8,9 +8,12 @@ app.ts                    new Hono; CORS + mutationOrigin on /api/*; registerRou
 app-env.ts                AppEnv / App types
 scheduler.ts              scheduled(): Promise.allSettled of 3 batches, then client.end
 routes/
-  index.ts                registerRoutes(): auth, health, /api/me, then 16 `app.route` mounts in the pre-refactor order
+  index.ts                registerRoutes(): auth (password-reset router mounted FIRST), health, /api/me, then 16 `app.route` mounts in the pre-refactor order
   health.ts               GET /health, GET /health/db
   auth/auth.routes.ts     ALL /api/auth/* (Better Auth), GET /api/me
+  auth/password-reset.routes.ts  Anonymous endpoints: POST /api/password-reset/forgot-password (rate-limited),
+                                 GET /api/password-reset/validate, POST /api/password-reset/reset-password.
+                                 Mounted BEFORE the Better Auth ALL handler. CUSTOMER + ADMIN only; SUPER_ADMIN excluded.
   customer/               customer.ts (public catalog + /api/customer/*), orders.ts (customer + admin orders),
                           reviews.ts (public + customer + super-admin moderation), payments.ts (payment session),
                           returns.ts (customer, admin, super-admin return/refund)

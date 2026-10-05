@@ -7,6 +7,8 @@ import { roles, userRoles } from "../../db/schema/rbac";
 import { authOptions } from "./options";
 
 export type AuthBindings = {
+  /** Dedicated base64 32-byte AES key for private seller bank details. */
+  ADMIN_BANK_ENCRYPTION_KEY?: string;
   HYPERDRIVE: { connectionString: string };
   KYC_BUCKET?: {
     put: (
@@ -47,6 +49,17 @@ export type AuthBindings = {
    * must be set to the Worker's own URL.
    */
   PUBLIC_WORKER_URL?: string;
+  /** Resend API key for transactional email (invitations, password reset). */
+  RESEND_API_KEY?: string;
+  /** Verified sender address configured in Resend dashboard. */
+  RESEND_FROM_EMAIL?: string;
+  /**
+   * Full URL of the frontend password-reset page, e.g.
+   * https://ownlinedropship.com/reset-password  (production)
+   * http://127.0.0.1:3000/reset-password        (local dev)
+   * When unset, falls back to FRONTEND_ORIGIN + "/reset-password".
+   */
+  PASSWORD_RESET_URL?: string;
 };
 
 export function createAuth(env: AuthBindings) {

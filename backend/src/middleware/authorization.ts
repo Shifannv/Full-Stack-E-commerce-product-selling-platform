@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { createMiddleware } from "hono/factory";
 import { users } from "../db/schema/auth";
+import { adminCredentials } from "../db/schema/admin-credentials";
 import {
   admins,
   permissions,
@@ -17,6 +18,7 @@ export type Actor = {
   roles: string[];
   permissions: string[];
   adminApproved: boolean;
+  mustChangePassword?: boolean;
 };
 
 export type AuthorizedEnv = {
@@ -69,6 +71,7 @@ function authenticate(archiveRecovery = false) {
       ];
 
       let adminApproved = false;
+      let mustChangePassword = false;
       if (roleNames.includes("ADMIN")) {
         const [admin] = await connection.db
           .select({ status: admins.status, deletedAt: admins.deletedAt })
@@ -76,6 +79,14 @@ function authenticate(archiveRecovery = false) {
           .where(eq(admins.userId, session.user.id))
           .limit(1);
         adminApproved = accountEligible(admin);
+        // Super Admin authentication/session behavior remains unchanged.
+        if (!roleNames.includes("SUPER_ADMIN")) {
+          const [state] = await connection.db.select({ required: adminCredentials.mustChangePassword })
+            .from(adminCredentials).innerJoin(admins, eq(admins.id, adminCredentials.adminId))
+            .where(eq(admins.userId, session.user.id)).limit(1);
+          mustChangePassword = state?.required ?? false;
+          if (mustChangePassword) adminApproved = false;
+        }
       }
 
       c.set("actor", {
@@ -83,7 +94,12 @@ function authenticate(archiveRecovery = false) {
         roles: roleNames,
         permissions: permissionKeys,
         adminApproved,
+        ...(roleNames.includes("ADMIN") ? { mustChangePassword } : {}),
       });
+      if (mustChangePassword && !(
+        (c.req.method === "GET" && c.req.path === "/api/me") ||
+        (c.req.method === "POST" && c.req.path === "/api/admin/account/initial-password")
+      )) return c.json({ error: "ADMIN_PASSWORD_CHANGE_REQUIRED" }, 403);
     } catch (error) {
       console.error("Authorization failed", {
         name: error instanceof Error ? error.name : "UnknownError",

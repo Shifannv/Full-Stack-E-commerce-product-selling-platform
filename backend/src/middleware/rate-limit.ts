@@ -8,7 +8,7 @@ export function mutationRatePolicy(path: string, method: string) {
   if (path === "/api/admin/activate")
     return { group: "activation", limit: 10, seconds: 600 };
   if (!isMutation(method)) return null;
-  if (/\/account\/(deletion-requests|recovery-requests)/.test(path))
+  if (/\/account\/(deletion-requests|recovery-requests|initial-password)/.test(path))
     return { group: "account", limit: 10, seconds: 600 };
   if (/\/review\/(invite|reinvite|provision)$/.test(path))
     return { group: "invitation", limit: 10, seconds: 600 };
@@ -16,6 +16,8 @@ export function mutationRatePolicy(path: string, method: string) {
     return { group: "privileged", limit: 60, seconds: 60 };
   if (/^\/api\/(checkout|orders(?:\/|$)|returns(?:\/|$))/.test(path))
     return { group: "commerce", limit: 20, seconds: 60 };
+  // Note: /api/auth/forgot-password uses group "pwd-reset" consumed inline
+  // in password-reset.routes.ts because it is always IP-keyed (no actor).
   return null;
 }
 

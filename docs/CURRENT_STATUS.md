@@ -1,6 +1,6 @@
 # Ownline Dropship — Current Status
 
-**Last reconciled:** 2026-10-05 (authenticated customer mutation E2E verification; local checkout-test database only)
+**Last reconciled:** 2026-10-06 (Admin + Customer password recovery backend contract; local checkout-test database only)
 **Purpose:** Single source of truth for the current implementation state. Historical checkpoints in `PROJECT_CONTEXT.md`, `verification/*` and the historical part of `api/FRONTEND_API_MAP.md` are evidence only; where they disagree with this file, this file wins.
 
 Labels: IMPLEMENTED, REFACTORED, TESTED, VERIFIED, BLOCKED, NOT VERIFIED, NOT TOUCHED, PRODUCTION VERIFIED.
@@ -8,6 +8,10 @@ Labels: IMPLEMENTED, REFACTORED, TESTED, VERIFIED, BLOCKED, NOT VERIFIED, NOT TO
 ---
 
 ## Headline
+
+**Admin + Customer password recovery backend contract — IMPLEMENTED, locally verified, 2026-10-06.** Three anonymous endpoints (`POST /api/password-reset/forgot-password`, `GET /api/password-reset/validate`, `POST /api/password-reset/reset-password`) implement the full password-reset flow for CUSTOMER and ADMIN roles. Super Admin is explicitly excluded at every layer. 48-byte CSPRNG raw token; only SHA-256 hash stored in existing `verifications` table (no schema migration); 1-hour TTL; single-use delete on consumption; all sessions invalidated on success; rate-limited by CF edge IP (5 per 600 s). Reset email via existing Resend integration. No production email sent. Backend TypeScript: PASS. 23/23 focused password-reset PG tests: PASS. 84/84 unit tests: PASS. 349/349 full PostgreSQL suite: PASS. Drizzle check: clean. `git diff --check`: clean (pre-existing CRLF warnings only). Existing Super Admin account untouched. Existing Admin lifecycle unaffected. No migration required. Evidence below and in `docs/architecture/Forgot_Password_workflow.md`.
+
+**Admin seller lifecycle continuation — PARTIAL, locally verified, 2026-10-05.** Temporary-password provisioning, server-enforced first-password change, encrypted mandatory bank details, Super Admin bank verification and approval/manual-payout gates are implemented. Backend TypeScript, 84 unit tests, 325 existing PG tests plus the new lifecycle integration test, frontend TypeScript/lint, authenticated Super Admin browser checks and a 29-page isolated build passed. The existing Super Admin account and customer storefront design were untouched. Admin UI, Admin browser verification and customer regression remain gated; the full master task is not complete. Evidence and limits: [ADMIN_SELLER_LIFECYCLE_LOCAL](verification/ADMIN_SELLER_LIFECYCLE_LOCAL.md). Authoritative business/API contract: [ADMIN_SELLER_LIFECYCLE](architecture/ADMIN_SELLER_LIFECYCLE.md).
 
 **Authenticated CUSTOMER mutation verification completed locally, 2026-10-05: PASS.** Order cancellation, review submission and return-request submission passed through the exported frontend, real local Worker/API code, Better Auth sessions and `ownline_checkout_test`. Ownership, unauthenticated denial, eligibility, five-day delivered-at return deadline, replay/concurrency, cross-customer denial, database transitions and refreshed UI state were checked. Temporary `mut-e2e-` records were removed and a broad residue sweep returned zero. Frontend TypeScript/lint/build, backend TypeScript, 84/84 unit tests, 287/287 isolated PostgreSQL tests and `git diff --check` passed. No Aiven/production/provider/R2/deployment/migration operation occurred. Evidence: [CUSTOMER_MUTATIONS_LOCAL](verification/CUSTOMER_MUTATIONS_LOCAL.md).
 
@@ -35,8 +39,9 @@ Authenticated local Admin/Super Admin frontend verification completed **2026-10-
 
 | Check | Result | Notes |
 |---|---|---|
-| Backend unit suite (`npm test`) | **82/82 PASS** | Re-run after the last backend change |
-| Isolated PostgreSQL suite (`npm run test:checkout:pg`) | **281/281 PASS** | Local `ownline_checkout_test` only (guarded; never Aiven). Includes 28 Worker-level security tests and the scheduler/cancellation race tests. Re-run after the last backend change |
+| Backend unit suite (`npm test`) | **84/84 PASS** | Re-run after the last backend change |
+| Isolated PostgreSQL suite (`npm run test:checkout:pg`) | **349/349 PASS** | Local `ownline_checkout_test` only (guarded; never Aiven). Includes 23 new password-reset integration tests. |
+| Password-reset focused suite (`npm run test:password-reset:pg`) | **23/23 PASS** | |
 | Scheduler tests, repeated | **10/10 runs PASS** | 19 scheduler-named tests per run (190 passes, 0 failures) |
 | Backend TypeScript (`npm run typecheck`) | **PASS** | |
 | Frontend TypeScript (`npm run typecheck`) | **PASS** | |
@@ -231,3 +236,52 @@ Production infrastructure has been deployed; **commerce launch remains blocked**
 | `development/*` | REFACTORING_GUIDE, ERROR_HANDLING (path note added), FRONTEND_DESIGN_SYSTEM |
 | `verification/*` | Historical evidence; not rewritten |
 | `docs_this_old_ecommerce_plan/` | SUPERSEDED; its `PROJECT_CONTEXT.md` (646 lines) conflicts with the canonical one (4739+ lines) and was not merged |
+
+
+## Important: don't run the old task
+
+Your previous task was essentially:
+
+> **Connect Super Admin UI to the existing APIs.**
+
+**Stop that task for now.**
+
+The new task supersedes it because the Admin lifecycle has now been clarified.
+
+The correct chain is:
+
+```text
+                    CURRENT
+                       │
+                       ▼
+             Super Admin account
+                  ✅ established
+                       │
+                       ▼
+        Backend contract reconciliation
+                  ✅ mostly done
+                       │
+                       ▼
+        ADMIN LIFECYCLE RECONCILIATION
+              ← NEW TASK NOW
+                       │
+                       ▼
+        Password + onboarding + approval
+                       │
+                       ▼
+          Backend tests / verification
+                       │
+                       ▼
+             Super Admin UI
+                       │
+                       ▼
+          Super Admin browser E2E
+                       │
+                       ▼
+                Admin UI
+                       │
+                       ▼
+             Admin browser E2E
+                       │
+                       ▼
+             Customer regression

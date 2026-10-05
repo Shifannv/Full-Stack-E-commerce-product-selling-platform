@@ -2,6 +2,8 @@ export * from "./auth";
 export * from "./rbac";
 export * from "./admin";
 export * from "./admin-lifecycle";
+export * from "./admin-credentials";
+export * from "./admin-bank";
 export * from "./catalog";
 export * from "./orders";
 export * from "./shipping";

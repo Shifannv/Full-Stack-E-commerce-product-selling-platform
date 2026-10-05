@@ -5,6 +5,7 @@ export type Actor = {
   roles: string[];
   permissions: string[];
   adminApproved: boolean;
+  mustChangePassword?: boolean;
 };
 export type Product = {
   id: string;

@@ -1,6 +1,7 @@
 import type { App } from "../app-env";
 import { registerHealthRoutes } from "./health";
 import { registerAuthHandler, registerSessionRoute } from "./auth/auth.routes";
+import { passwordResetRoutes } from "./auth/password-reset.routes";
 import { adminActivationRoutes, adminRoutes } from "./admin";
 import { adminLifecycleRoutes } from "./admin/admin-lifecycle";
 import { customerRoutes, publicCatalogRoutes } from "./customer/customer";
@@ -23,6 +24,9 @@ import { paymentWebhookRoutes } from "./webhooks/payments.webhook";
  * re-diffing the route table (see docs/development/REFACTORING_GUIDE.md).
  */
 export function registerRoutes(app: App) {
+  // Password-reset routes must be mounted BEFORE the Better Auth handler, which
+  // uses app.all("/api/auth/*") and would otherwise intercept /api/auth/* first.
+  app.route("/api/password-reset", passwordResetRoutes);
   registerAuthHandler(app);
   registerHealthRoutes(app);
   registerSessionRoute(app);

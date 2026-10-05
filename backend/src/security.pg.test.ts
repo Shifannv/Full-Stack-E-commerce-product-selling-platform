@@ -1068,3 +1068,80 @@ test(
       assert.equal(response.status, 422);
     }, "SUPER_ADMIN"),
 );
+
+// ---------------------------------------------------------------------------
+// Super Admin read-only oversight — GET /api/super-admin/roles,
+// GET /api/super-admin/lifecycle-requests
+// ---------------------------------------------------------------------------
+
+for (const path of [
+  "/api/super-admin/roles",
+  "/api/super-admin/lifecycle-requests?type=DELETION",
+]) {
+  test(`${path}: anonymous request returns 401`, async () => {
+    const response = await call(path, {});
+    assert.equal(response.status, 401);
+  });
+  test(`${path}: CUSTOMER is denied with 403`, () =>
+    fixture(async (c) => {
+      const response = await call(path, { headers: c.headers });
+      assert.equal(response.status, 403);
+    }));
+  test(`${path}: ADMIN is denied with 403`, () =>
+    fixture(async (c) => {
+      const response = await call(path, { headers: c.headers });
+      assert.equal(response.status, 403);
+    }, "ADMIN"));
+}
+
+test("super-admin roles: SUPER_ADMIN receives roles and permissions", () =>
+  fixture(async (c) => {
+    const response = await call("/api/super-admin/roles", {
+      headers: c.headers,
+    });
+    assert.equal(response.status, 200);
+    const body = (await response.json()) as {
+      roles: Array<{ name: string; permissions: string[] }>;
+      permissions: Array<{ key: string }>;
+    };
+    assert.ok(Array.isArray(body.roles));
+    assert.ok(Array.isArray(body.permissions));
+    assert.ok(body.roles.some((r) => r.name === "SUPER_ADMIN"));
+  }, "SUPER_ADMIN"));
+
+test("super-admin lifecycle-requests: SUPER_ADMIN receives both request types", () =>
+  fixture(async (c) => {
+    for (const type of ["DELETION", "RECOVERY"]) {
+      const response = await call(
+        `/api/super-admin/lifecycle-requests?type=${type}&limit=5`,
+        { headers: c.headers },
+      );
+      assert.equal(response.status, 200);
+      const body = (await response.json()) as {
+        requests: unknown[];
+        limit: number;
+        offset: number;
+      };
+      assert.ok(Array.isArray(body.requests));
+      assert.equal(body.limit, 5);
+      assert.equal(body.offset, 0);
+    }
+  }, "SUPER_ADMIN"));
+
+test("super-admin lifecycle-requests: invalid input returns 422", () =>
+  fixture(async (c) => {
+    for (const query of [
+      "",
+      "?type=OTHER",
+      "?type=RECOVERY&status=REQUESTED",
+      "?type=DELETION&status=BOGUS",
+      "?type=DELETION&limit=0",
+      "?type=DELETION&offset=-1",
+    ]) {
+      const response = await call(
+        `/api/super-admin/lifecycle-requests${query}`,
+        { headers: c.headers },
+      );
+      assert.equal(response.status, 422, query);
+    }
+  }, "SUPER_ADMIN"));

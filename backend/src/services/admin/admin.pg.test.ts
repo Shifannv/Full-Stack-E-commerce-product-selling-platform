@@ -20,6 +20,7 @@ import {
   subcategories,
 } from "../../db/schema/catalog";
 import { admins } from "../../db/schema/rbac";
+import { adminBankAccounts } from "../../db/schema/admin-bank";
 import { reviewApplication, setCategoryAssignment } from "./admin.service";
 import { getProductInventory, setProductInventory, updateProduct } from "./catalog.service";
 import { transitionAdminStatus } from "./account-state.service";
@@ -162,6 +163,7 @@ async function makeFixture(pendingUser: boolean) {
         businessType: "PERSON",
         contactPhone: "9999999999",
       });
+      await tx.insert(adminBankAccounts).values({ adminId, encryptedDetails: "isolated-fixture-not-real-bank-data", accountLast4: "0000", status: "VERIFIED", reviewedByUserId: reviewerId, reviewedAt: new Date() });
     });
   } catch (error) {
     await Promise.all([
@@ -219,6 +221,7 @@ async function makeFixture(pendingUser: boolean) {
             .delete(subcategories)
             .where(eq(subcategories.id, subcategoryId));
           await tx.delete(categories).where(eq(categories.id, categoryId));
+          await tx.delete(adminBankAccounts).where(eq(adminBankAccounts.adminId, adminId));
           await tx.delete(admins).where(eq(admins.id, adminId));
           await tx.delete(users).where(eq(users.id, sellerId));
           await tx.delete(users).where(eq(users.id, reviewerId));

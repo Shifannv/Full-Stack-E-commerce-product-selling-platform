@@ -1,10 +1,20 @@
 # API Route Map
 
-Reconciled against route sources on 2026-10-04. Mount order lives in `backend/src/routes/index.ts`; **order is behavior** (see [REFACTORING_GUIDE](../development/REFACTORING_GUIDE.md)). The read-only audit enumerates 108 distinct method/path handlers including the three direct GETs, excluding Better Auth ALL and middleware; see [FRONTEND_CONNECTION_AUDIT.json](../verification/FRONTEND_CONNECTION_AUDIT.json). Current UI connections and gates: [FRONTEND_INTEGRATION_STATUS](FRONTEND_INTEGRATION_STATUS.md).
+Reconciled against route sources on 2026-10-06 (password-reset endpoints added). Mount order lives in `backend/src/routes/index.ts`; **order is behavior** (see [REFACTORING_GUIDE](../development/REFACTORING_GUIDE.md)). The read-only audit enumerates 111 distinct method/path handlers (108 original + 3 password-reset) including the three direct GETs, excluding Better Auth ALL and middleware; see [FRONTEND_CONNECTION_AUDIT.json](../verification/FRONTEND_CONNECTION_AUDIT.json). Current UI connections and gates: [FRONTEND_INTEGRATION_STATUS](FRONTEND_INTEGRATION_STATUS.md).
 
 Authentication/role enforcement lives in each handler or router middleware (`requireAuth`, role/permission checks), not in this table; this table is the HTTP surface only. Provider-authenticated routes (webhooks) use provider secrets/signatures, not sessions. Several routers mix audiences under one `use("*", requireAuth)` (orders, returns, finance, reviews, shipping); they are filed under their primary domain, not split.
 
 Global: for `/api/*`, CORS (origin must equal `FRONTEND_ORIGIN`, credentials on) then `mutationOrigin`. Registered directly: `ALL /api/auth/*` (Better Auth), `GET /health`, `GET /health/db`, `GET /api/me`.
+
+## passwordResetRoutes — mounted at `/api/password-reset` (anonymous, mounted FIRST)
+
+All three endpoints are anonymous (no session required). The raw token itself is the authorization credential for the reset endpoint. Super Admin accounts are excluded at the service layer.
+
+| Method | Path | Auth | Source |
+|---|---|---|---|
+| POST | `/api/password-reset/forgot-password` | Anonymous; rate-limited (5 req/600 s/IP) | `backend/src/routes/auth/password-reset.routes.ts` |
+| GET | `/api/password-reset/validate?token=<raw>` | Anonymous | `backend/src/routes/auth/password-reset.routes.ts` |
+| POST | `/api/password-reset/reset-password` | Anonymous; token is credential | `backend/src/routes/auth/password-reset.routes.ts` |
 
 ## publicCatalogRoutes — mounted at `/api`
 
@@ -104,6 +114,8 @@ Global: for `/api/*`, CORS (origin must equal `FRONTEND_ORIGIN`, credentials on)
 | PATCH | `/api/admin/catalog/products/:productId/featured` | `backend/src/routes/admin/catalog.ts` |
 | PUT | `/api/admin/catalog/fields` | `backend/src/routes/admin/catalog.ts` |
 | GET | `/api/admin/onboarding` | `backend/src/routes/admin/onboarding.ts` |
+| POST | `/api/admin/account/initial-password` | `backend/src/routes/admin/onboarding.ts` — own provisioned Admin; forced credential replacement |
+| PUT | `/api/admin/onboarding/bank` | `backend/src/routes/admin/onboarding.ts` — own Admin; encrypted bank save, masked response |
 | PUT | `/api/admin/onboarding/kyc` | `backend/src/routes/admin/onboarding.ts` |
 | POST | `/api/admin/onboarding/kyc/documents` | `backend/src/routes/admin/onboarding.ts` |
 | PUT | `/api/admin/onboarding/addresses/:type` | `backend/src/routes/admin/onboarding.ts` |
@@ -123,6 +135,8 @@ Global: for `/api/*`, CORS (origin must equal `FRONTEND_ORIGIN`, credentials on)
 | GET | `/api/admin/products/:productId/inventory` | `backend/src/routes/admin/products.ts` |
 | GET | `/api/admin/review/:adminId` | `backend/src/routes/admin/review.ts` |
 | POST | `/api/admin/review/provision` | `backend/src/routes/admin/review.ts` |
+| POST | `/api/admin/review/:adminId/bank/reveal` | `backend/src/routes/admin/review.ts` — audited Super Admin private reveal |
+| POST | `/api/admin/review/:adminId/bank/decision` | `backend/src/routes/admin/review.ts` — revision-bound Super Admin bank verification |
 | POST | `/api/admin/review/invite` | `backend/src/routes/admin/review.ts` |
 | POST | `/api/admin/review/reinvite` | `backend/src/routes/admin/review.ts` |
 | GET | `/api/admin/review/:adminId/documents/:documentId` | `backend/src/routes/admin/review.ts` |
@@ -142,6 +156,23 @@ Global: for `/api/*`, CORS (origin must equal `FRONTEND_ORIGIN`, credentials on)
 |---|---|---|
 | GET | `/api/super-admin/summary` | `backend/src/routes/super-admin/dashboard.ts` |
 | GET | `/api/super-admin/admins` | `backend/src/routes/super-admin/dashboard.ts` |
+| GET | `/api/super-admin/products` | `backend/src/routes/super-admin/dashboard.ts` |
+| GET | `/api/super-admin/payouts` | `backend/src/routes/super-admin/dashboard.ts` |
+| GET | `/api/super-admin/roles` | `backend/src/routes/super-admin/dashboard.ts` |
+| GET | `/api/super-admin/lifecycle-requests` | `backend/src/routes/super-admin/dashboard.ts` |
+
+### Super Admin read contracts (2026-10-05)
+
+All four are read-only, session-authenticated (`requireAuth`) and SUPER_ADMIN-only: anonymous `401`, CUSTOMER/ADMIN `403`. Validation failures `422` (`{ error }`); unexpected failures `503 { error: "Dashboard unavailable" }`. No side effects, no audit writes (reads only). Pagination: `limit` 1..50 (default 20, values above 50 are clamped), `offset` >= 0 (default 0); response echoes `limit` and `offset`. No migration.
+
+| Route | Query | Response | Ordering | Service |
+|---|---|---|---|---|
+| GET `/api/super-admin/products` | `status?` DRAFT\|PUBLISHED\|ARCHIVED, `adminId?` UUID, `categoryId?` UUID, `q?` name (<=100) | `{ products: [{ id, name, slug, price, currency, status, featured, returnEnabled, category, categoryId, categorySlug, subcategory, subcategorySlug, ownerAdminId, createdAt, updatedAt }], limit, offset }` | `updatedAt DESC, id ASC` | `listSuperAdminProducts` (catalog.service) |
+| GET `/api/super-admin/payouts` | `status?` REQUESTED\|APPROVED\|REJECTED\|PAID, `adminId?` UUID | `{ payouts: [{ id, adminId, amount, status, requestedAt, reviewedAt, reviewNotes, paidAt, paymentReference, createdAt, updatedAt }], limit, offset }` (stored values, no recalculation) | `requestedAt DESC, id ASC` | `listSuperAdminPayouts` (finance.service) |
+| GET `/api/super-admin/roles` | none | `{ roles: [{ id, name, description, permissions: string[] }], permissions: [{ id, key, description }] }` | roles by name, permissions/grants by key | `listRolePermissions` (super-admin-oversight.service) |
+| GET `/api/super-admin/lifecycle-requests` | `type` DELETION\|RECOVERY (required); `status?` DELETION: REQUESTED\|PENDING\|APPROVED\|REJECTED, RECOVERY: PENDING\|APPROVED\|REJECTED | `{ requests: [{ id, type, adminId, adminStatus, userName, userEmail, status, reason, requestedAt, reviewedAt, reviewNotes, verifiedAt (DELETION) or archiveId (RECOVERY) }], limit, offset }` | `requestedAt DESC, id ASC` | `listAdminLifecycleRequests` (super-admin-oversight.service) |
+
+Writes stay on existing routes: payout decision/paid (`financeRoutes`), deletion/recovery decision `POST /api/admin/review/:adminId/{deletion|recovery}-requests/:requestId/decision` (`adminLifecycleRoutes`). Only DELETION rows with `status=PENDING` and non-null `verifiedAt` are approvable. Permission grant mutation is intentionally not exposed (role-wide grants, no approved policy).
 
 ## reconciliationRoutes — mounted at `/api/super-admin`
 

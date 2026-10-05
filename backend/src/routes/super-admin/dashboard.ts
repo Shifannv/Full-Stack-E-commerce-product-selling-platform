@@ -12,6 +12,13 @@ import {
   listSuperAdminPayouts,
   VALID_PAYOUT_STATUSES,
 } from "../../services/admin/finance.service";
+import {
+  LIFECYCLE_REQUEST_STATUSES,
+  LIFECYCLE_REQUEST_TYPES,
+  type LifecycleRequestType,
+  listAdminLifecycleRequests,
+  listRolePermissions,
+} from "../../services/admin/super-admin-oversight.service";
 
 
 export const superAdminDashboardRoutes = new Hono<AuthorizedEnv>();
@@ -182,4 +189,55 @@ superAdminDashboardRoutes.get("/payouts", async (c) => {
   );
 
   return c.json({ payouts, limit, offset });
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/super-admin/roles
+// Read-only role -> permission grants from existing RBAC tables.
+// Grant mutation is deliberately not exposed (no approved policy; grants are
+// role-wide and would change every Admin at once).
+// Authorization: SUPER_ADMIN only
+// ---------------------------------------------------------------------------
+superAdminDashboardRoutes.get("/roles", async (c) => {
+  requireSuperAdmin(c.get("actor").roles);
+  return c.json(
+    await withDb(c.env.HYPERDRIVE.connectionString, listRolePermissions),
+  );
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/super-admin/lifecycle-requests
+// Platform-wide discovery of Admin deletion/recovery requests. Decisions use
+// the existing POST /api/admin/review/:adminId/{deletion|recovery}-requests/
+// :requestId/decision routes.
+//
+// Query params:
+//   type    — "DELETION" | "RECOVERY" (required)
+//   status  — DELETION: REQUESTED|PENDING|APPROVED|REJECTED;
+//             RECOVERY: PENDING|APPROVED|REJECTED (optional)
+//   limit   — 1..50, default 20
+//   offset  — >= 0, default 0
+//
+// Authorization: SUPER_ADMIN only
+// ---------------------------------------------------------------------------
+superAdminDashboardRoutes.get("/lifecycle-requests", async (c) => {
+  requireSuperAdmin(c.get("actor").roles);
+  const type = c.req.query("type");
+  if (!type || !(LIFECYCLE_REQUEST_TYPES as readonly string[]).includes(type))
+    throw new DomainError("Invalid type", 422);
+  const requestType = type as LifecycleRequestType;
+  const status = c.req.query("status");
+  if (status && !LIFECYCLE_REQUEST_STATUSES[requestType].includes(status))
+    throw new DomainError("Invalid status", 422);
+  const limit = Math.min(50, pageNumber(c.req.query("limit"), "limit", 20));
+  const offset = pageNumber(c.req.query("offset"), "offset", 0);
+  const requests = await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
+    listAdminLifecycleRequests(db, {
+      type: requestType,
+      status,
+      limit,
+      offset,
+    }),
+  );
+  return c.json({ requests, limit, offset });
 });

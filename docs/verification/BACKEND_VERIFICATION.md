@@ -363,3 +363,17 @@ Do not run overlapping auth fixture suites: bootstrap allows only one Super Admi
 Implemented: `GET /api/products` now returns primary image object key, availability, published rating/count, and creation time, with server-whitelisted newest/price ordering and in-stock filtering. `GET /api/products/:slug` returns availability and published review summary. `GET /api/customer/checkout/quote?addressId=` is customer-only and read-only; it uses current cart/product/variant prices, stock, fulfillment fields, and an owned address. It returns validation problems and a payable amount only when valid. Checkout still rechecks under transaction locks. Super Admin-only `PATCH /api/admin/catalog/products/:productId/featured` supports deliberate curation. No Cashfree or database schema change was made.
 
 Verified: backend TypeScript PASS; 53 unit/route tests PASS, including invalid sort/availability, quote 401, and a quote with current price/stock but no writes; Drizzle check PASS; database integrity PASS (44 tables, 9 migrations); local Worker public categories/products 200, invalid sort 422, unauthenticated quote 401. Read-only Wrangler checks confirm `shop-product-images` exists and has no custom domain. The configured Aiven database has zero ADMIN/SUPER_ADMIN/CUSTOMER users and zero catalog rows, so an authorized Admin API fixture and authenticated quote could not be tested. The product-image Worker binding/upload path and Google browser OAuth remain NOT VERIFIED. No deployment was performed.
+PREVIOUS BACKEND CONTRACT WORK
+A previous backend reconciliation added/readied these Super Admin contracts:
+GET /api/super-admin/products
+GET /api/super-admin/payouts
+GET /api/super-admin/roles
+GET /api/super-admin/lifecycle-requests
+Existing reconciliation API must continue using:
+after_id
+with UUID ordering.
+Do not create a duplicate reconciliation API.
+Before changing any of these APIs, inspect their current implementation and
+tests.
+Do not assume the previous implementation is correct merely because a prior
+report said PASS.

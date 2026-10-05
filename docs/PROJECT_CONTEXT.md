@@ -4753,3 +4753,37 @@ Frontend typecheck, lint, local-Worker-backed static build, fixed-route HTTP smo
 Public product list/detail contracts now return existing-schema image, availability, published review summary, and created-at data; the list supports whitelisted newest/price sorting and in-stock filtering. The frontend no longer performs one detail fetch per card. A new authenticated read-only `GET /api/customer/checkout/quote` returns authoritative current cart lines, totals, and validation problems without order creation or stock reservation. The frontend review displays the quote but still stops before payment. Backend TypeScript and 53 tests, frontend TypeScript/lint/static build, Drizzle check, local API probes, and database integrity passed.
 
 `verify:readiness` found zero operator/customer users and zero catalog records in the configured Aiven database. No authorized Admin API session exists for a controlled fixture, so no fixture or published slugs were created and the static category/product routes remain pending. Read-only Wrangler checks confirm `shop-product-images` exists but has no custom domain; the Worker binds only private KYC R2 and has no product-image upload path. Category media has no schema field; a nullable object-key column is justified once the media contract exists, but no migration was made. Google OAuth and authenticated customer quote remain NOT VERIFIED. Private order details/tracking remain on fixed `/orders` under static export. Phase 11b stays **OPEN** and deployment **NOT SAFE**. Next task: provision an authorized test Admin/Super Admin account and real test catalog via existing APIs, configure public media, then activate and verify real static catalog pages and customer browser flows.
+# Current Admin lifecycle contract
+
+The [2026-10-05 Admin seller lifecycle reconciliation](architecture/ADMIN_SELLER_LIFECYCLE.md) supersedes historical invitation-only provisioning guidance in this document. New Admins receive a temporary initial password and must replace it before onboarding. Existing Super Admin credentials and customer storefront design are protected. Bank details are mandatory for every seller, with Super Admin verification before seller approval and manual payout approval/payment recording.
+
+ABSOLUTE RULES
+DO NOT:
+- modify Customer design
+- create public Admin registration
+- expose Admin passwords
+- expose Super Admin password
+- log passwords
+- store plaintext passwords
+- add Super Admin Forgot Password
+- create duplicate auth systems
+- create duplicate RBAC
+- create duplicate onboarding APIs
+- create fake API data
+- create fake finance data
+- hardcode Admin records
+- hardcode products
+- bypass backend authorization
+- invent business rules
+- mutate Aiven
+- deploy production
+- call production providers
+- rewrite historical verification reports
+USE THE CURRENT SOURCE-OF-TRUTH DOCUMENTATION.
+IF DOCUMENTS CONFLICT:
+CURRENT_STATUS.md and the latest current architecture/API documentation
+take precedence over historical verification reports.
+IF A REQUIRED WORKFLOW HAS A REAL BACKEND GAP:
+STOP THAT DEPENDENT FRONTEND WORK.
+RECONCILE/IMPLEMENT THE BACKEND FIRST.
+==============================================

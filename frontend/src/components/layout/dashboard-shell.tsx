@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3, Boxes, ExternalLink, LayoutDashboard, Menu } from "lucide-react";
+import { BarChart3, Boxes, ExternalLink, LayoutDashboard, Menu, Users, CreditCard, Shield, RefreshCw, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -16,18 +16,46 @@ type DashboardShellProps = {
   children: React.ReactNode;
 };
 
+const adminNav = [
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, external: false },
+  { href: "#records", label: "Products", icon: Boxes, external: false },
+  { href: "#insights", label: "Insights", icon: BarChart3, external: false },
+  { href: "#operations", label: "Manage workspace", icon: Boxes, external: false },
+  { href: "/admin/account", label: "Account", icon: Activity, external: false },
+];
+
+const superAdminNav = [
+  { href: "/super-admin", label: "Dashboard", icon: LayoutDashboard, external: false },
+  { href: "/super-admin/admins", label: "Admins", icon: Users, external: false },
+  { href: "/super-admin/products", label: "Products", icon: Boxes, external: false },
+  { href: "/super-admin/payouts", label: "Payouts", icon: CreditCard, external: false },
+  { href: "/super-admin/roles", label: "Roles & Permissions", icon: Shield, external: false },
+  { href: "/super-admin/lifecycle", label: "Lifecycle Requests", icon: Activity, external: false },
+  { href: "/super-admin/reconciliation", label: "Reconciliation", icon: RefreshCw, external: false },
+  { href: "#operations", label: "Workflows", icon: BarChart3, external: false },
+];
+
 export function DashboardShell({
   title,
   subtitle,
   homeHref,
   children,
 }: DashboardShellProps) {
+  const isSuperAdmin = homeHref === "/super-admin";
+  const navItems = isSuperAdmin ? superAdminNav : adminNav;
+
   const navigation = (
     <nav aria-label={`${title} navigation`} className="flex flex-col gap-1 text-sm">
-      <a href="#overview" className="flex items-center gap-3 rounded-md bg-primary/10 px-4 py-3 font-medium text-primary"><LayoutDashboard aria-hidden="true" className="size-4" /> Overview</a>
-      <a href="#records" className="flex items-center gap-3 rounded-md px-4 py-3 opacity-75 hover:bg-primary/10 hover:opacity-100"><Boxes aria-hidden="true" className="size-4" /> {homeHref === "/admin" ? "Products" : "Admins"}</a>
-      <a href="#insights" className="flex items-center gap-3 rounded-md px-4 py-3 opacity-75 hover:bg-primary/10 hover:opacity-100"><BarChart3 aria-hidden="true" className="size-4" /> Insights</a>
-      <a href="#operations" className="flex items-center gap-3 px-4 py-3 hover:bg-primary/10"><Boxes aria-hidden="true" className="size-4" /> Manage workspace</a>
+      {navItems.map((item) => (
+        <a
+          key={item.href + item.label}
+          href={item.href}
+          className="flex items-center gap-3 rounded-md px-4 py-3 opacity-75 hover:bg-primary/10 hover:opacity-100 transition-colors"
+        >
+          <item.icon aria-hidden="true" className="size-4 shrink-0" />
+          {item.label}
+        </a>
+      ))}
     </nav>
   );
 

@@ -13,6 +13,7 @@ import { refunds, returnItems } from "../../db/schema/returns";
 import { withTransitionRetry } from "../reservation.service";
 import { recordSensitiveAction } from "../security-audit";
 import { admins } from "../../db/schema/rbac";
+import { requireVerifiedBank } from "./bank.service";
 
 type Db = ReturnType<typeof createDb>["db"];
 type FinanceSettingKey = "COMMISSION_BPS" | "PAYMENT_GATEWAY_FEE_BPS";
@@ -405,6 +406,7 @@ export async function reviewPayout(
       )
       .returning();
     if (!request) throw new DomainError("Pending payout unavailable", 409);
+    if (decision === "APPROVED") await requireVerifiedBank(tx, request.adminId);
     if (decision === "REJECTED") {
       const links = await tx
         .select({ id: payoutSettlementItems.settlementId })
@@ -455,6 +457,7 @@ export async function markPayoutPaid(
       )
       .returning();
     if (!request) throw new DomainError("Approved payout unavailable", 409);
+    await requireVerifiedBank(tx, request.adminId);
     const links = await tx
       .select({ id: payoutSettlementItems.settlementId })
       .from(payoutSettlementItems)

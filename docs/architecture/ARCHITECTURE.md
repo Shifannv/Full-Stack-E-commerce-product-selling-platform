@@ -4,6 +4,8 @@ Status: reflects the repository after the 2026-10-01 structure refactor. Busines
 
 ## Shape
 
+The [2026-10-05 Admin seller lifecycle contract](ADMIN_SELLER_LIFECYCLE.md) supersedes older invitation-only account provisioning descriptions. Authentication eligibility, forced credential replacement, seller onboarding and approval are separate persisted gates. Private seller bank details use a dedicated encryption key; Super Admin sessions and existing account recovery configuration remain unchanged.
+
 ```
 Browser (Next.js static export, output: "export")
    |  credentials: "include", JSON over HTTPS      frontend/src/lib/api/*

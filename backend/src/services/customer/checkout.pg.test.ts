@@ -429,6 +429,7 @@ async function createFixture() {
             .delete(subcategories)
             .where(eq(subcategories.id, subcategoryId));
           await tx.delete(categories).where(eq(categories.id, categoryId));
+          await tx.delete(adminBankAccounts).where(eq(adminBankAccounts.adminId, adminId));
           await tx.delete(admins).where(eq(admins.id, adminId));
           await tx.delete(sessions).where(inArray(sessions.userId, customers));
           await tx.delete(accounts).where(inArray(accounts.userId, customers));
@@ -2323,6 +2324,7 @@ test("security refund authorization and result audit preserve actor/entity and r
 
 test("security settlement and payout decisions retain atomic actor-attributed audit", async () =>
   fixture(async (c) => {
+    await c.db.insert(adminBankAccounts).values({ adminId: c.adminId, encryptedDetails: "isolated-fixture", accountLast4: "0000", status: "VERIFIED", reviewedAt: new Date(), reviewedByUserId: c.customers[0] });
     const { item } = await financeSale(c);
     await assert.rejects(
       createSettlement(c.db, item.id, "0.00", "nonexistent-security-actor"),
@@ -7469,3 +7471,4 @@ test(
       await assertInventoryInvariant(c);
     }),
 );
+import { adminBankAccounts } from "../../db/schema/admin-bank";

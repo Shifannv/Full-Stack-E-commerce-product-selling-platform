@@ -4,33 +4,255 @@ import { useEffect, useState } from "react";
 import { authApi, ApiError } from "@/lib/api";
 import { operatorWorkflows, runOperatorWorkflow, type OperatorWorkflow } from "@/lib/api/operator-workflows";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { api as apiCall, json } from "@/lib/api/client";
+
+const MIN_PASSWORD_LENGTH = 12;
+const MAX_PASSWORD_LENGTH = 128;
 
 export function OperatorGate({ role, children }: { role: "admin" | "super-admin"; children: React.ReactNode }) {
-  const [state, setState] = useState<"loading" | "signed-out" | "allowed" | "forbidden" | "error">("loading");
+  const [state, setState] = useState<"loading" | "signed-out" | "allowed" | "forbidden" | "error" | "must-change-password">("loading");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [attempt, setAttempt] = useState(0);
+
   useEffect(() => {
-    let active=true;
-    authApi.me().then(actor => { if(active) setState(actor.roles.includes(role === "admin" ? "ADMIN" : "SUPER_ADMIN") ? "allowed" : "forbidden"); }).catch(reason => { if(active) { setState(reason instanceof ApiError && reason.status === 401 ? "signed-out" : "error"); setError(reason instanceof Error ? reason.message : "Account check unavailable"); }});
-    return ()=>{active=false;};
-  },[role,attempt]);
+    let active = true;
+    authApi.me().then(actor => {
+      if (!active) return;
+      // Forced password change takes precedence for Admin role only.
+      if (actor.mustChangePassword && role === "admin") {
+        setState("must-change-password");
+        return;
+      }
+      setState(actor.roles.includes(role === "admin" ? "ADMIN" : "SUPER_ADMIN") ? "allowed" : "forbidden");
+    }).catch(reason => {
+      if (!active) return;
+      setState(reason instanceof ApiError && reason.status === 401 ? "signed-out" : "error");
+      setError(reason instanceof Error ? reason.message : "Account check unavailable");
+    });
+    return () => { active = false; };
+  }, [role, attempt]);
+
   async function signIn(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault(); const form=new FormData(event.currentTarget); setBusy(true); setError(null);
-    try { await authApi.signIn(String(form.get("email")),String(form.get("password"))); setState("loading"); setAttempt(value=>value+1); }
-    catch(reason) { setError(reason instanceof Error ? reason.message : "Sign-in unavailable"); }
-    finally { setBusy(false); }
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    setBusy(true); setError(null);
+    try {
+      await authApi.signIn(String(form.get("email")), String(form.get("password")));
+      setState("loading");
+      setAttempt(value => value + 1);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Sign-in unavailable");
+    } finally {
+      setBusy(false);
+    }
   }
+
   async function signOut() {
     setBusy(true); setError(null);
-    try { await authApi.signOut(); setState("signed-out"); }
-    catch(reason) { setError(reason instanceof Error ? reason.message : "Sign-out unavailable"); }
-    finally { setBusy(false); }
+    try {
+      await authApi.signOut();
+      setState("signed-out");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Sign-out unavailable");
+    } finally {
+      setBusy(false);
+    }
   }
-  if(state === "loading") return <p role="status" className="py-12">Checking your workspace…</p>;
-  if(state === "forbidden" || state === "error") return <div className="commerce-panel max-w-xl"><h1 className="type-section">{state === "forbidden" ? "This workspace needs another account" : "Workspace unavailable"}</h1><p className="mt-4 text-muted-foreground">{state === "forbidden" ? `Sign in with an authorized ${role === "admin" ? "seller" : "Super Admin"} account.` : error}</p><Button className="mt-6" disabled={busy} onClick={()=>void signOut()}>Sign out</Button><Button className="ml-2 mt-6" variant="outline" onClick={()=>{setState("loading");setAttempt(value=>value+1);}}>Try again</Button></div>;
-  if(state === "signed-out") return <section className="commerce-panel max-w-xl"><h1 className="type-page">Your workspace</h1><p className="mt-4 text-muted-foreground">Sign in to manage {role === "admin" ? "your seller account" : "Ownline Dropship"}.</p><form className="workflow-form" onSubmit={event=>void signIn(event)}><label>Email<input name="email" type="email" autoComplete="username" required /></label><label>Password<input name="password" type="password" autoComplete="current-password" required /></label>{error && <p role="alert" className="text-sm text-destructive">{error}</p>}<Button disabled={busy} type="submit">{busy ? "Signing in…" : "Sign in"}</Button></form></section>;
-  return <><div className="mb-6 flex items-center justify-end gap-4">{error && <p role="alert" className="text-sm text-destructive">{error}</p>}<Button variant="outline" disabled={busy} onClick={()=>void signOut()}>{busy ? "Signing out…" : "Sign out"}</Button></div>{children}</>;
+
+  if (state === "loading") return <p role="status" className="py-12">Checking your workspace…</p>;
+
+  if (state === "forbidden" || state === "error") return (
+    <div className="commerce-panel max-w-xl">
+      <h1 className="type-section">{state === "forbidden" ? "This workspace needs another account" : "Workspace unavailable"}</h1>
+      <p className="mt-4 text-muted-foreground">
+        {state === "forbidden" ? `Sign in with an authorized ${role === "admin" ? "seller" : "Super Admin"} account.` : error}
+      </p>
+      <Button className="mt-6" disabled={busy} onClick={() => void signOut()}>Sign out</Button>
+      <Button className="ml-2 mt-6" variant="outline" onClick={() => { setState("loading"); setAttempt(value => value + 1); }}>Try again</Button>
+    </div>
+  );
+
+  if (state === "must-change-password") return (
+    <InitialPasswordChange
+      onDone={() => { setState("loading"); setAttempt(v => v + 1); }}
+      onSignOut={() => void signOut()}
+    />
+  );
+
+  if (state === "signed-out") return (
+    <section className="commerce-panel max-w-xl">
+      <h1 className="type-page">Your workspace</h1>
+      <p className="mt-4 text-muted-foreground">Sign in to manage {role === "admin" ? "your seller account" : "Ownline Dropship"}.</p>
+      <form className="workflow-form" onSubmit={event => void signIn(event)}>
+        <label>Email<input name="email" type="email" autoComplete="username" required /></label>
+        <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+        <Button disabled={busy} type="submit">{busy ? "Signing in…" : "Sign in"}</Button>
+      </form>
+      {role === "admin" && (
+        <p className="mt-4 text-sm text-muted-foreground">
+          <Link href="/admin/forgot-password" className="text-primary underline-offset-4 hover:underline">
+            Forgot your password?
+          </Link>
+        </p>
+      )}
+    </section>
+  );
+
+  return (
+    <>
+      <div className="mb-6 flex items-center justify-end gap-4">
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+        <Button variant="outline" disabled={busy} onClick={() => void signOut()}>{busy ? "Signing out…" : "Sign out"}</Button>
+      </div>
+      {children}
+    </>
+  );
+}
+
+/**
+ * Forced-password-change form for newly-provisioned Admins with mustChangePassword = true.
+ *
+ * POST /api/admin/account/initial-password
+ * Backend requirements:
+ *   - currentPassword: the temporary password provided by the Super Admin
+ *   - newPassword: 12–128 characters, different from currentPassword
+ * Backend response:
+ *   - { mustChangePassword: false, signInRequired: true }
+ *   - All existing sessions are deleted.
+ *
+ * SECURITY:
+ * - Never displays the temporary password.
+ * - Password policy matches backend: 12–128 chars, new !== current.
+ * - Handles 403 (wrong current password) and 409 (already changed) separately.
+ */
+function InitialPasswordChange({ onDone, onSignOut }: { onDone: () => void; onSignOut: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (busy) return;
+    const form = new FormData(event.currentTarget);
+    const currentPassword = String(form.get("currentPassword") ?? "");
+    const newPassword = String(form.get("newPassword") ?? "");
+    const confirm = String(form.get("confirm") ?? "");
+
+    if (newPassword.length < MIN_PASSWORD_LENGTH) { setError(`New password must be at least ${MIN_PASSWORD_LENGTH} characters.`); return; }
+    if (newPassword.length > MAX_PASSWORD_LENGTH) { setError(`New password must not exceed ${MAX_PASSWORD_LENGTH} characters.`); return; }
+    if (newPassword !== confirm) { setError("New passwords do not match."); return; }
+    if (currentPassword === newPassword) { setError("Choose a different permanent password (not the same as the temporary one)."); return; }
+
+    setBusy(true); setError(null);
+    try {
+      await apiCall<{ mustChangePassword: boolean; signInRequired: boolean }>(
+        "/api/admin/account/initial-password",
+        { method: "POST", body: json({ currentPassword, newPassword }) }
+      );
+      setDone(true);
+    } catch (reason) {
+      if (reason instanceof ApiError && reason.status === 403) {
+        setError("Current password is incorrect. Enter the temporary password provided by your administrator.");
+      } else if (reason instanceof ApiError && reason.status === 409) {
+        setError("This password has already been changed. Sign out and sign in with your permanent password.");
+      } else {
+        setError(reason instanceof Error ? reason.message : "Password change failed. Please try again.");
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (done) return (
+    <section className="commerce-panel max-w-xl">
+      <div className="rounded-xl border border-border bg-card p-8 text-center">
+        <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+          <svg aria-hidden="true" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h1 className="text-xl font-semibold tracking-tight">Password updated</h1>
+        <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+          Your permanent password has been set. All existing sessions have been signed out for security.
+          Sign in with your new password to continue.
+        </p>
+        <Button className="mt-6 w-full" onClick={onDone}>Continue to sign in</Button>
+      </div>
+    </section>
+  );
+
+  return (
+    <section className="commerce-panel max-w-xl">
+      <div className="rounded-xl border border-border bg-card p-8">
+        <h1 className="text-xl font-semibold tracking-tight">Set a permanent password</h1>
+        <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+          Your account was provisioned with a temporary password. You must set a permanent password before you can continue.
+          Enter the temporary password you received, then choose a new permanent password.
+        </p>
+
+        <form onSubmit={event => void handleSubmit(event)} className="mt-7 space-y-5" noValidate>
+          <label className="block">
+            <span className="block text-sm font-medium mb-2">Current (temporary) password</span>
+            <input
+              id="admin-initial-password-current"
+              name="currentPassword"
+              type="password"
+              autoComplete="current-password"
+              required
+              disabled={busy}
+              className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 transition-shadow"
+            />
+          </label>
+
+          <label className="block">
+            <span className="block text-sm font-medium mb-2">New password</span>
+            <input
+              id="admin-initial-password-new"
+              name="newPassword"
+              type="password"
+              autoComplete="new-password"
+              required
+              minLength={MIN_PASSWORD_LENGTH}
+              maxLength={MAX_PASSWORD_LENGTH}
+              disabled={busy}
+              className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 transition-shadow"
+              placeholder={`${MIN_PASSWORD_LENGTH}+ characters`}
+            />
+            <span className="mt-1 block text-xs text-muted-foreground">Minimum {MIN_PASSWORD_LENGTH} characters, maximum {MAX_PASSWORD_LENGTH}.</span>
+          </label>
+
+          <label className="block">
+            <span className="block text-sm font-medium mb-2">Confirm new password</span>
+            <input
+              id="admin-initial-password-confirm"
+              name="confirm"
+              type="password"
+              autoComplete="new-password"
+              required
+              disabled={busy}
+              className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 transition-shadow"
+              placeholder="Re-enter new password"
+            />
+          </label>
+
+          {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+
+          <Button id="admin-initial-password-submit" type="submit" disabled={busy} className="w-full">
+            {busy ? "Setting password…" : "Set permanent password"}
+          </Button>
+        </form>
+
+        <div className="mt-4 text-center">
+          <button type="button" onClick={onSignOut} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Sign out
+          </button>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function label(key: string) { return key.replace(/([a-z])([A-Z])/g,"$1 $2").replaceAll("_"," "); }

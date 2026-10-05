@@ -19,17 +19,29 @@ import {
   setCategoryAssignment,
 } from "../../services/admin/admin.service";
 import {
-  createInvitation,
   reissueInvitation,
 } from "../../services/admin/invitation.service";
 import { sendInvitationEmail } from "../../services/admin/invitation-email.service";
 import { transitionAdminStatus } from "../../services/admin/account-state.service";
+import { provisionAdmin } from "../../services/admin/provisioning.service";
+import { getBankSummary, revealBankDetails, reviewBankDetails } from "../../services/admin/bank.service";
 import type { AdminRouter } from "./shared";
 import { withDb, superAdmin, requireSetupUrl, body } from "./shared";
 
 export function registerReviewRoutes(adminRoutes: AdminRouter) {
+  adminRoutes.post("/review/:adminId/bank/reveal", async (c) => {
+    superAdmin(c.get("actor"));
+    c.header("Cache-Control", "private, no-store");
+    return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => revealBankDetails(db, c.req.param("adminId"), c.get("actor").userId, c.env.ADMIN_BANK_ENCRYPTION_KEY)));
+  });
+  adminRoutes.post("/review/:adminId/bank/decision", async (c) => {
+    superAdmin(c.get("actor"));
+    const input = await body(c);
+    return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) => reviewBankDetails(db, c.req.param("adminId"), c.get("actor").userId, input)));
+  });
   adminRoutes.get("/review/:adminId", async (c) => {
     superAdmin(c.get("actor"));
+    c.header("Cache-Control", "private, no-store");
     return c.json(
       await withDb(c.env.HYPERDRIVE.connectionString, async (db) => {
         const adminId = c.req.param("adminId");
@@ -73,58 +85,30 @@ export function registerReviewRoutes(adminRoutes: AdminRouter) {
           addresses,
           categories: cats,
           audit,
+          bank: await getBankSummary(db, adminId),
         };
       }),
     );
   });
 
   // ---------------------------------------------------------------------------
-  // Passwords must be chosen by the invited Admin, never supplied by Super Admin.
+  // Super Admin supplies only the temporary initial password.
   // ---------------------------------------------------------------------------
   adminRoutes.post("/review/provision", async (c) => {
     superAdmin(c.get("actor"));
-    throw new DomainError("Use Admin invitation for password setup", 422);
+    const input = await body(c);
+    c.header("Cache-Control", "no-store");
+    return c.json(await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
+      provisionAdmin(db, c.get("actor").userId, input)), 201);
   });
 
   // ---------------------------------------------------------------------------
-  // Invitation flow: Super Admin sends a secure invitation email.
-  // The Admin activates their account via GET/POST /admin/activate (unauthenticated).
+  // New sellers must use the temporary-password lifecycle. Existing outstanding
+  // invitation tokens/reissue remain compatible; they are not a new-account path.
   // ---------------------------------------------------------------------------
   adminRoutes.post("/review/invite", async (c) => {
     superAdmin(c.get("actor"));
-    if (!c.env.RESEND_API_KEY || !c.env.RESEND_FROM_EMAIL)
-      throw new DomainError("Admin invitation delivery is not configured", 409);
-    const setupPageUrl = requireSetupUrl(c.env.ADMIN_SETUP_URL);
-    const v = await body(c);
-    const email = requiredText(v.email, "email", 320);
-    const name = requiredText(v.name, "name");
-    const result = await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
-      createInvitation(db, {
-        email,
-        name,
-        invitedByUserId: c.get("actor").userId,
-      }),
-    );
-    const emailResult = await sendInvitationEmail({
-      toEmail: email,
-      toName: name,
-      rawToken: result.rawToken,
-      expiresAt: result.expiresAt,
-      setupPageUrl,
-      fromEmail: c.env.RESEND_FROM_EMAIL ?? "",
-      resendApiKey: c.env.RESEND_API_KEY ?? "",
-    });
-    return c.json(
-      {
-        adminId: result.adminId,
-        expiresAt: result.expiresAt,
-        emailDelivered: emailResult.delivered,
-        emailNote: emailResult.delivered
-          ? undefined
-          : (emailResult as { reason?: string }).reason,
-      },
-      201,
-    );
+    throw new DomainError("Provision new Admins with a temporary password using /api/admin/review/provision", 409);
   });
 
   adminRoutes.post("/review/reinvite", async (c) => {
