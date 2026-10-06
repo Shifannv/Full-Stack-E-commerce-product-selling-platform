@@ -149,12 +149,12 @@ export function AdminAccountPage() {
         <h2 id="profile-heading" className="text-base font-semibold">Profile</h2>
         <dl className="mt-5 grid gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-xs font-medium text-muted-foreground">Email</dt>
-            <dd className="mt-1 text-sm break-all">{actor.roles.join(", ") ? actor.userId : "—"}</dd>
-          </div>
-          <div>
             <dt className="text-xs font-medium text-muted-foreground">Role</dt>
             <dd className="mt-1 text-sm">{actor.roles.join(", ") || "—"}</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium text-muted-foreground">Account ID</dt>
+            <dd className="mt-1 text-xs font-mono text-muted-foreground break-all">{actor.userId}</dd>
           </div>
           <div>
             <dt className="text-xs font-medium text-muted-foreground">Approval status</dt>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export function InvitationSetup() {
   const token = useRef<string | null>(null);
@@ -99,9 +100,8 @@ export function InvitationSetup() {
         >
           Password
         </label>
-        <Input
+        <PasswordInput
           id="setup-password"
-          type="password"
           autoComplete="new-password"
           required
           minLength={12}
@@ -122,9 +122,8 @@ export function InvitationSetup() {
         >
           Confirm password
         </label>
-        <Input
+        <PasswordInput
           id="setup-confirmation"
-          type="password"
           autoComplete="new-password"
           required
           minLength={12}

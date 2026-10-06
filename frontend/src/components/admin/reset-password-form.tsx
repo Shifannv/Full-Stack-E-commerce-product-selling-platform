@@ -18,6 +18,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { PasswordInput } from "@/components/ui/password-input";
 import { passwordResetApi } from "@/lib/api/password-reset";
 import { ApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
@@ -194,16 +195,14 @@ function ResetPasswordForm() {
               <form onSubmit={(e) => void handleSubmit(e)} className="mt-7 space-y-5" noValidate>
                 <label className="block">
                   <span className="block text-sm font-medium mb-2">New password</span>
-                  <input
+                  <PasswordInput
                     id="admin-reset-password-new"
                     name="password"
-                    type="password"
                     autoComplete="new-password"
                     required
                     minLength={MIN_PASSWORD_LENGTH}
                     maxLength={MAX_PASSWORD_LENGTH}
                     disabled={phase === "submitting"}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 transition-shadow"
                     placeholder="12+ characters"
                   />
                   <span className="mt-1 block text-xs text-muted-foreground">
@@ -213,14 +212,12 @@ function ResetPasswordForm() {
 
                 <label className="block">
                   <span className="block text-sm font-medium mb-2">Confirm new password</span>
-                  <input
+                  <PasswordInput
                     id="admin-reset-password-confirm"
                     name="confirm"
-                    type="password"
                     autoComplete="new-password"
                     required
                     disabled={phase === "submitting"}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 transition-shadow"
                     placeholder="Re-enter password"
                   />
                 </label>

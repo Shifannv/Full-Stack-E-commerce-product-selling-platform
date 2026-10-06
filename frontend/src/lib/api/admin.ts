@@ -1,14 +1,31 @@
 import { api, id, json } from "./client";
-import type { AdminProductSummary, ReturnStatus } from "./types";
+import type {
+  AdminCategoryConfig,
+  AdminFinance,
+  AdminOrder,
+  AdminProductDetail,
+  AdminProductSummary,
+  AdminReturnDetail,
+  AdminReturnsResponse,
+  AdminSummary,
+  InventoryRow,
+  PayoutRequest,
+  Shipment,
+} from "./types";
+import type { SellerApplication } from "./seller-lifecycle";
 
 export const adminApi = {
-  summary: () => api<unknown>("/api/admin/summary"),
+  summary: () => api<AdminSummary>("/api/admin/summary"),
   products: (query: URLSearchParams = new URLSearchParams()) =>
     api<{ products: AdminProductSummary[]; limit: number; offset: number }>(
       `/api/admin/products?${query}`,
     ),
-  onboarding: () => api<unknown>("/api/admin/onboarding"),
-  categories: () => api<unknown>("/api/admin/categories"),
+  /** Full detail for prefilling the editor. Foreign products answer 404 by design. */
+  product: (productId: string) =>
+    api<AdminProductDetail>(`/api/admin/products/${id(productId)}`),
+  onboarding: () => api<SellerApplication>("/api/admin/onboarding"),
+  categories: () =>
+    api<{ categories: AdminCategoryConfig[] }>("/api/admin/categories"),
   createProduct: (input: Record<string, unknown>) =>
     api<unknown>("/api/admin/products", { method: "POST", body: json(input) }),
   updateProduct: (productId: string, input: Record<string, unknown>) =>
@@ -16,19 +33,43 @@ export const adminApi = {
       method: "PATCH",
       body: json(input),
     }),
-  inventory: (productId: string, quantity: number, expectedVersion: number, variantId?: string) =>
-    api<unknown>(`/api/admin/products/${id(productId)}/inventory`, {
+  /** Current inventory rows and their optimistic-concurrency versions. */
+  inventoryRows: (productId: string) =>
+    api<{ inventories: InventoryRow[] }>(
+      `/api/admin/products/${id(productId)}/inventory`,
+    ),
+  /**
+   * `expectedVersion` must be the `version` read from `inventoryRows`. A stale
+   * value is rejected with 409 INVENTORY_VERSION_STALE rather than overwriting
+   * a newer quantity. Use 0 only to create a missing row.
+   */
+  inventory: (
+    productId: string,
+    quantity: number,
+    expectedVersion: number,
+    variantId?: string,
+  ) =>
+    api<InventoryRow>(`/api/admin/products/${id(productId)}/inventory`, {
       method: "PUT",
       body: json({ quantity, variantId, expectedVersion }),
     }),
-  orders: () => api<unknown>("/api/admin/orders"),
+  /** Unpaginated by contract — the Worker returns every scoped order. */
+  orders: () => api<{ orders: AdminOrder[] }>("/api/admin/orders"),
+  /** Returns a bare order object, not wrapped in a key. */
+  order: (orderId: string) =>
+    api<AdminOrder>(`/api/admin/orders/${id(orderId)}`),
   tracking: (orderId: string) =>
-    api<unknown>(`/api/admin/orders/${id(orderId)}/tracking`),
-  finance: () => api<unknown>("/api/admin/finance"),
+    api<{ shipments: Shipment[] }>(
+      `/api/admin/orders/${id(orderId)}/tracking`,
+    ),
+  finance: () => api<AdminFinance>("/api/admin/finance"),
   requestPayout: () =>
-    api<unknown>("/api/admin/payouts", { method: "POST", body: "{}" }),
+    api<PayoutRequest>("/api/admin/payouts", { method: "POST", body: "{}" }),
+  /** Seller-scoped queue; `status`, `limit` (max 50) and `offset` are the only filters. */
+  returns: (query: URLSearchParams = new URLSearchParams()) =>
+    api<AdminReturnsResponse>(`/api/admin/returns?${query}`),
   returnStatus: (returnId: string) =>
-    api<ReturnStatus>(`/api/admin/returns/${id(returnId)}`),
+    api<AdminReturnDetail>(`/api/admin/returns/${id(returnId)}`),
   decideReturn: (returnId: string, approve: boolean, notes: string) =>
     api<unknown>(`/api/admin/returns/${id(returnId)}/decision`, {
       method: "POST",

@@ -1,4 +1,10 @@
 import { api, id, json } from "./client";
+import type {
+  FinanceSettings,
+  PendingReview,
+  ProductStatus,
+  SettlementsResponse,
+} from "./types";
 
 // ─── Super Admin response types (browser-facing, no secrets) ─────────────────
 
@@ -136,19 +142,6 @@ export const superAdminApi = {
   admins: (query: URLSearchParams = new URLSearchParams()) =>
     api<AdminsResponse>(`/api/super-admin/admins?${query}`),
 
-  // Review workflows (existing)
-  reviewAdmin: (adminId: string) =>
-    api<unknown>(`/api/admin/review/${id(adminId)}`),
-  decideAdmin: (
-    adminId: string,
-    decision: "APPROVED" | "CHANGES_REQUIRED" | "REJECTED",
-    notes: string,
-  ) =>
-    api<unknown>(`/api/admin/review/${id(adminId)}/decision`, {
-      method: "POST",
-      body: json({ decision, notes }),
-    }),
-
   // Products
   products: (query: URLSearchParams = new URLSearchParams()) =>
     api<ProductsResponse>(`/api/super-admin/products?${query}`),
@@ -170,6 +163,22 @@ export const superAdminApi = {
       method: "POST",
       body: json({ paymentReference }),
     }),
+
+  // Settlements (read-only history; creation stays a reference-driven advanced task)
+  settlements: (query: URLSearchParams = new URLSearchParams()) =>
+    api<SettlementsResponse>(`/api/super-admin/settlements?${query}`),
+
+  // Catalog publication
+  setProductStatus: (productId: string, status: ProductStatus) =>
+    api<unknown>(`/api/admin/catalog/products/${id(productId)}/status`, {
+      method: "PATCH",
+      body: json({ status }),
+    }),
+  setProductFeatured: (productId: string, featured: boolean) =>
+    api<{ id: string; featured: boolean }>(
+      `/api/admin/catalog/products/${id(productId)}/featured`,
+      { method: "PATCH", body: json({ featured }) },
+    ),
 
   // Roles (read-only)
   roles: () => api<RolesResponse>("/api/super-admin/roles"),
@@ -216,9 +225,12 @@ export const superAdminApi = {
     }),
 
   // Finance settings
-  financeSettings: () => api<unknown>("/api/super-admin/finance-settings"),
+  financeSettings: () =>
+    api<FinanceSettings>("/api/super-admin/finance-settings"),
 
   // Review moderation (existing)
+  pendingReviews: () =>
+    api<{ reviews: PendingReview[] }>("/api/super-admin/reviews/pending"),
   moderateReview: (
     reviewId: string,
     decision: "PUBLISHED" | "REJECTED",

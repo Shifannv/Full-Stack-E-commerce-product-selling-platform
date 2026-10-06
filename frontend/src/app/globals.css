@@ -296,3 +296,36 @@ textarea {
     scroll-behavior: auto;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Operator console (Admin + Super Admin). Scoped to .dashboard-shell so the
+   storefront is untouched. Status tones pair a tinted surface with a dark
+   foreground of the same hue; labels always carry the meaning, never colour alone.
+   --------------------------------------------------------------------------- */
+.dashboard-shell {
+  --tone-ok-fg: #1f4d33; --tone-ok-bg: #e2eee4;
+  --tone-warn-fg: #6f4710; --tone-warn-bg: #f5e9cf;
+  --tone-bad-fg: #82291f; --tone-bad-bg: #f4dfdb;
+  --tone-info-fg: #294662; --tone-info-bg: #e0e8f0;
+  --tone-neutral-fg: #484d45; --tone-neutral-bg: #e9e8e1;
+  font-variant-numeric: tabular-nums;
+}
+.dashboard-shell ::selection { background: #cfd8cb; color: #1b241d; }
+.op-title { font-family: var(--font-display), Georgia, serif; font-size: clamp(1.7rem, 2.4vw, 2.25rem); line-height: 1.12; letter-spacing: -0.015em; font-weight: 400; text-wrap: balance; }
+.op-section-title { font-size: 0.95rem; font-weight: 650; letter-spacing: -0.005em; }
+.op-num { font-variant-numeric: tabular-nums; }
+.op-link { color: var(--primary); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--primary) 35%, transparent); }
+.op-link:hover { text-decoration-color: currentColor; }
+.op-table th { text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--muted-foreground); padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--border); white-space: nowrap; background: color-mix(in srgb, var(--secondary) 55%, var(--card)); }
+.op-table td { padding: 0.75rem 0.9rem; border-bottom: 1px solid var(--border); vertical-align: top; font-size: 0.875rem; }
+.op-table tbody tr:hover { background: color-mix(in srgb, var(--secondary) 35%, transparent); }
+.op-table tbody tr[data-selected="true"] { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+.op-skip { position: absolute; left: 0.75rem; top: -4rem; z-index: 60; background: var(--primary); color: var(--primary-foreground); padding: 0.6rem 1rem; transition: top 150ms ease-out; }
+.op-skip:focus { top: 0.75rem; }
+.dashboard-sidebar nav a[aria-current="page"] { background: color-mix(in srgb, currentColor 13%, transparent); font-weight: 600; opacity: 1; }
+.dashboard-shell[data-role="super-admin"] .dashboard-sidebar nav a:hover { background: rgb(255 255 255 / 9%); }
+.dashboard-shell main input:not([type="checkbox"]):not([type="radio"]), .dashboard-shell main select, .dashboard-shell main textarea { border: 1px solid var(--input); background: var(--card); border-radius: var(--radius-md); padding: 0.5rem 0.7rem; font: inherit; }
+.dashboard-shell main textarea { min-height: 5.5rem; resize: vertical; }
+.dashboard-shell main :is(input, select, textarea):disabled { background: var(--muted); color: var(--muted-foreground); }
+.dashboard-shell main :is(input, select, textarea)[aria-invalid="true"] { border-color: var(--destructive); }
+@media (prefers-reduced-motion: reduce) { .op-skip { transition: none; } }

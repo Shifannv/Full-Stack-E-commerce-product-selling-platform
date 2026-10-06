@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { PasswordInput } from "@/components/ui/password-input";
 import { sellerLifecycle, type SellerApplication, type BankDetails } from "@/lib/api/seller-lifecycle";
 
 const message = (error: unknown) => error instanceof Error ? error.message : "The operation failed. Please try again.";
@@ -11,8 +12,13 @@ export function ProvisionSeller({ onCreated }: { onCreated: (id: string) => void
   const [success, setSuccess] = useState<string | null>(null);
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); const form = event.currentTarget;
-    const input = Object.fromEntries(new FormData(form));
-    if (!window.confirm(`Create an internal seller account for ${String(input.email)}? The seller must replace the temporary password before onboarding.`)) return;
+    const entries = new FormData(form);
+    const input = {
+      name: String(entries.get("name") ?? ""),
+      email: String(entries.get("email") ?? ""),
+      temporaryPassword: String(entries.get("temporaryPassword") ?? ""),
+    };
+    if (!window.confirm(`Create an internal seller account for ${input.email}? The seller must replace the temporary password before onboarding.`)) return;
     setBusy(true); setError(null); setSuccess(null);
     try {
       const created = await sellerLifecycle.provision(input);
@@ -26,7 +32,7 @@ export function ProvisionSeller({ onCreated }: { onCreated: (id: string) => void
     <form onSubmit={submit} className="workflow-form max-w-xl"><fieldset className="grid gap-4" disabled={busy}>
       <label>Seller name<input name="name" required maxLength={200} autoComplete="off" /></label>
       <label>Seller email<input name="email" type="email" required maxLength={320} autoComplete="off" /></label>
-      <label>Temporary password<input name="temporaryPassword" type="password" required minLength={12} maxLength={128} autoComplete="new-password" /></label>
+      <label>Temporary password<PasswordInput name="temporaryPassword" required minLength={12} maxLength={128} autoComplete="new-password" /></label>
       <p className="text-sm text-muted-foreground">Use 12–128 characters. Keep it only long enough to share securely with the seller.</p>
       <Button type="submit">{busy ? "Creating account…" : "Create seller account"}</Button>
     </fieldset>{error && <p role="alert" className="text-destructive">{error}</p>}{success && <p role="status">{success}</p>}</form>
@@ -62,12 +68,24 @@ export function SellerReview({ adminId, onClose, onUpdated }: { adminId: string;
   }
   function bankDecision(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); const form = new FormData(event.currentTarget);
-    void run(() => sellerLifecycle.verifyBank(adminId, { ...Object.fromEntries(form), revision: privateBank?.revision ?? data?.bank?.revision }), "Bank review saved.");
+    // The backend binds the decision to the revision under review and rejects a mismatch,
+    // so there is nothing safe to send when no revision is loaded.
+    const revisionUnderReview = privateBank?.revision ?? data?.bank?.revision;
+    if (!revisionUnderReview) { setError("Reload the application before saving a bank decision."); return; }
+    const decisionValue = String(form.get("decision") ?? "");
+    if (decisionValue !== "VERIFIED" && decisionValue !== "CHANGES_REQUIRED") { setError("Choose a bank decision."); return; }
+    void run(() => sellerLifecycle.verifyBank(adminId, {
+      revision: revisionUnderReview,
+      decision: decisionValue,
+      notes: String(form.get("notes") ?? ""),
+    }), "Bank review saved.");
   }
   function decision(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); const form = new FormData(event.currentTarget);
-    if (!window.confirm(`Save the ${String(form.get("decision")).replaceAll("_", " ").toLowerCase()} decision for this seller application?`)) return;
-    void run(() => sellerLifecycle.decision(adminId, String(form.get("decision")), String(form.get("notes"))), "Application decision saved.");
+    const decisionValue = String(form.get("decision") ?? "");
+    if (decisionValue !== "APPROVED" && decisionValue !== "CHANGES_REQUIRED" && decisionValue !== "REJECTED") { setError("Choose a decision."); return; }
+    if (!window.confirm(`Save the ${decisionValue.replaceAll("_", " ").toLowerCase()} decision for this seller application?`)) return;
+    void run(() => sellerLifecycle.decision(adminId, decisionValue, String(form.get("notes") ?? "")), "Application decision saved.");
   }
   async function documentDownload(documentId: string) {
     setBusy(true); setError(null);

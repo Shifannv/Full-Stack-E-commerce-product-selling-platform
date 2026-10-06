@@ -5,6 +5,8 @@ export class ApiError extends Error {
   constructor(
     readonly status: number,
     message: string,
+    /** Seconds from a `Retry-After` response header, when the server supplied one. */
+    readonly retryAfterSeconds?: number,
   ) {
     super(message);
   }
@@ -34,9 +36,17 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
       typeof payload.error === "string"
         ? payload.error
         : `API request failed (${response.status})`;
-    throw new ApiError(response.status, message);
+    throw new ApiError(response.status, message, retryAfterSeconds(response));
   }
   return payload as T;
+}
+
+// Rate limiting (middleware/rate-limit.ts) and limiter outages both send `Retry-After`.
+function retryAfterSeconds(response: Response): number | undefined {
+  const header = response.headers.get("Retry-After");
+  if (!header) return undefined;
+  const seconds = Number(header);
+  return Number.isFinite(seconds) && seconds >= 0 ? seconds : undefined;
 }
 
 export const id = (value: string) => encodeURIComponent(value);

@@ -1,6 +1,5 @@
-import { RoleDashboard } from "@/components/layout/role-dashboard";
-import { OperatorGate, OperatorWorkspace } from "@/components/layout/operator-workspace";
+import { AdminOverview } from "@/components/operator/admin-overview";
 
 export default function AdminPage() {
-  return <OperatorGate role="admin"><RoleDashboard role="admin" /><OperatorWorkspace role="admin" /></OperatorGate>;
+  return <AdminOverview />;
 }

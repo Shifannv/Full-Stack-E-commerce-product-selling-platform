@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
-import { DashboardShell } from "@/components/layout/dashboard-shell";
 
 export const metadata: Metadata = {
-  title: "Platform",
+  title: { default: "Platform", template: "%s — Ownline Dropship Platform" },
   robots: { index: false, follow: false },
 };
 
-export default function SuperAdminLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <DashboardShell
-      title="Platform workspace"
-      subtitle="Ownline Dropship operations"
-      homeHref="/super-admin"
-    >
-      {children}
-    </DashboardShell>
-  );
+export default function SuperAdminLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return children;
 }

@@ -533,3 +533,37 @@ export async function listSuperAdminPayouts(
     .limit(opts.limit)
     .offset(opts.offset);
 }
+
+export const VALID_SETTLEMENT_STATUSES = [
+  "AVAILABLE",
+  "PAYOUT_PENDING",
+  "PAID",
+  "HELD",
+] as const;
+
+/**
+ * Platform-wide settlement history for Super Admin. Amounts are read from stored rows (never
+ * recomputed), so Commission and Payment Gateway Fee shown are the values snapshotted when the
+ * settlement was created.
+ */
+export async function listSuperAdminSettlements(
+  db: Db,
+  opts: {
+    status?: string;
+    adminId?: string;
+    limit: number;
+    offset: number;
+  },
+) {
+  const conditions = [];
+  if (opts.status) conditions.push(eq(adminSettlements.status, opts.status));
+  if (opts.adminId) conditions.push(eq(adminSettlements.adminId, opts.adminId));
+
+  return db
+    .select()
+    .from(adminSettlements)
+    .where(conditions.length ? and(...conditions) : undefined)
+    .orderBy(desc(adminSettlements.createdAt), asc(adminSettlements.id))
+    .limit(opts.limit)
+    .offset(opts.offset);
+}

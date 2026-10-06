@@ -15,6 +15,8 @@ import {
   decideReturn,
   getReturn,
   inspectReturn,
+  isReturnState,
+  listAdminReturns,
   markReturnReceived,
   requestReturn,
   returnWindowDays,
@@ -104,6 +106,40 @@ returnRoutes.get("/returns/:returnId", async (c) => {
       getReturn(db, c.req.param("returnId"), c.get("actor"), "customer"),
     ),
   );
+});
+
+// Seller-scoped queue. Registered beside the per-reference route; `/admin/returns` and
+// `/admin/returns/:returnId` have different depths so declaration order does not matter.
+function queuePage(raw: string | undefined, name: "limit" | "offset", fallback: number) {
+  if (raw === undefined) return fallback;
+  const value = Number(raw);
+  if (!Number.isSafeInteger(value) || value < (name === "limit" ? 1 : 0))
+    throw new DomainError(`Invalid ${name}`, 422);
+  return value;
+}
+
+returnRoutes.get("/admin/returns", async (c) => {
+  const status = c.req.query("status");
+  if (status && !isReturnState(status))
+    throw new DomainError("Invalid status", 422);
+  const limit = Math.min(50, queuePage(c.req.query("limit"), "limit", 20));
+  const offset = queuePage(c.req.query("offset"), "offset", 0);
+  // An unconfigured policy must not break a read-only queue; deadlines are then omitted.
+  let windowDays: number | null = null;
+  try {
+    windowDays = returnWindowDays(c.env.RETURN_WINDOW_DAYS);
+  } catch {
+    windowDays = null;
+  }
+  const returnsList = await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
+    listAdminReturns(db, c.get("actor"), {
+      status: status || undefined,
+      limit,
+      offset,
+      windowDays,
+    }),
+  );
+  return c.json({ returns: returnsList, limit, offset });
 });
 
 returnRoutes.get("/admin/returns/:returnId", async (c) => {

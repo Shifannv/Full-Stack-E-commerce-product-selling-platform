@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { authApi, ApiError } from "@/lib/api";
 import { operatorWorkflows, runOperatorWorkflow, type OperatorWorkflow } from "@/lib/api/operator-workflows";
 import { Button } from "@/components/ui/button";
+import { PasswordInput } from "@/components/ui/password-input";
 import Link from "next/link";
 import { api as apiCall, json } from "@/lib/api/client";
 
@@ -87,7 +88,7 @@ export function OperatorGate({ role, children }: { role: "admin" | "super-admin"
       <p className="mt-4 text-muted-foreground">Sign in to manage {role === "admin" ? "your seller account" : "Ownline Dropship"}.</p>
       <form className="workflow-form" onSubmit={event => void signIn(event)}>
         <label>Email<input name="email" type="email" autoComplete="username" required /></label>
-        <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
+        <label>Password<PasswordInput name="password" autoComplete="current-password" required /></label>
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <Button disabled={busy} type="submit">{busy ? "Signing in…" : "Sign in"}</Button>
       </form>
@@ -128,7 +129,7 @@ export function OperatorGate({ role, children }: { role: "admin" | "super-admin"
  * - Password policy matches backend: 12–128 chars, new !== current.
  * - Handles 403 (wrong current password) and 409 (already changed) separately.
  */
-function InitialPasswordChange({ onDone, onSignOut }: { onDone: () => void; onSignOut: () => void }) {
+export function InitialPasswordChange({ onDone, onSignOut }: { onDone: () => void; onSignOut: () => void }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
@@ -196,29 +197,25 @@ function InitialPasswordChange({ onDone, onSignOut }: { onDone: () => void; onSi
         <form onSubmit={event => void handleSubmit(event)} className="mt-7 space-y-5" noValidate>
           <label className="block">
             <span className="block text-sm font-medium mb-2">Current (temporary) password</span>
-            <input
+            <PasswordInput
               id="admin-initial-password-current"
               name="currentPassword"
-              type="password"
               autoComplete="current-password"
               required
               disabled={busy}
-              className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 transition-shadow"
             />
           </label>
 
           <label className="block">
             <span className="block text-sm font-medium mb-2">New password</span>
-            <input
+            <PasswordInput
               id="admin-initial-password-new"
               name="newPassword"
-              type="password"
               autoComplete="new-password"
               required
               minLength={MIN_PASSWORD_LENGTH}
               maxLength={MAX_PASSWORD_LENGTH}
               disabled={busy}
-              className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 transition-shadow"
               placeholder={`${MIN_PASSWORD_LENGTH}+ characters`}
             />
             <span className="mt-1 block text-xs text-muted-foreground">Minimum {MIN_PASSWORD_LENGTH} characters, maximum {MAX_PASSWORD_LENGTH}.</span>
@@ -226,14 +223,12 @@ function InitialPasswordChange({ onDone, onSignOut }: { onDone: () => void; onSi
 
           <label className="block">
             <span className="block text-sm font-medium mb-2">Confirm new password</span>
-            <input
+            <PasswordInput
               id="admin-initial-password-confirm"
               name="confirm"
-              type="password"
               autoComplete="new-password"
               required
               disabled={busy}
-              className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 transition-shadow"
               placeholder="Re-enter new password"
             />
           </label>

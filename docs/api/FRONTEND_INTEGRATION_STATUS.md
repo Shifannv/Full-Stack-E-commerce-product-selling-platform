@@ -1,8 +1,14 @@
-# Frontend integration status — 2026-10-04
+# Frontend integration status — 2026-10-06
 
 Current local implementation; no deployment or production data changes. This report covers customer pages, Admin and Super Admin, as requested. Provider readiness is separate from a connected screen.
 
-## What changed
+## What changed (2026-10-06 update)
+
+- **Admin UI missing workflows wired:** `PUT /api/admin/onboarding/bank` (bank details — account holder, bank name, account number, IFSC) added to Admin Seller Profile operator workflows. `POST /api/admin/review/provision` (Super Admin provisioning with temporary password), `POST /api/admin/review/:adminId/bank/reveal` (audited full bank reveal), and `POST /api/admin/review/:adminId/bank/decision` (bank verification decision with revision) added to Super Admin Sellers workflows.
+- **Account page fix:** Admin account page now shows "Account ID" (monospace UUID) instead of the user's UUID mislabeled as "Email". The `/api/me` endpoint does not return email, so showing the role and internal ID is the correct display.
+- **Stub catalog build script added:** `backend/scripts/stub-catalog-server.ts` — in-process server serving real `ownline_checkout_test` catalog data for frontend build verification. Use `CATALOG_BUILD_API_URL=http://127.0.0.1:8797` during builds when the main Worker is not running against the test database.
+
+## What changed (2026-10-04 update)
 
 - Customer account, addresses, search, collections, cart, checkout, orders and favourites share the homepage's cream/forest palette, Instrument Serif headings, DM Sans controls and restrained borders. Product detail retains its shopping layout. The homepage intro, video handoff and static product grids remain in place.
 - The shared footer now has a Dress entry, collection/account navigation, returns access and back-to-top. All links resolve to existing shopping routes; no unconfigured newsletter or invented policy links were added. Tablet navigation collapses before the desktop links become crowded.

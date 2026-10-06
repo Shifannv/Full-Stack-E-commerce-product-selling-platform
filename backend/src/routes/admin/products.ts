@@ -10,6 +10,7 @@ import {
   createSubcategory,
   createVariant,
   getAdminCategoryConfig,
+  getAdminProduct,
   getProductInventory,
   listAdminProducts,
   saveProductImageMetadata,
@@ -34,6 +35,14 @@ export function registerProductRoutes(adminRoutes: AdminRouter) {
     return c.json({ inventories: await withDb(c.env.HYPERDRIVE.connectionString, async (db) =>
       getProductInventory(db, await getAdminId(db, actor.userId), c.req.param("productId")),
     ) });
+  });
+  adminRoutes.get("/products/:productId", async (c) => {
+    const actor = c.get("actor");
+    if (!actor.roles.includes("ADMIN") || !actor.adminApproved || !actor.permissions.includes("products.view"))
+      throw new DomainError("Forbidden", 403);
+    return c.json(await withDb(c.env.HYPERDRIVE.connectionString, async (db) =>
+      getAdminProduct(db, await getAdminId(db, actor.userId), c.req.param("productId")),
+    ));
   });
   adminRoutes.get("/categories", async (c) => {
     ownAdmin(c.get("actor"));

@@ -3,7 +3,7 @@ import { randomBytes, randomUUID, createHash } from "node:crypto";
 import { createRequire } from "node:module";
 import { createServer } from "node:http";
 import { spawn } from "node:child_process";
-import { readFileSync, mkdirSync } from "node:fs";
+import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { parse } from "dotenv";
 import { eq, inArray } from "drizzle-orm";
@@ -17,8 +17,9 @@ import { adminAddresses, adminAuditEvents, adminCategoryAssignments, adminKycDoc
 import { categories } from "../src/db/schema/catalog";
 import { apiRateLimits } from "../src/db/schema/security";
 import { provisionAdmin, changeInitialAdminPassword } from "../src/services/admin/provisioning.service";
-import { saveKyc, saveAddress, requestCategory, submitApplication } from "../src/services/admin/admin.service";
-import { saveBankDetails } from "../src/services/admin/bank.service";
+import { saveKyc, saveAddress, requestCategory, submitApplication, reviewApplication } from "../src/services/admin/admin.service";
+import { saveBankDetails, revealBankDetails, reviewBankDetails } from "../src/services/admin/bank.service";
+import { initiatePasswordReset } from "../src/services/password-reset/password-reset.service";
 import { app } from "../src/app";
 import type { AuthBindings } from "../src/lib/auth/auth";
 
@@ -168,8 +169,251 @@ try {
       await new Promise<void>((res, rej) => { build.once("error", rej); build.once("exit", (code) => code === 0 ? res() : rej(new Error("Isolated frontend production build failed"))); });
     }
   } else {
+    // Provision Admin account (reviewer + category already created by shared setup above)
     await provisionAdmin(db, reviewerId, { email: sellerEmail, name: "Browser Seller", temporaryPassword });
-    throw new Error("Admin browser phase is not implemented yet");
+    const kycDocPath = join(screenshotRoot, "fixture-kyc.pdf");
+    writeFileSync(kycDocPath, "%PDF-1.4 isolated admin browser verification fixture");
+
+    // PHASE 2: Admin login with temporary password → forced change
+    await page.goto(`${frontendOrigin}/admin`);
+    await page.getByLabel("Email").fill(sellerEmail);
+    await page.getByLabel("Password").fill(temporaryPassword);
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.getByRole("heading", { name: "Set a permanent password" }).waitFor({ timeout: 15000 });
+    assert.equal(await page.getByRole("button", { name: "Sign in", exact: true }).count(), 0, "Sign-in form must be hidden during forced password change");
+    assert.equal(await page.getByText("Manage your store").count(), 0, "Dashboard must not appear before forced password change");
+    await page.locator('[name="currentPassword"]').fill(temporaryPassword);
+    await page.locator('[name="newPassword"]').fill(permanentPassword);
+    await page.locator('[name="confirm"]').fill(permanentPassword);
+    await page.getByRole("button", { name: "Set permanent password" }).click();
+    await page.getByRole("heading", { name: "Password updated" }).waitFor({ timeout: 10000 });
+    await page.getByRole("button", { name: "Continue to sign in" }).click();
+    await page.getByRole("button", { name: "Sign in", exact: true }).waitFor({ timeout: 10000 });
+
+    // Temporary password now rejected
+    await page.getByLabel("Email").fill(sellerEmail);
+    await page.getByLabel("Password").fill(temporaryPassword);
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.getByRole("alert").waitFor({ timeout: 10000 });
+
+    // Sign in with permanent password
+    await page.getByLabel("Password").clear();
+    await page.getByLabel("Password").fill(permanentPassword);
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.getByRole("button", { name: "Sign out" }).waitFor({ timeout: 20000 });
+    assert.equal(await page.getByRole("heading", { name: "Your workspace" }).count(), 1, "Admin workspace heading must appear");
+
+    // Role check: Admin must not see Super Admin dashboard
+    await page.goto(`${frontendOrigin}/super-admin`);
+    await page.waitForLoadState("networkidle");
+    const bodyText = await page.evaluate(() => document.body.textContent ?? "");
+    assert.ok(!bodyText.includes("Platform at a glance"), "Admin must not reach Super Admin dashboard");
+    assert.ok(bodyText.includes("Sign in") || bodyText.includes("needs another account"), "Admin must see sign-in or forbidden state on Super Admin route");
+    await page.goto(`${frontendOrigin}/admin`);
+    await page.getByRole("button", { name: "Sign out" }).waitFor({ timeout: 20000 });
+
+    // PHASE 3: Admin onboarding via UI
+    await page.getByRole("button", { name: "Seller profile" }).click();
+
+    // KYC details
+    await page.locator("nav").getByRole("button", { name: "Save seller details" }).click();
+    await page.getByLabel("Legal name").fill("Browser Seller Ltd");
+    await page.getByLabel("Business type").fill("Individual");
+    await page.getByLabel("Contact phone").fill("9876543210");
+    await page.getByRole("button", { name: "Review changes" }).click();
+    await page.getByRole("button", { name: "Confirm changes" }).click();
+    await page.getByText("Operation completed").waitFor({ timeout: 10000 });
+
+    // KYC document upload
+    await page.locator("nav").getByRole("button", { name: "Upload verification document" }).click();
+    await page.getByLabel("Document type").fill("Identity");
+    await page.locator('[name="file"]').setInputFiles(kycDocPath);
+    await page.getByRole("button", { name: "Review changes" }).click();
+    await page.getByRole("button", { name: "Confirm changes" }).click();
+    await page.getByText("Operation completed").waitFor({ timeout: 15000 });
+
+    // SHIPPING_ORIGIN address
+    await page.locator("nav").getByRole("button", { name: "Save operational address" }).click();
+    await page.locator("select[name='type']").selectOption("SHIPPING_ORIGIN");
+    await page.getByLabel("Contact name").fill("Browser Seller Shipping");
+    await page.getByLabel("Phone").fill("9876543210");
+    await page.getByLabel("Address line 1").fill("12 Main Street");
+    await page.getByLabel("City").fill("Chennai");
+    await page.getByLabel("State").fill("Tamil Nadu");
+    await page.getByLabel("Postal code").fill("600001");
+    await page.getByLabel("Country code").fill("IN");
+    await page.getByRole("button", { name: "Review changes" }).click();
+    await page.getByRole("button", { name: "Confirm changes" }).click();
+    await page.getByText("Operation completed").waitFor({ timeout: 10000 });
+
+    // Navigate away to reset the address form, then RETURN address
+    await page.locator("nav").getByRole("button", { name: "Seller application" }).click();
+    await page.locator("nav").getByRole("button", { name: "Save operational address" }).click();
+    await page.locator("select[name='type']").selectOption("RETURN");
+    await page.getByLabel("Contact name").fill("Browser Seller Returns");
+    await page.getByLabel("Phone").fill("9876543211");
+    await page.getByLabel("Address line 1").fill("14 Return Street");
+    await page.getByLabel("City").fill("Chennai");
+    await page.getByLabel("State").fill("Tamil Nadu");
+    await page.getByLabel("Postal code").fill("600002");
+    await page.getByLabel("Country code").fill("IN");
+    await page.getByRole("button", { name: "Review changes" }).click();
+    await page.getByRole("button", { name: "Confirm changes" }).click();
+    await page.getByText("Operation completed").waitFor({ timeout: 10000 });
+
+    // Category request
+    await page.locator("nav").getByRole("button", { name: "Request a category assignment" }).click();
+    await page.getByLabel("Category reference").fill(categoryId);
+    await page.getByRole("button", { name: "Review changes" }).click();
+    await page.getByRole("button", { name: "Confirm changes" }).click();
+    await page.getByText("Operation completed").waitFor({ timeout: 10000 });
+
+    // Bank details (masked response expected)
+    await page.locator("nav").getByRole("button", { name: "Save bank details" }).click();
+    await page.getByLabel("Account holder name").fill("Browser Seller Ltd");
+    await page.getByLabel("Bank name").fill("Fixture Bank");
+    await page.getByLabel("Account number").fill("987654321012");
+    await page.getByLabel("IFSC code").fill("TEST0987654");
+    await page.getByRole("button", { name: "Review changes" }).click();
+    await page.getByRole("button", { name: "Confirm changes" }).click();
+    await page.getByText("Operation completed").waitFor({ timeout: 10000 });
+    assert.equal(await page.getByText("987654321012", { exact: true }).count(), 0, "Full account number must not appear in bank save response");
+
+    // Submit application
+    await page.locator("nav").getByRole("button", { name: "Submit application for review" }).click();
+    await page.getByRole("button", { name: "Review changes" }).click();
+    await page.getByRole("button", { name: "Confirm changes" }).click();
+    await page.getByText("Operation completed").waitFor({ timeout: 10000 });
+
+    // Verify PENDING_SUPER_ADMIN_APPROVAL via UI
+    await page.locator("nav").getByRole("button", { name: "Seller application" }).click();
+    await page.getByRole("button", { name: "Load records" }).click();
+    await page.getByText("PENDING_SUPER_ADMIN_APPROVAL").first().waitFor({ timeout: 10000 });
+
+    // DB verification
+    const [seller] = await db.select({ id: admins.id, status: admins.status, userId: admins.userId }).from(admins).innerJoin(users, eq(users.id, admins.userId)).where(eq(users.email, sellerEmail));
+    assert.ok(seller, "Seller admin record must exist in database");
+    assert.equal(seller.status, "PENDING_SUPER_ADMIN_APPROVAL", `Expected PENDING_SUPER_ADMIN_APPROVAL, got ${seller.status}`);
+
+    // PHASE 4: Pre-approval security — product creation must be blocked
+    await page.getByRole("button", { name: "Catalog" }).click();
+    await page.locator("nav").getByRole("button", { name: "Create a product" }).click();
+    await page.locator('[name="categoryId"]').fill(categoryId);
+    await page.locator('[name="subcategoryId"]').fill(randomUUID());
+    await page.getByLabel("Name").fill("Pending Test Product");
+    await page.getByLabel("URL slug").fill("pending-test-product");
+    await page.getByLabel("Price in INR").fill("999");
+    await page.locator("select[name='returnEnabled']").selectOption("false");
+    await page.getByRole("button", { name: "Review changes" }).click();
+    await page.getByRole("button", { name: "Confirm changes" }).click();
+    const blockedAlertEl = page.getByRole("alert").filter({ hasText: /\S/ }).filter({ hasNot: page.locator('[id="__next-route-announcer__"]') });
+    await blockedAlertEl.first().waitFor({ timeout: 10000 });
+    const blockedAlert = await blockedAlertEl.first().textContent() ?? "";
+    assert.ok(blockedAlert.length > 0, "Pre-approval product creation must return an error message");
+
+    // PHASE 7: Programmatic approval (SA review UI already verified in --super-admin mode)
+    const bankData = await revealBankDetails(db, seller.id, reviewerId, env.ADMIN_BANK_ENCRYPTION_KEY);
+    await reviewBankDetails(db, seller.id, reviewerId, { decision: "VERIFIED", notes: "Fixture bank verified for admin browser E2E test", revision: bankData.revision });
+    await reviewApplication(db, seller.id, reviewerId, "APPROVED", "Admin browser E2E — approved programmatically after SA flow verified separately");
+    assert.equal((await db.select({ status: admins.status }).from(admins).where(eq(admins.id, seller.id)))[0].status, "ACTIVE", "Admin must be ACTIVE after approval");
+
+    // PHASE 8: Active Admin dashboard
+    await page.goto(`${frontendOrigin}/admin`);
+    await page.getByRole("button", { name: "Sign out" }).waitFor({ timeout: 20000 });
+    await page.getByRole("heading", { name: "Your workspace" }).waitFor({ timeout: 10000 });
+
+    // Walk all workspace groups — no alerts
+    for (const group of ["Catalog", "Seller profile", "Orders & returns", "Finance", "Account lifecycle"]) {
+      await page.getByRole("button", { name: group }).click();
+      await page.waitForTimeout(800);
+      const alerts = page.locator("main").getByRole("alert").filter({ hasText: /\S/ });
+      assert.equal(await alerts.count(), 0, `Unexpected error on group "${group}"`);
+    }
+
+    // Finance: verify balance loads
+    await page.getByRole("button", { name: "Finance" }).click();
+    await page.locator("nav").getByRole("button", { name: "Balance, settlements & payouts" }).click();
+    await page.getByRole("button", { name: "Load records" }).click();
+    await page.getByText("Records").waitFor({ timeout: 10000 });
+
+    // Account lifecycle: verify lifecycle loads
+    await page.getByRole("button", { name: "Account lifecycle" }).click();
+    await page.locator("nav").getByRole("button", { name: "Account lifecycle" }).click();
+    await page.getByRole("button", { name: "Load records" }).click();
+    await page.getByText("Records").waitFor({ timeout: 10000 });
+
+    // Responsive overflow check
+    for (const [name, width, height] of [["desktop", 1440, 960], ["tablet-lg", 1280, 800], ["tablet", 1024, 768], ["tablet-sm", 768, 1024], ["mobile-lg", 390, 844], ["mobile-sm", 375, 812]] as const) {
+      await page.setViewportSize({ width, height });
+      const noOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
+      assert.equal(noOverflow, true, `Horizontal overflow at ${name} (${width}x${height})`);
+      await page.screenshot({ path: join(screenshotRoot, `admin-${name}.png`), fullPage: true });
+    }
+    await page.setViewportSize({ width: 1440, height: 960 });
+
+    // Logout
+    await page.getByRole("button", { name: "Sign out" }).click();
+    await page.getByRole("button", { name: "Sign in", exact: true }).waitFor({ timeout: 10000 });
+
+    // PHASE 9: Password recovery
+    // Enumerate-safe forgot-password UI
+    await page.goto(`${frontendOrigin}/admin/forgot-password`);
+    await page.getByLabel("Email address").fill("does-not-exist@example.invalid");
+    await page.getByRole("button", { name: "Send reset link" }).click();
+    await page.getByText("Check your email").waitFor({ timeout: 10000 });
+
+    // No-token reset URL shows invalid state
+    await page.goto(`${frontendOrigin}/admin/reset-password`);
+    await page.getByText("No reset token was provided").waitFor({ timeout: 10000 });
+
+    // Obtain token via direct service call (test mode — no Resend email sent)
+    const resetResult = await initiatePasswordReset(db, sellerEmail);
+    assert.ok(resetResult, "initiatePasswordReset must succeed for an eligible Admin");
+    const recoveredPassword = randomBytes(18).toString("base64url");
+
+    // Token validation: valid token shows the reset form
+    await page.goto(`${frontendOrigin}/admin/reset-password?token=${encodeURIComponent(resetResult.rawToken)}`);
+    await page.getByRole("heading", { name: "Set a new password" }).waitFor({ timeout: 10000 });
+
+    // Submit new password
+    await page.locator('[name="password"]').fill(recoveredPassword);
+    await page.locator('[name="confirm"]').fill(recoveredPassword);
+    await page.getByRole("button", { name: "Set new password" }).click();
+    await page.getByRole("heading", { name: "Password updated" }).waitFor({ timeout: 10000 });
+
+    // Old password must fail (sessions invalidated)
+    await page.goto(`${frontendOrigin}/admin`);
+    await page.getByLabel("Email").fill(sellerEmail);
+    await page.getByLabel("Password").fill(permanentPassword);
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.getByRole("alert").waitFor({ timeout: 10000 });
+
+    // New password must work
+    await page.getByLabel("Password").clear();
+    await page.getByLabel("Password").fill(recoveredPassword);
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.getByRole("button", { name: "Sign out" }).waitFor({ timeout: 20000 });
+
+    // Token is single-use: reuse must fail
+    const page2 = await browser.newPage();
+    await page2.goto(`${frontendOrigin}/admin/reset-password?token=${encodeURIComponent(resetResult.rawToken)}`);
+    await page2.getByText("invalid or has already expired").waitFor({ timeout: 10000 });
+    await page2.close();
+
+    // Final sign-out
+    await page.getByRole("button", { name: "Sign out" }).click();
+    await page.getByRole("button", { name: "Sign in", exact: true }).waitFor({ timeout: 10000 });
+
+    assert.deepEqual(errors.filter(e => !e.includes("hydration") && !e.includes("act(")), [], "No unhandled JS runtime errors");
+    console.log("PASS: Admin browser phase — login, forced password change, role isolation, full onboarding via UI (KYC, document, both addresses, category, bank, submit), pre-approval product block, programmatic approval, active dashboard with all groups, responsive overflow (6 viewports), logout, password recovery (enumerate-safe, token validation, reset, old-password rejection, new-password accepted, single-use enforcement).");
+
+    if (process.argv.includes("--build")) {
+      const build = spawn(process.execPath, [join(frontendRoot, "node_modules/next/dist/bin/next"), "build"], {
+        cwd: frontendRoot, windowsHide: true, stdio: "inherit",
+        env: { ...process.env, NEXT_PUBLIC_API_URL: apiOrigin, CATALOG_BUILD_API_URL: apiOrigin, NEXT_TELEMETRY_DISABLED: "1", OWNLINE_VERIFY_DIST_DIR: ".next-admin-build" },
+      });
+      await new Promise<void>((res, rej) => { build.once("error", rej); build.once("exit", (code) => code === 0 ? res() : rej(new Error("Isolated frontend production build failed"))); });
+    }
   }
 } finally {
   await browser?.close(); next?.kill();

@@ -733,6 +733,76 @@ export async function getProductInventory(db: Db, adminId: string, productId: st
   }).from(inventories).where(eq(inventories.productId, productId));
 }
 
+/**
+ * Full detail for one product the seller manages, so an editor can prefill every field.
+ *
+ * Ownership and category scope are enforced by `assertProductAdmin`, which answers a foreign or
+ * missing product with the same 404 ("Product unavailable") and an out-of-scope category with
+ * 403 — identical to the inventory read. Image rows expose the R2 object key (the same value the
+ * public catalog already serves); no credentials or bucket details are involved.
+ */
+export async function getAdminProduct(db: Db, adminId: string, productId: string) {
+  await assertProductAdmin(db, adminId, productId);
+  const [product] = await db
+    .select({
+      id: products.id,
+      name: products.name,
+      slug: products.slug,
+      description: products.description,
+      sku: products.sku,
+      price: products.price,
+      currency: products.currency,
+      status: products.status,
+      attributes: products.attributes,
+      returnEnabled: products.returnEnabled,
+      featured: products.featured,
+      weightKg: products.weightKg,
+      lengthCm: products.lengthCm,
+      breadthCm: products.breadthCm,
+      heightCm: products.heightCm,
+      categoryId: products.categoryId,
+      category: categories.name,
+      categorySlug: categories.slug,
+      subcategoryId: products.subcategoryId,
+      subcategory: subcategories.name,
+      subcategorySlug: subcategories.slug,
+      createdAt: products.createdAt,
+      updatedAt: products.updatedAt,
+    })
+    .from(products)
+    .innerJoin(categories, eq(categories.id, products.categoryId))
+    .innerJoin(subcategories, eq(subcategories.id, products.subcategoryId))
+    .where(eq(products.id, productId))
+    .limit(1);
+  if (!product) throw new DomainError("Product unavailable", 404);
+  const variants = await db
+    .select({
+      id: productVariants.id,
+      sku: productVariants.sku,
+      title: productVariants.title,
+      price: productVariants.price,
+      attributes: productVariants.attributes,
+      status: productVariants.status,
+      createdAt: productVariants.createdAt,
+      updatedAt: productVariants.updatedAt,
+    })
+    .from(productVariants)
+    .where(eq(productVariants.productId, productId))
+    .orderBy(asc(productVariants.createdAt), asc(productVariants.id));
+  const images = await db
+    .select({
+      id: productImages.id,
+      variantId: productImages.variantId,
+      objectKey: productImages.objectKey,
+      altText: productImages.altText,
+      sortOrder: productImages.sortOrder,
+    })
+    .from(productImages)
+    .where(eq(productImages.productId, productId))
+    .orderBy(asc(productImages.sortOrder), asc(productImages.id));
+  return { ...product, variants, images };
+}
+
 // ---------------------------------------------------------------------------
 // GET /api/super-admin/products — Super Admin private catalog discovery.
 // Returns all products across all admins including DRAFTs and ARCHIVED.

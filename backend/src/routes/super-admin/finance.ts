@@ -9,11 +9,13 @@ import {
   createSettlement,
   getAdminFinance,
   getFinanceSettings,
+  listSuperAdminSettlements,
   markPayoutPaid,
   parseBasisPoints,
   requestPayout,
   reviewPayout,
   updateFinanceSetting,
+  VALID_SETTLEMENT_STATUSES,
 } from "../../services/admin/finance.service";
 import {
   requireAuth,
@@ -121,6 +123,29 @@ financeRoutes.put(
     );
   },
 );
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function listPage(raw: string | undefined, name: "limit" | "offset", fallback: number) {
+  if (raw === undefined) return fallback;
+  const value = Number(raw);
+  if (!Number.isSafeInteger(value) || value < (name === "limit" ? 1 : 0))
+    throw new DomainError(`Invalid ${name}`, 422);
+  return value;
+}
+financeRoutes.get("/super-admin/settlements", async (c) => {
+  superAdmin(c.get("actor").roles);
+  const status = c.req.query("status");
+  if (status && !(VALID_SETTLEMENT_STATUSES as readonly string[]).includes(status))
+    throw new DomainError("Invalid status", 422);
+  const adminId = c.req.query("adminId");
+  if (adminId && !UUID.test(adminId))
+    throw new DomainError("Invalid adminId", 422);
+  const limit = Math.min(50, listPage(c.req.query("limit"), "limit", 20));
+  const offset = listPage(c.req.query("offset"), "offset", 0);
+  const settlements = await withDb(c.env.HYPERDRIVE.connectionString, (db) =>
+    listSuperAdminSettlements(db, { status, adminId, limit, offset }),
+  );
+  return c.json({ settlements, limit, offset });
+});
 financeRoutes.post("/super-admin/settlements", async (c) => {
   superAdmin(c.get("actor").roles);
   const v = await body(c);

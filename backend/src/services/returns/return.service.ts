@@ -1,4 +1,4 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { recordSensitiveAction } from "../security-audit";
 import type { createDb } from "../../db";
 import { adminAddresses } from "../../db/schema/admin";
@@ -654,4 +654,137 @@ export async function getReturn(
       ? record.returnAddressSnapshot
       : null,
   };
+}
+
+/** Return states a seller can filter their queue by (returns_status_check). */
+export const RETURN_STATES = [
+  "REQUESTED",
+  "APPROVED",
+  "RETURN_PENDING",
+  "RECEIVED",
+  "QC_IN_PROGRESS",
+  "QC_APPROVED",
+  "QC_REJECTED",
+  "REFUND_PROCESSING",
+  "REFUNDED",
+  "RETURN_ISSUE",
+  "REJECTED",
+] as const;
+
+export type ReturnState = (typeof RETURN_STATES)[number];
+
+export const isReturnState = (value: string): value is ReturnState =>
+  (RETURN_STATES as readonly string[]).includes(value);
+
+/**
+ * Seller-scoped return queue.
+ *
+ * Authorization mirrors `getReturn(..., "admin")` for an ADMIN caller: approved seller role
+ * plus `orders.view`, and only rows whose `returns.adminId` is this seller. SUPER_ADMIN is
+ * deliberately NOT given a platform-wide queue here — that remains a documented gap rather
+ * than an undocumented privilege on a seller endpoint.
+ *
+ * `returnWindowEndsAt` is computed here from the order's `deliveredAt` and the configured
+ * window so the browser never recomputes return policy. It is null when either the delivery
+ * timestamp or the policy configuration is absent, rather than guessing a deadline.
+ */
+export async function listAdminReturns(
+  db: Db,
+  actor: Actor,
+  options: {
+    status?: string;
+    limit: number;
+    offset: number;
+    /** Null when the return-window policy is not configured; no deadline is then claimed. */
+    windowDays: number | null;
+  },
+) {
+  if (
+    !actor.roles.includes("ADMIN") ||
+    !actor.adminApproved ||
+    !actor.permissions.includes("orders.view")
+  )
+    throw new DomainError("Forbidden", 403);
+  const [admin] = await db
+    .select({ id: admins.id })
+    .from(admins)
+    .where(eq(admins.userId, actor.userId))
+    .limit(1);
+  if (!admin) throw new DomainError("Forbidden", 403);
+
+  const scope = options.status
+    ? and(eq(returns.adminId, admin.id), eq(returns.status, options.status))
+    : eq(returns.adminId, admin.id);
+
+  const rows = await db
+    .select({
+      id: returns.id,
+      orderId: returns.orderId,
+      orderNumber: orders.orderNumber,
+      status: returns.status,
+      reason: returns.reason,
+      requestedAt: returns.requestedAt,
+      approvedAt: returns.approvedAt,
+      receivedAt: returns.receivedAt,
+      qcStatus: returns.qcStatus,
+      grossRefundAmount: returns.grossRefundAmount,
+      deductionAmount: returns.deductionAmount,
+      netRefundAmount: returns.netRefundAmount,
+      deliveredAt: orders.deliveredAt,
+      refundStatus: refunds.status,
+      refundAmount: refunds.amount,
+    })
+    .from(returns)
+    .leftJoin(orders, eq(orders.id, returns.orderId))
+    .leftJoin(refunds, eq(refunds.returnId, returns.id))
+    .where(scope)
+    .orderBy(desc(returns.requestedAt), asc(returns.id))
+    .limit(options.limit)
+    .offset(options.offset);
+
+  // Quantities live on return_items; one grouped read keeps this O(1) queries.
+  const ids = rows.map((row) => row.id);
+  const totals = ids.length
+    ? await db
+        .select({
+          returnId: returnItems.returnId,
+          itemCount: sql<number>`count(${returnItems.id})::int`,
+          totalQuantity: sql<number>`coalesce(sum(${returnItems.quantity}), 0)::int`,
+        })
+        .from(returnItems)
+        .where(inArray(returnItems.returnId, ids))
+        .groupBy(returnItems.returnId)
+    : [];
+  const byReturn = new Map(totals.map((entry) => [entry.returnId, entry]));
+
+  return rows.map((row) => {
+    const totalsForRow = byReturn.get(row.id);
+    return {
+      id: row.id,
+      orderId: row.orderId,
+      orderNumber: row.orderNumber,
+      status: row.status,
+      reason: row.reason,
+      requestedAt: row.requestedAt,
+      approvedAt: row.approvedAt,
+      receivedAt: row.receivedAt,
+      qcStatus: row.qcStatus,
+      grossRefundAmount: row.grossRefundAmount,
+      deductionAmount: row.deductionAmount,
+      netRefundAmount: row.netRefundAmount,
+      deliveredAt: row.deliveredAt,
+      returnWindowEndsAt:
+        row.deliveredAt && options.windowDays !== null
+          ? new Date(
+              row.deliveredAt.getTime() + options.windowDays * 86400000,
+            )
+          : null,
+      itemCount: totalsForRow?.itemCount ?? 0,
+      totalQuantity: totalsForRow?.totalQuantity ?? 0,
+      refund:
+        row.refundStatus === null
+          ? null
+          : { status: row.refundStatus, amount: row.refundAmount },
+    };
+  });
 }
