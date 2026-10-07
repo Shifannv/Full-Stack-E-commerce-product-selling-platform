@@ -49,7 +49,7 @@ export async function sendPasswordResetEmail(
   const html = `
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>Reset your Ownline Dropship password</title></head>
+<head><meta charset="UTF-8"><title>Reset your given demo password</title></head>
 <body style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#1a1a1a">
   <h1 style="font-size:22px;margin-bottom:8px">Reset your password</h1>
   <p>Hi ${escapeHtml(toName)},</p>
@@ -77,7 +77,7 @@ export async function sendPasswordResetEmail(
       body: JSON.stringify({
         from: fromEmail,
         to: [toEmail],
-        subject: "Reset your Ownline Dropship password",
+        subject: "Reset your old password",
         html,
       }),
       signal: AbortSignal.timeout(15000),

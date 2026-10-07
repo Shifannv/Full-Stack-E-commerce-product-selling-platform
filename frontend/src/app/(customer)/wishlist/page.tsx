@@ -19,6 +19,7 @@ type SavedProduct = {
   image?: { objectKey: string; altText: string | null } | null;
   secondImage?: { objectKey: string; altText: string | null } | null;
   available?: boolean;
+  firstAvailableVariantId?: string;
 };
 
 function WishlistContent() {
@@ -34,7 +35,7 @@ function WishlistContent() {
         const enriched = await Promise.all(result.products.map(async (item) => {
           try {
             const detail = await customerApi.product(item.slug);
-            return { ...item, image: detail.images[0] ?? null, secondImage: detail.images[1] ?? null, available: detail.available };
+            return { ...item, image: detail.images[0] ?? null, secondImage: detail.images[1] ?? null, available: detail.available, firstAvailableVariantId: detail.variants.find((variant) => variant.available)?.id };
           } catch {
             return item;
           }
@@ -70,6 +71,17 @@ function WishlistContent() {
       setBusyId(null);
     }
   }
+  async function addToCart(product: SavedProduct) {
+    setBusyId(product.productId);
+    setError(null);
+    try {
+      await customerApi.setCartItem(product.productId, 1, product.firstAvailableVariantId);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Could not add product to cart");
+    } finally {
+      setBusyId(null);
+    }
+  }
   if (loading) return <LoadingState label="Loading wishlist" />;
   if (error && !products.length) return <ErrorState description={error} />;
   return (
@@ -87,15 +99,10 @@ function WishlistContent() {
               className="min-w-0"
             >
               <ProductCard showWishlist={false} product={{ id: product.productId, slug: product.slug, name: product.name, price: product.price, currency: product.currency, image: product.image, secondImage: product.secondImage, available: product.available }} />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mt-2 -ml-3"
-                disabled={busyId === product.productId}
-                onClick={() => void remove(product.productId)}
-              >
-                Remove
-              </Button>
+              <div className="mt-3 flex gap-2">
+                <Button className="flex-1" size="sm" disabled={busyId === product.productId || product.available === false} onClick={() => void addToCart(product)}>Add to cart</Button>
+                <Button variant="ghost" size="sm" disabled={busyId === product.productId} onClick={() => void remove(product.productId)}>Remove</Button>
+              </div>
             </div>
           ))}
         </div>

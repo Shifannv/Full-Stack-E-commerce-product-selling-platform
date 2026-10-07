@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { publicImageUrl } from "@/lib/images";
+import { CatalogImage } from "@/components/storefront/catalog-image";
 import { PriceDisplay } from "./price-display";
 import { RatingDisplay } from "./rating-display";
 import { WishlistButton } from "./wishlist-button";
@@ -30,29 +30,9 @@ export function ProductCard({ product, showWishlist = true, eager = false }: { p
         className="block focus-visible:outline-2 focus-visible:outline-ring"
       >
         <div className="product-image relative aspect-[4/5] overflow-hidden bg-secondary">
-          {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt={product.image?.altText || product.name}
-              fill
-              loading={eager ? "eager" : "lazy"}
-              decoding="async"
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
-            />
-          ) : (
-            <span className="flex h-full items-center justify-center px-5 text-center text-sm text-muted-foreground">
-              Image coming soon
-            </span>
-          )}
+          <CatalogImage src={imageUrl} alt={product.image?.altText || product.name} sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" priority={eager} className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]" />
           {secondImageUrl && (
-            <Image
-              src={secondImageUrl}
-              alt={product.secondImage?.altText || product.name}
-              fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="product-image-secondary object-cover"
-            />
+            <CatalogImage src={secondImageUrl} alt={product.secondImage?.altText || product.name} sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" fallback="none" className="product-image-secondary object-cover" />
           )}
           {product.featured && (
             <span className="absolute left-3 top-3 bg-background px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.16em]">Featured</span>

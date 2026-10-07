@@ -47,7 +47,7 @@ function AccountContent() {
       </div>
       <nav
         aria-label="Account sections"
-        className="commerce-panel flex h-fit flex-col gap-1"
+        className="account-nav flex h-fit flex-col gap-1"
       >
         <Link
           href="/account/addresses"

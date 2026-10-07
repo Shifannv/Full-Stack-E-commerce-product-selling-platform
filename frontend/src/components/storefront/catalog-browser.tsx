@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Filter, Search } from "lucide-react";
+import { Filter, Search, SlidersHorizontal } from "lucide-react";
 import { ProductGrid } from "@/components/catalog/product-grid";
 import type { ProductCardData } from "@/components/catalog/product-card";
 import { EmptyState } from "@/components/states/empty-state";
@@ -11,10 +11,53 @@ import { ErrorState } from "@/components/states/error-state";
 import { LoadingState } from "@/components/states/loading-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { customerApi } from "@/lib/api";
 import type { PublicSubcategory } from "@/lib/public-catalog";
 
 const PAGE_SIZE = 12;
+
+type FilterControlsProps = {
+  minPrice: string;
+  maxPrice: string;
+  available: boolean;
+  setAvailable: (value: boolean) => void;
+  setMinPrice: (value: string) => void;
+  setMaxPrice: (value: string) => void;
+  apply: (updates: Record<string, string>) => void;
+};
+
+function FilterControls({ minPrice, maxPrice, available, setAvailable, setMinPrice, setMaxPrice, apply }: FilterControlsProps) {
+  return (
+    <form className="catalog-filter-form" onSubmit={(event) => { event.preventDefault(); apply({ minPrice, maxPrice, available: available ? "true" : "" }); }}>
+      <div className="catalog-filter-section">
+        <h3>Availability</h3>
+        <label className="catalog-check">
+          <input type="checkbox" checked={available} onChange={(event) => setAvailable(event.target.checked)} />
+          <span>In stock</span>
+        </label>
+      </div>
+      <div className="catalog-filter-section">
+        <h3>Price range</h3>
+        <div className="grid grid-cols-2 gap-2">
+          <label className="text-xs text-muted-foreground">Minimum<Input inputMode="decimal" type="number" min="0" step="0.01" value={minPrice} onChange={(event) => setMinPrice(event.target.value)} placeholder="₹0" /></label>
+          <label className="text-xs text-muted-foreground">Maximum<Input inputMode="decimal" type="number" min="0" step="0.01" value={maxPrice} onChange={(event) => setMaxPrice(event.target.value)} placeholder="Any" /></label>
+        </div>
+      </div>
+      <Button type="submit" className="w-full">Apply filters</Button>
+      <Button type="button" variant="ghost" className="w-full" onClick={() => { setMinPrice(""); setMaxPrice(""); setAvailable(false); apply({ minPrice: "", maxPrice: "", available: "" }); }}>Clear filters</Button>
+    </form>
+  );
+}
 
 export function CatalogBrowser({
   categorySlug,
@@ -78,6 +121,7 @@ function CatalogBrowserContent({
   const [searchText, setSearchText] = useState(searchParams.get("q") ?? "");
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") ?? "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") ?? "");
+  const [available, setAvailable] = useState(searchParams.get("available") === "true");
 
   const setQuery = (updates: Record<string, string>) => {
     const next = new URLSearchParams(queryKey);
@@ -141,66 +185,16 @@ function CatalogBrowserContent({
           ))}
         </nav>
       )}
-      <form
-        className="mb-9 flex flex-wrap items-end gap-3 border-y border-border py-5"
-        onSubmit={(event) => {
-          event.preventDefault();
-          setQuery({ minPrice, maxPrice });
-        }}
-      >
-        <Filter
-          aria-hidden="true"
-          className="mb-2 hidden size-4 text-muted-foreground sm:block"
-        />
-        <div>
-          <label
-            htmlFor="min-price"
-            className="mb-1 block text-xs font-medium text-muted-foreground"
-          >
-            Minimum price (₹)
-          </label>
-          <Input
-            id="min-price"
-            inputMode="decimal"
-            type="number"
-            min="0"
-            step="0.01"
-            value={minPrice}
-            onChange={(event) => setMinPrice(event.target.value)}
-            className="w-32"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="max-price"
-            className="mb-1 block text-xs font-medium text-muted-foreground"
-          >
-            Maximum price (₹)
-          </label>
-          <Input
-            id="max-price"
-            inputMode="decimal"
-            type="number"
-            min="0"
-            step="0.01"
-            value={maxPrice}
-            onChange={(event) => setMaxPrice(event.target.value)}
-            className="w-32"
-          />
-        </div>
-        <Button type="submit" variant="outline">
-          Apply price
-        </Button>
-        <label className="flex items-center gap-2 pb-2 text-xs">
-          <input
-            type="checkbox"
-            checked={searchParams.get("available") === "true"}
-            onChange={(event) =>
-              setQuery({ available: event.target.checked ? "true" : "" })
-            }
-          />{" "}
-          In stock
-        </label>
+      <div className="catalog-toolbar">
+        <Sheet>
+          <SheetTrigger asChild><Button variant="outline" className="lg:hidden"><SlidersHorizontal aria-hidden="true" /> Filters</Button></SheetTrigger>
+          <SheetContent side="left" className="overflow-y-auto bg-background" data-lenis-prevent>
+            <SheetHeader><SheetTitle className="type-section">Refine the edit</SheetTitle><SheetDescription>Use the filters supported by the current catalog.</SheetDescription></SheetHeader>
+            <div className="px-4"><FilterControls minPrice={minPrice} maxPrice={maxPrice} available={available} setAvailable={setAvailable} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} apply={setQuery} /></div>
+            <SheetFooter><SheetClose asChild><Button variant="outline">View products</Button></SheetClose></SheetFooter>
+          </SheetContent>
+        </Sheet>
+        <p className="text-sm text-muted-foreground">{products.length} {products.length === 1 ? "piece" : "pieces"}</p>
         <div className="ml-auto">
           <label
             htmlFor="catalog-sort"
@@ -223,7 +217,13 @@ function CatalogBrowserContent({
             <option value="price-desc">Price: high to low</option>
           </select>
         </div>
-      </form>
+      </div>
+      <div className="catalog-layout">
+        <aside className="catalog-filter-sidebar" aria-label="Product filters">
+          <div className="mb-6 flex items-center gap-2"><Filter aria-hidden="true" className="size-4" /><h2 className="font-semibold">Filter</h2></div>
+          <FilterControls minPrice={minPrice} maxPrice={maxPrice} available={available} setAvailable={setAvailable} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} apply={setQuery} />
+        </aside>
+        <div className="min-w-0">
       {error && !products.length ? (
         <><ErrorState description={error} /><Button variant="outline" onClick={() => void catalog.refetch()}>Try again</Button></>
       ) : loading && !products.length ? (
@@ -256,6 +256,8 @@ function CatalogBrowserContent({
           </Button>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 }

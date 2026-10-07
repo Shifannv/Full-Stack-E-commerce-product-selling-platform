@@ -150,7 +150,7 @@ function AddressContent() {
       </div>
       <form
         onSubmit={(event) => void save(event)}
-        className="commerce-panel h-fit"
+        className="commerce-panel h-fit lg:sticky lg:top-8"
       >
         <h2 className="text-xl font-semibold">
           {editingId ? "Edit address" : "Add an address"}
@@ -192,7 +192,7 @@ function AddressContent() {
               />
             </div>
           ))}
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex min-h-11 items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={form.isDefault}

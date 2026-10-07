@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Heart } from "lucide-react";
+import { Heart, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PriceDisplay } from "@/components/catalog/price-display";
 import { customerApi } from "@/lib/api";
@@ -86,10 +86,17 @@ export function ProductActions({ product }: { product: PublicProductDetail }) {
   }
 
   return (
-    <div className="mt-7 space-y-7">
+    <div className="product-purchase mt-7 space-y-7">
+      <div className="flex items-center justify-between gap-4 border-y border-border py-5">
+        <PriceDisplay amount={variant?.price ?? product.price} currency={product.currency} className="text-xl" />
+        <p className="text-sm text-muted-foreground">{isAvailable ? "In stock" : "Out of stock"}</p>
+      </div>
       {product.variants.length > 0 && (
         <fieldset>
-          <legend className="mb-3 text-xs font-semibold uppercase tracking-[0.12em]">Choose an option</legend>
+          <legend className="mb-3 flex w-full items-center justify-between gap-4 text-xs font-semibold uppercase tracking-[0.12em]">
+            <span>Choose an option</span>
+            {variant && <span className="normal-case tracking-normal text-muted-foreground">{variant.title}</span>}
+          </legend>
           <div className="flex flex-wrap gap-2">
             {product.variants.map((item) => (
               <button
@@ -98,7 +105,7 @@ export function ProductActions({ product }: { product: PublicProductDetail }) {
                 aria-pressed={item.id === variantId}
                 disabled={!item.available}
                 onClick={() => setVariantId(item.id)}
-                className="min-w-12 border border-border px-4 py-2.5 text-sm aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground disabled:cursor-not-allowed disabled:opacity-55"
+                className="min-h-11 min-w-12 border border-border px-4 py-2.5 text-sm transition-colors aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground disabled:cursor-not-allowed disabled:opacity-55"
               >
                 <span>{item.title}</span>
                 {!item.available && (
@@ -109,14 +116,6 @@ export function ProductActions({ product }: { product: PublicProductDetail }) {
           </div>
         </fieldset>
       )}
-      <PriceDisplay
-        amount={variant?.price ?? product.price}
-        currency={product.currency}
-        className="text-xl"
-      />
-      <p className="text-sm text-muted-foreground">
-        {isAvailable ? "Available" : "Currently out of stock"}
-      </p>
       <div>
         <label
           htmlFor="product-quantity"
@@ -124,30 +123,38 @@ export function ProductActions({ product }: { product: PublicProductDetail }) {
         >
           Quantity
         </label>
-        <input
-          id="product-quantity"
-          type="number"
-          min="1"
-          max="100"
-          value={quantity}
-          onChange={(event) =>
-            setQuantity(
-              Math.max(1, Math.min(100, Number(event.target.value) || 1)),
-            )
-          }
-          className="h-10 w-24 rounded-md border border-input bg-background px-3"
-        />
+        <div className="quantity-stepper">
+          <button type="button" aria-label="Decrease quantity" disabled={quantity <= 1} onClick={() => setQuantity((value) => Math.max(1, value - 1))}>
+            <Minus aria-hidden="true" />
+          </button>
+          <input
+            id="product-quantity"
+            type="number"
+            min="1"
+            max="100"
+            value={quantity}
+            aria-label="Product quantity"
+            onChange={(event) =>
+              setQuantity(
+                Math.max(1, Math.min(100, Number(event.target.value) || 1)),
+              )
+            }
+          />
+          <button type="button" aria-label="Increase quantity" disabled={quantity >= 100} onClick={() => setQuantity((value) => Math.min(100, value + 1))}>
+            <Plus aria-hidden="true" />
+          </button>
+        </div>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-[1fr_auto] gap-2">
         <Button
-          className="min-w-40 flex-1"
+          className="col-start-1 row-start-1 w-full"
           disabled={busy || !isAvailable}
           onClick={() => void addToCart(false)}
         >
           Add to cart
         </Button>
         <Button
-          className="min-w-32 flex-1"
+          className="col-span-2 w-full"
           disabled={busy || !isAvailable}
           variant="outline"
           onClick={() => void addToCart(true)}
@@ -155,6 +162,7 @@ export function ProductActions({ product }: { product: PublicProductDetail }) {
           Buy now
         </Button>
         <Button
+          className="col-start-2 row-start-1"
           disabled={busy}
           variant="ghost"
           size="icon"

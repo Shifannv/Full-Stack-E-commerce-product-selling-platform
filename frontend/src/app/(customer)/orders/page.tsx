@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { PriceDisplay } from "@/components/catalog/price-display";
 import { CustomerGate } from "@/components/storefront/customer-gate";
 import { PageHeading } from "@/components/storefront/page-heading";
+import { StatusPill } from "@/components/storefront/status-pill";
 import { CancelOrder, OrderItemActions } from "@/components/storefront/order-item-actions";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
@@ -63,7 +65,7 @@ function Tracking({ orderId }: { orderId: string }) {
             {shipments.map((shipment) => (
               <div
                 key={shipment.id}
-                className="rounded-lg bg-secondary/60 p-4 text-sm"
+                className="border-t border-border py-4 text-sm first:border-t-0"
               >
                 <p className="font-semibold">
                   {shipment.carrierName || "Shipment"} ·{" "}
@@ -159,7 +161,7 @@ function OrdersContent() {
       {orders.map((order) => (
         <article
           key={order.id}
-          className="commerce-panel"
+          className="commerce-panel order-card"
         >
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -172,12 +174,13 @@ function OrdersContent() {
                 })}
               </p>
             </div>
-            <div className="text-right">
+            <div className="flex flex-col items-end gap-2 text-right">
               <PriceDisplay
                 amount={order.totalAmount}
                 currency={order.currency}
               />
-              <p className="mt-1 text-sm text-muted-foreground">
+              <div className="flex flex-wrap justify-end gap-2"><StatusPill status={order.status} /><StatusPill status={`Payment ${order.paymentStatus}`} /></div>
+              <p className="sr-only">
                 {order.status.replaceAll("_", " ")} · Payment{" "}
                 {order.paymentStatus.replaceAll("_", " ")}
               </p>
@@ -185,7 +188,7 @@ function OrdersContent() {
           </div>
           <details className="mt-6 border-t border-border pt-5">
             <summary className="cursor-pointer text-sm font-semibold">
-              Order details
+              Order details <ChevronDown aria-hidden="true" className="size-4 transition-transform" />
             </summary>
             <div className="mt-5 grid gap-6 md:grid-cols-2">
               <div>

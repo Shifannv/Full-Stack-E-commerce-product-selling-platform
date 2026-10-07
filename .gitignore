@@ -1,6 +1,7 @@
 node_modules/
 .next/
 .next-seller-*/
+.next-storefront-*/
 out/
 *.tsbuildinfo
 .env

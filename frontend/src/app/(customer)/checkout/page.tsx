@@ -101,7 +101,7 @@ function CheckoutContent() {
             {addresses.map((address) => (
               <label
                 key={address.id}
-                className="flex gap-3 rounded-lg border border-border bg-card p-4"
+                className="checkout-address flex gap-3 border border-border bg-background p-5"
               >
                 <input
                   type="radio"
@@ -150,7 +150,7 @@ function CheckoutContent() {
           ))}
         </div>
       </div>
-      <aside className="commerce-panel h-fit">
+      <aside className="commerce-panel checkout-summary h-fit lg:sticky lg:top-8">
         <h2 className="text-lg font-semibold">Checkout review</h2>
         {quoteLoading && (
           <p className="mt-5 text-sm text-muted-foreground">
@@ -207,7 +207,7 @@ function CheckoutContent() {
             </p>
           </>
         )}
-        <div className="mt-7 rounded-lg bg-secondary p-4">
+        <div className="mt-7 border-t border-border pt-5">
           <p className="font-semibold">Payment is not available yet</p>
           <p className="mt-2 text-sm text-muted-foreground">
             You can review your items and delivery address. Order placement

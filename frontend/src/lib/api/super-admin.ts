@@ -118,11 +118,21 @@ export type LifecycleResponse = {
 
 export type ReconciliationItem = {
   id: string;
+  itemKey: string;
   domain: string;
-  status: string;
-  entityType: string;
+  /** Backend schema field name is `state`, not `status`. Values: PENDING | RETRYABLE | REVIEW | RESOLVED */
+  state: string;
+  type: string;
   entityId: string;
-  note: string | null;
+  providerReference: string | null;
+  retryCount: number;
+  nextRetryAt: string | null;
+  lastAttemptedAt: string | null;
+  lastError: string | null;
+  evidence: Record<string, unknown> | null;
+  resolvedAt: string | null;
+  resolvedByUserId: string | null;
+  resolutionNote: string | null;
   createdAt: string;
   updatedAt: string;
 };

@@ -7,6 +7,7 @@ import { describeApiError } from "@/lib/api/errors";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/ui/password-input";
 import { InitialPasswordChange } from "@/components/layout/operator-workspace";
+import { OperatorActorProvider } from "./operator-actor";
 
 type GateState =
   | "loading"
@@ -183,5 +184,9 @@ export function OperatorGate({
     );
 
   if (!actor) return null;
-  return <>{children(actor)}</>;
+  return (
+    <OperatorActorProvider actor={actor}>
+      {children(actor)}
+    </OperatorActorProvider>
+  );
 }
