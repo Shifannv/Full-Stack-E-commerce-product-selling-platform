@@ -1,0 +1,134 @@
+{
+  "mode": "super-admin",
+  "pages": [
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nPlatform overview\n\nWhat is happening across Ownline Dropship right now.\n\nActive sellers\n1\n\n1 total\n\nPublished products\n2\nOrders\n0\n\nPlatform total\n\nGross settled sales\n₹0\n\nNothing is waiting on a decision right now.\n\nReconciliation items needing review and open lifecycle requests are tracked on their own pages — see Reconciliation and Lifecycle requests in the sidebar.",
+      "headings": [
+        "Platform overview"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/super-admin/summary",
+          "query": "",
+          "status": 200
+        }
+      ],
+      "screenshot": "super-admin-loaded--super-admin.png"
+    },
+    {
+      "route": "/super-admin/reviews",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nReview moderation\n\nPending customer reviews waiting for a publish or reject decision.\n\nNo reviews pending moderation\n\nAll submitted reviews have been moderated.\nAuthorize a refund\nReturn ID\n\nEnter a return ID above to authorize its refund.",
+      "headings": [
+        "Review moderation",
+        "Authorize a refund"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/super-admin/reviews/pending",
+          "query": "",
+          "status": 200
+        }
+      ],
+      "screenshot": "super-admin-loaded--super-admin-reviews.png"
+    }
+  ],
+  "network": [
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 401
+    },
+    {
+      "path": "/api/auth/sign-in/email",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/super-admin/summary",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/super-admin/reviews/pending",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/sign-out",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 401
+    }
+  ],
+  "blocked": [],
+  "runtimeErrors": [],
+  "loginStatus": 200,
+  "actor": {
+    "status": 200,
+    "roles": [
+      "SUPER_ADMIN"
+    ]
+  },
+  "logoutStatus": 200,
+  "logoutMethod": "API; missing normal-workspace sign-out UI documented separately",
+  "afterLogoutStatus": 401,
+  "result": "PASS"
+}

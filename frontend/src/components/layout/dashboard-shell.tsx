@@ -87,6 +87,7 @@ type DashboardShellProps = {
   homeHref: "/admin" | "/super-admin";
   /** The signed-in actor, once known, so navigation reflects real grants. Null while loading or signed out. */
   actor?: Actor | null;
+  headerActions?: React.ReactNode;
   children: React.ReactNode;
 };
 
@@ -95,6 +96,7 @@ export function DashboardShell({
   subtitle,
   homeHref,
   actor = null,
+  headerActions,
   children,
 }: DashboardShellProps) {
   const pathname = usePathname();
@@ -171,12 +173,15 @@ export function DashboardShell({
               <p className="hidden truncate text-xs text-muted-foreground sm:block">{subtitle}</p>
             </div>
           </div>
+          <div className="flex shrink-0 items-center gap-3">
           <Link
             href="/"
             className="shrink-0 text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
             View storefront
           </Link>
+          {headerActions}
+          </div>
         </header>
         <main id="main-content" className="mx-auto w-full max-w-[88rem] px-4 py-8 sm:px-8 sm:py-10">
           {children}

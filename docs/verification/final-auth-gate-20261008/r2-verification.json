@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-10-08T09:38:26.682Z",
+  "source": "wrangler r2 object get --remote (read only)",
+  "bucket": "shop-product-images",
+  "key": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+  "bytes": 68,
+  "width": 1,
+  "height": 1,
+  "sha256": "36301ece93d96811008b89131c3a6c26cb223801c0da1761fc81838de9341c4d",
+  "matchesPublicBytes": true
+}

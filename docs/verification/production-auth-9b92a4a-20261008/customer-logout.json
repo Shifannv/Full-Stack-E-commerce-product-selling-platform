@@ -1,0 +1,21 @@
+{
+  "method": "existing manually authenticated CUSTOMER session; UI logout",
+  "blocked": [],
+  "beforeLogout": {
+    "status": 200,
+    "userId": "EnvlbnlnSoUCsGRvO5MF8xn8kF6GZG7C",
+    "roles": [
+      "CUSTOMER"
+    ]
+  },
+  "sameIdentity": true,
+  "logoutStatus": 200,
+  "afterLogout": {
+    "status": 401
+  },
+  "afterRefresh": {
+    "status": 401
+  },
+  "signedOutUI": true,
+  "result": "PASS"
+}

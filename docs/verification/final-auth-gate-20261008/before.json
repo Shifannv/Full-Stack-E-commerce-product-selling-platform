@@ -1,0 +1,812 @@
+{
+  "phase": "before",
+  "startedAt": "2026-10-08T09:28:54.489Z",
+  "requests": [
+    {
+      "timestamp": "2026-10-08T09:29:02.770Z",
+      "completedAt": "2026-10-08T09:29:03.059Z",
+      "role": "CUSTOMER",
+      "endpoint": "/api/me",
+      "status": 401,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "error"
+        ],
+        "arrays": {}
+      },
+      "ray": "a4741e71ee1e7ed3-MAA",
+      "retryAfter": null,
+      "retry": false,
+      "error": "Unauthorized"
+    },
+    {
+      "timestamp": "2026-10-08T09:29:03.065Z",
+      "completedAt": "2026-10-08T09:29:04.200Z",
+      "role": "PUBLIC",
+      "endpoint": "/api/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "id",
+          "categoryId",
+          "subcategoryId",
+          "name",
+          "slug",
+          "description",
+          "price",
+          "currency",
+          "attributes",
+          "returnEnabled",
+          "createdAt",
+          "images",
+          "variants",
+          "available",
+          "rating",
+          "reviewCount"
+        ],
+        "arrays": {
+          "images": 1,
+          "variants": 0
+        }
+      },
+      "ray": "a4741e72ee4d7ed3-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:13.963Z",
+      "completedAt": "2026-10-08T09:29:14.703Z",
+      "role": "ADMIN",
+      "endpoint": "/api/me",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "userId",
+          "roles",
+          "permissions",
+          "adminApproved",
+          "mustChangePassword"
+        ],
+        "arrays": {
+          "roles": 1,
+          "permissions": 16
+        }
+      },
+      "ray": "a4741eb6cbb91ed1-MAA",
+      "retryAfter": null,
+      "retry": false,
+      "roles": [
+        "ADMIN"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T09:29:14.706Z",
+      "completedAt": "2026-10-08T09:29:17.679Z",
+      "role": "ADMIN",
+      "endpoint": "/api/admin/summary",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "products",
+          "orders",
+          "finance"
+        ],
+        "arrays": {}
+      },
+      "ray": "a4741ebb6dd31ed1-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:17.687Z",
+      "completedAt": "2026-10-08T09:29:20.230Z",
+      "role": "ADMIN",
+      "endpoint": "/api/admin/products",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "products",
+          "limit",
+          "offset"
+        ],
+        "arrays": {
+          "products": 2
+        }
+      },
+      "ray": "a4741ece2c651ed1-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:20.235Z",
+      "completedAt": "2026-10-08T09:29:23.089Z",
+      "role": "ADMIN",
+      "endpoint": "/api/admin/products/c549089e-32fb-4217-96d7-35dc5a40eb70/inventory",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "inventories"
+        ],
+        "arrays": {
+          "inventories": 1
+        }
+      },
+      "ray": "a4741ede3b711ed1-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:23.091Z",
+      "completedAt": "2026-10-08T09:29:24.128Z",
+      "role": "ADMIN",
+      "endpoint": "/api/admin/orders",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "orders"
+        ],
+        "arrays": {
+          "orders": 0
+        }
+      },
+      "ray": "a4741eeffa011ed1-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:24.139Z",
+      "completedAt": "2026-10-08T09:29:27.117Z",
+      "role": "ADMIN",
+      "endpoint": "/api/admin/returns",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "returns",
+          "limit",
+          "offset"
+        ],
+        "arrays": {
+          "returns": 0
+        }
+      },
+      "ray": "a4741ef6cc7c1ed1-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:27.129Z",
+      "completedAt": "2026-10-08T09:29:29.267Z",
+      "role": "ADMIN",
+      "endpoint": "/api/admin/finance",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "availableBalance",
+          "settlements",
+          "payouts",
+          "refundObligations"
+        ],
+        "arrays": {
+          "settlements": 0,
+          "payouts": 0,
+          "refundObligations": 0
+        }
+      },
+      "ray": "a4741f096bca1ed1-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:29.275Z",
+      "completedAt": "2026-10-08T09:29:32.171Z",
+      "role": "ADMIN",
+      "endpoint": "/api/admin/onboarding",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "profile",
+          "application",
+          "documents",
+          "addresses",
+          "categories",
+          "bank"
+        ],
+        "arrays": {
+          "documents": 1,
+          "addresses": 2,
+          "categories": 1
+        }
+      },
+      "ray": "a4741f1698731ed1-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:32.176Z",
+      "completedAt": "2026-10-08T09:29:34.397Z",
+      "role": "ADMIN",
+      "endpoint": "/api/super-admin/summary",
+      "status": 403,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "error"
+        ],
+        "arrays": {}
+      },
+      "ray": "a4741f28aee91ed1-MAA",
+      "retryAfter": null,
+      "retry": false,
+      "error": "Forbidden"
+    },
+    {
+      "timestamp": "2026-10-08T09:29:36.714Z",
+      "completedAt": "2026-10-08T09:29:37.137Z",
+      "role": "SUPER_ADMIN",
+      "endpoint": "/api/me",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "userId",
+          "roles",
+          "permissions",
+          "adminApproved"
+        ],
+        "arrays": {
+          "roles": 1,
+          "permissions": 16
+        }
+      },
+      "ray": "a4741f45089c800a-MAA",
+      "retryAfter": null,
+      "retry": false,
+      "roles": [
+        "SUPER_ADMIN"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T09:29:37.140Z",
+      "completedAt": "2026-10-08T09:29:38.855Z",
+      "role": "SUPER_ADMIN",
+      "endpoint": "/api/super-admin/summary",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "admins",
+          "catalog",
+          "orders",
+          "finance",
+          "onboarding"
+        ],
+        "arrays": {}
+      },
+      "ray": "a4741f47a90d800a-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:38.857Z",
+      "completedAt": "2026-10-08T09:29:40.391Z",
+      "role": "SUPER_ADMIN",
+      "endpoint": "/api/super-admin/products",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "products",
+          "limit",
+          "offset"
+        ],
+        "arrays": {
+          "products": 2
+        }
+      },
+      "ray": "a4741f526a92800a-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:40.392Z",
+      "completedAt": "2026-10-08T09:29:41.876Z",
+      "role": "SUPER_ADMIN",
+      "endpoint": "/api/super-admin/admins",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "admins",
+          "limit",
+          "offset"
+        ],
+        "arrays": {
+          "admins": 1
+        }
+      },
+      "ray": "a4741f5bfbc1800a-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:41.878Z",
+      "completedAt": "2026-10-08T09:29:42.737Z",
+      "role": "SUPER_ADMIN",
+      "endpoint": "/api/super-admin/reviews/pending",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "reviews"
+        ],
+        "arrays": {
+          "reviews": 0
+        }
+      },
+      "ray": "a4741f654cc8800a-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:42.739Z",
+      "completedAt": "2026-10-08T09:29:44.601Z",
+      "role": "SUPER_ADMIN",
+      "endpoint": "/api/super-admin/reconciliation",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "items",
+          "count"
+        ],
+        "arrays": {
+          "items": 0
+        }
+      },
+      "ray": "a4741f6abdae800a-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:44.603Z",
+      "completedAt": "2026-10-08T09:29:46.149Z",
+      "role": "SUPER_ADMIN",
+      "endpoint": "/api/super-admin/payouts",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "payouts",
+          "limit",
+          "offset"
+        ],
+        "arrays": {
+          "payouts": 0
+        }
+      },
+      "ray": "a4741f764ff6800a-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:46.152Z",
+      "completedAt": "2026-10-08T09:29:47.644Z",
+      "role": "SUPER_ADMIN",
+      "endpoint": "/api/super-admin/roles",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "roles",
+          "permissions"
+        ],
+        "arrays": {
+          "roles": 3,
+          "permissions": 16
+        }
+      },
+      "ray": "a4741f7ff9c0800a-MAA",
+      "retryAfter": null,
+      "retry": false
+    },
+    {
+      "timestamp": "2026-10-08T09:29:48.303Z",
+      "completedAt": "2026-10-08T09:29:48.429Z",
+      "role": "ANONYMOUS",
+      "endpoint": "/api/me",
+      "status": 401,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "error"
+        ],
+        "arrays": {}
+      },
+      "ray": "a4741f8d9bffc3e9-MAA",
+      "retryAfter": null,
+      "retry": false,
+      "error": "Unauthorized"
+    },
+    {
+      "timestamp": "2026-10-08T09:29:48.433Z",
+      "completedAt": "2026-10-08T09:29:48.557Z",
+      "role": "ANONYMOUS",
+      "endpoint": "/api/customer/addresses",
+      "status": 401,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "error"
+        ],
+        "arrays": {}
+      },
+      "ray": "a4741f8e3c2ac3e9-MAA",
+      "retryAfter": null,
+      "retry": false,
+      "error": "Unauthorized"
+    },
+    {
+      "timestamp": "2026-10-08T09:29:48.560Z",
+      "completedAt": "2026-10-08T09:29:48.764Z",
+      "role": "ANONYMOUS",
+      "endpoint": "/api/admin/summary",
+      "status": 401,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "error"
+        ],
+        "arrays": {}
+      },
+      "ray": "a4741f8f3c92c3e9-MAA",
+      "retryAfter": null,
+      "retry": false,
+      "error": "Unauthorized"
+    },
+    {
+      "timestamp": "2026-10-08T09:29:48.767Z",
+      "completedAt": "2026-10-08T09:29:48.918Z",
+      "role": "ANONYMOUS",
+      "endpoint": "/api/super-admin/summary",
+      "status": 401,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "error"
+        ],
+        "arrays": {}
+      },
+      "ray": "a4741f909d03c3e9-MAA",
+      "retryAfter": null,
+      "retry": false,
+      "error": "Unauthorized"
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.074Z",
+      "role": "DOCUMENT",
+      "endpoint": "/returns",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.139Z",
+      "role": "DOCUMENT",
+      "endpoint": "/admin",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.207Z",
+      "role": "DOCUMENT",
+      "endpoint": "/admin/onboarding",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.263Z",
+      "role": "DOCUMENT",
+      "endpoint": "/admin/products",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.348Z",
+      "role": "DOCUMENT",
+      "endpoint": "/admin/inventory",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.412Z",
+      "role": "DOCUMENT",
+      "endpoint": "/admin/orders",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.485Z",
+      "role": "DOCUMENT",
+      "endpoint": "/admin/returns",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.563Z",
+      "role": "DOCUMENT",
+      "endpoint": "/admin/finance",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.646Z",
+      "role": "DOCUMENT",
+      "endpoint": "/admin/account",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.720Z",
+      "role": "DOCUMENT",
+      "endpoint": "/super-admin",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.800Z",
+      "role": "DOCUMENT",
+      "endpoint": "/super-admin/admins",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.863Z",
+      "role": "DOCUMENT",
+      "endpoint": "/super-admin/products",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:49.928Z",
+      "role": "DOCUMENT",
+      "endpoint": "/super-admin/reviews",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:50.005Z",
+      "role": "DOCUMENT",
+      "endpoint": "/super-admin/payouts",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:50.076Z",
+      "role": "DOCUMENT",
+      "endpoint": "/super-admin/reconciliation",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    },
+    {
+      "timestamp": "2026-10-08T09:29:50.142Z",
+      "role": "DOCUMENT",
+      "endpoint": "/super-admin/roles",
+      "status": 200,
+      "shape": {
+        "type": "HTML"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "label": "Existing CUSTOMER session available",
+      "ok": false
+    },
+    {
+      "label": "ADMIN existing account UI login",
+      "ok": true,
+      "evidence": {
+        "status": 200
+      }
+    },
+    {
+      "label": "ADMIN identity",
+      "ok": true
+    },
+    {
+      "label": "ADMIN normal UI logout present",
+      "ok": false
+    },
+    {
+      "label": "SUPER_ADMIN existing account UI login",
+      "ok": true,
+      "evidence": {
+        "status": 200
+      }
+    },
+    {
+      "label": "SUPER_ADMIN identity",
+      "ok": true
+    },
+    {
+      "label": "SUPER_ADMIN normal UI logout present",
+      "ok": false
+    },
+    {
+      "label": "Anonymous 401 /api/me",
+      "ok": true
+    },
+    {
+      "label": "Anonymous 401 /api/customer/addresses",
+      "ok": true
+    },
+    {
+      "label": "Anonymous 401 /api/admin/summary",
+      "ok": true
+    },
+    {
+      "label": "Anonymous 401 /api/super-admin/summary",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /returns",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /admin",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /admin/onboarding",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /admin/products",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /admin/inventory",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /admin/orders",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /admin/returns",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /admin/finance",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /admin/account",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /super-admin",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /super-admin/admins",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /super-admin/products",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /super-admin/reviews",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /super-admin/payouts",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /super-admin/reconciliation",
+      "ok": true
+    },
+    {
+      "label": "Document 200 /super-admin/roles",
+      "ok": true
+    }
+  ],
+  "runtimeErrors": [],
+  "blocked": [],
+  "authOperations": [
+    {
+      "timestamp": "2026-10-08T09:29:12.655Z",
+      "path": "/api/auth/sign-in/email",
+      "method": "POST"
+    },
+    {
+      "timestamp": "2026-10-08T09:29:35.432Z",
+      "path": "/api/auth/sign-in/email",
+      "method": "POST"
+    }
+  ],
+  "productMediaRecord": {
+    "id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+    "images": [
+      {
+        "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+        "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+        "altText": "Phase 11b-3 R2 verification image",
+        "sortOrder": 0
+      }
+    ]
+  },
+  "media": [
+    {
+      "timestamp": "2026-10-08T09:29:04.995Z",
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 68,
+      "width": 1,
+      "height": 1,
+      "sha256": "36301ece93d96811008b89131c3a6c26cb223801c0da1761fc81838de9341c4d"
+    },
+    {
+      "timestamp": "2026-10-08T09:29:06.228Z",
+      "url": "https://ecommerce-api.ownlinedropshipping.workers.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 68,
+      "width": 1,
+      "height": 1,
+      "sha256": "36301ece93d96811008b89131c3a6c26cb223801c0da1761fc81838de9341c4d"
+    }
+  ],
+  "mediaRendering": [
+    {
+      "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "complete": true,
+      "width": 1,
+      "height": 1,
+      "visible": true
+    }
+  ],
+  "finishedAt": "2026-10-08T09:29:50.159Z"
+}

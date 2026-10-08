@@ -1,0 +1,347 @@
+{
+  "mode": "super-admin",
+  "pages": [
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nPlatform overview\n\nWhat is happening across Ownline Dropship right now.\n\nLoading platform overview…",
+      "headings": [
+        "Platform overview"
+      ],
+      "overflow": false,
+      "loading": [
+        "Loading platform overview…"
+      ],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        }
+      ],
+      "screenshot": "super-admin-loaded--super-admin.png"
+    },
+    {
+      "route": "/super-admin/admins",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nSellers\n\nProvision internal seller accounts and review their onboarding applications.\n\nCreate seller account\nSearch\nSearch\nStatus\nAll\nDraft\nPending\nAwaiting approval\nChanges required\nActive\nSuspended\nRejected\nSeller accounts\nSeller\tStatus\tCreated\n\n\nPhase 11b-2 Test Seller\n\n[credential redacted]\n\n\t\nActive\t28 Sept 2026",
+      "headings": [
+        "Sellers"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/super-admin/admins",
+          "query": "?limit=20&offset=0",
+          "status": 200
+        }
+      ],
+      "screenshot": "super-admin-loaded--super-admin-admins.png"
+    },
+    {
+      "route": "/super-admin/products",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nProducts\n\nEvery product across all sellers, including drafts and archived items.\n\nSearch\nSearch\nStatus\nAll\nDraft\nPublished\nArchived\nProducts\nProduct\tStatus\tPrice\n\n\nTEST Ownline Out of Stock No Image\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\n\t\nPublished\n\t₹1\n\n\nTEST Ownline Everyday Cotton Tote\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\n\t\nPublished\nFeatured\n\t₹349",
+      "headings": [
+        "Products"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/super-admin/products",
+          "query": "?limit=20&offset=0",
+          "status": 200
+        }
+      ],
+      "screenshot": "super-admin-loaded--super-admin-products.png"
+    },
+    {
+      "route": "/super-admin/roles",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nRoles & permissions\n\nA role's permission grant is role-wide: changing it here would change every Admin who holds that role at once. There is no approved policy for that, so this view is read-only.\n\nRoles\n3 roles\n\nADMIN\n\nInternal seller/operator\n\n16 permissions\nanalytics.view\ncustomers.message\ncustomers.view\nearnings.view\ninventory.update\ninventory.view\norders.update\norders.view\npayouts.request\npayouts.view\nproducts.create\nproducts.delete\nproducts.update\nproducts.view\nreviews.moderate\nreviews.view\n\nCUSTOMER\n\nCustomer\n\n0 permissions\n\nSUPER_ADMIN\n\nPlatform owner\n\n16 permissions\nanalytics.view\ncustomers.message\ncustomers.view\nearnings.view\ninventory.update\ninventory.view\norders.update\norders.view\npayouts.request\npayouts.view\nproducts.create\nproducts.delete\nproducts.update\nproducts.view\nreviews.moderate\nreviews.view\nAll permissions\n16 registered\n\nanalytics.view\n\n—\n\ncustomers.message\n\n—\n\ncustomers.view\n\n—\n\nearnings.view\n\n—\n\ninventory.update\n\n—\n\ninventory.view\n\n—\n\norders.update\n\n—\n\norders.view\n\n—\n\npayouts.request\n\n—\n\npayouts.view\n\n—\n\nproducts.create\n\n—\n\nproducts.delete\n\n—\n\nproducts.update\n\n—\n\nproducts.view\n\n—\n\nreviews.moderate\n\n—\n\nreviews.view\n\n—",
+      "headings": [
+        "Roles & permissions",
+        "Roles",
+        "All permissions"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/super-admin/roles",
+          "query": "",
+          "status": 200
+        }
+      ],
+      "screenshot": "super-admin-loaded--super-admin-roles.png"
+    },
+    {
+      "route": "/super-admin/reconciliation",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nReconciliation\n\nFinance-integrity items that need attention. PENDING and RETRYABLE items retry automatically; REVIEW items require a manual decision.\n\nAll domains\nPayment\nRefund\nFinance\n\n0 items on this page\n\nNo unresolved reconciliation items\n\nThe queue is clear.",
+      "headings": [
+        "Reconciliation"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/super-admin/reconciliation",
+          "query": "?limit=50",
+          "status": 200
+        }
+      ],
+      "screenshot": "super-admin-loaded--super-admin-reconciliation.png"
+    },
+    {
+      "route": "/super-admin/reviews",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nReview moderation\n\nPending customer reviews waiting for a publish or reject decision.\n\nLoading pending reviews…\nAuthorize a refund\nReturn ID\n\nEnter a return ID above to authorize its refund.",
+      "headings": [
+        "Review moderation",
+        "Authorize a refund"
+      ],
+      "overflow": false,
+      "loading": [
+        "Loading pending reviews…"
+      ],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        }
+      ],
+      "screenshot": "super-admin-loaded--super-admin-reviews.png"
+    },
+    {
+      "route": "/super-admin/payouts",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nFinance\n\nGross Product Sales, Commission, Payment Gateway Fee and Refund Adjustment combine into each seller's Net Payable. Payout requests are decided and recorded here.\n\nPayout requests\nSearch\nSearch\nStatus\nAll\nRequested\nApproved\nRejected\nPaid\n\nNo payout requests match these filters\n\nSeller payout requests will appear here.\nSettlement history\nAll statuses\nAvailable\nPayout pending\nPaid\nOn hold\n\nNo settlements recorded yet",
+      "headings": [
+        "Finance",
+        "Payout requests",
+        "Settlement history"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/super-admin/settlements",
+          "query": "?limit=20&offset=0",
+          "status": 200
+        },
+        {
+          "path": "/api/super-admin/payouts",
+          "query": "?limit=20&offset=0",
+          "status": 200
+        }
+      ],
+      "screenshot": "super-admin-loaded--super-admin-payouts.png"
+    }
+  ],
+  "network": [
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 401
+    },
+    {
+      "path": "/api/auth/sign-in/email",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/super-admin/admins",
+      "query": "?limit=20&offset=0",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/super-admin/products",
+      "query": "?limit=20&offset=0",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/super-admin/roles",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/super-admin/reconciliation",
+      "query": "?limit=50",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/super-admin/settlements",
+      "query": "?limit=20&offset=0",
+      "status": 200
+    },
+    {
+      "path": "/api/super-admin/payouts",
+      "query": "?limit=20&offset=0",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/sign-out",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 401
+    }
+  ],
+  "blocked": [],
+  "runtimeErrors": [],
+  "loginStatus": 200,
+  "actor": {
+    "status": 200,
+    "roles": [
+      "SUPER_ADMIN"
+    ]
+  },
+  "logoutStatus": 200,
+  "logoutMethod": "API; missing normal-workspace sign-out UI documented separately",
+  "afterLogoutStatus": 401,
+  "result": "FAIL"
+}

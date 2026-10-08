@@ -1,0 +1,265 @@
+{
+  "mode": "admin",
+  "pages": [
+    {
+      "route": "/admin/returns",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nDashboard\nSeller profile\nProducts\nInventory\nOrders\nReturns\nFinance\nAccount\nAdvanced tools\nView storefront\n\nSeller workspace\n\nCatalog, orders and finance\n\nView storefront\nReturns\n\nCustomer return requests for your products.\n\nAll statuses\nREQUESTED\nAPPROVED\nRETURN PENDING\nRECEIVED\nQC IN PROGRESS\nQC APPROVED\nQC REJECTED\nREFUND PROCESSING\nREFUNDED\nRETURN ISSUE\nREJECTED\n\nNo returns match these filters.",
+      "headings": [
+        "Returns"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/returns",
+          "query": "?limit=20&offset=0",
+          "status": 200
+        }
+      ],
+      "screenshot": "admin-loaded--admin-returns.png"
+    },
+    {
+      "route": "/admin/finance",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nDashboard\nSeller profile\nProducts\nInventory\nOrders\nReturns\nFinance\nAccount\nAdvanced tools\nView storefront\n\nSeller workspace\n\nCatalog, orders and finance\n\nView storefront\nFinance\n\nYour earnings, settlement history, and payout requests.\n\nAvailable balance\n₹0\n\nReady to request\n\nSettlements\n0\n\nAll time\n\nPayout requests\n0\nRefund obligations\n0\nRequest payout\nRequest payout\n\nRequests your available balance (₹0) as a payout.\n\nSettlements\n\nNo settlements yet.\n\nPayout requests\n\nNo payout requests.",
+      "headings": [
+        "Finance",
+        "Request payout",
+        "Settlements",
+        "Payout requests"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/finance",
+          "query": "",
+          "status": 200
+        }
+      ],
+      "screenshot": "admin-loaded--admin-finance.png"
+    },
+    {
+      "route": "/admin/products?id=c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nDashboard\nSeller profile\nProducts\nInventory\nOrders\nReturns\nFinance\nAccount\nAdvanced tools\nView storefront\n\nSeller workspace\n\nCatalog, orders and finance\n\nView storefront\nProducts\n\nYour product catalog — published, draft and archived listings.\n\nTEST Ownline Everyday Cotton Tote\n\nphase11b2-cotton-tote-730d72e64790\n\nPublished\nClose\nPrice\n₹349\nCurrency\nINR\nSKU\nTEST-TOTE-730d72e64790\nReturn enabled\nNo\nFeatured\nYes\nWeight (kg)\n0.250\nCreated\n29 Sept 2026\nControlled development item for public catalog and static page verification. Not offered for sale.\nMove to draft\nMove to archived\nAll statuses\nDraft\nPublished\nArchived\nClear\nProducts\nProduct\tPrice\tStatus\tCreated\n\n\nTEST Ownline Out of Stock No Image\n\nphase11b2-oos-no-image-730d72e64790\n\n\t₹1\t\nPublished\t2 Oct 2026\n\n\nTEST Ownline Everyday Cotton Tote\n\nphase11b2-cotton-tote-730d72e64790\n\n\t₹349\t\nPublished\t29 Sept 2026",
+      "headings": [
+        "Products",
+        "TEST Ownline Everyday Cotton Tote"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/products",
+          "query": "?limit=20&offset=0",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/products/c549089e-32fb-4217-96d7-35dc5a40eb70",
+          "query": "",
+          "status": 200
+        }
+      ],
+      "screenshot": "admin-loaded--admin-products-id-c549089e-32fb-4217-96d7-35dc5a40eb70.png"
+    },
+    {
+      "route": "/admin/inventory?id=c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nDashboard\nSeller profile\nProducts\nInventory\nOrders\nReturns\nFinance\nAccount\nAdvanced tools\nView storefront\n\nSeller workspace\n\nCatalog, orders and finance\n\nView storefront\nInventory\n\nStock levels for your published products. Updates use optimistic concurrency — if two sessions edit the same row simultaneously, one will need to reload and retry.\n\nINVENTORY ROWS\n\nClose\n\nEach save requires the current version — if another process updated inventory since you loaded this page, the save will fail with a version conflict and refresh automatically.\n\nInventory\nVariant\tAvailable\tReserved\tVersion\tUpdated\tUpdate\nBase product\t12\t0\t0\t29 Sept 2026\tUpdate\nProducts with inventory\nProduct\tLast updated\n\n\nTEST Ownline Out of Stock No Image\n\nTEST Ownline Everyday Accessories / TEST Cotton Bags\n\n\t2 Oct 2026\n\n\nTEST Ownline Everyday Cotton Tote\n\nTEST Ownline Everyday Accessories / TEST Cotton Bags\n\n\t29 Sept 2026",
+      "headings": [
+        "Inventory"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/products",
+          "query": "?limit=20&offset=0&status=PUBLISHED",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/products/c549089e-32fb-4217-96d7-35dc5a40eb70/inventory",
+          "query": "",
+          "status": 200
+        }
+      ],
+      "screenshot": "admin-loaded--admin-inventory-id-c549089e-32fb-4217-96d7-35dc5a40eb70.png"
+    }
+  ],
+  "network": [
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 401
+    },
+    {
+      "path": "/api/auth/sign-in/email",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/returns",
+      "query": "?limit=20&offset=0",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/finance",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/products",
+      "query": "?limit=20&offset=0",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/products/c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/products",
+      "query": "?limit=20&offset=0&status=PUBLISHED",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/products/c549089e-32fb-4217-96d7-35dc5a40eb70/inventory",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/onboarding",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/sign-out",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 401
+    }
+  ],
+  "blocked": [],
+  "runtimeErrors": [],
+  "loginStatus": 200,
+  "actor": {
+    "status": 200,
+    "roles": [
+      "ADMIN"
+    ]
+  },
+  "logoutStatus": 200,
+  "logoutMethod": "UI",
+  "afterLogoutStatus": 401,
+  "result": "PASS"
+}

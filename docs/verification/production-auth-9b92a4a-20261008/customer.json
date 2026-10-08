@@ -1,0 +1,4364 @@
+{
+  "mode": "customer",
+  "startedAt": "2026-10-08T08:15:37.355Z",
+  "classification": "PARTIALLY VERIFIED",
+  "api": [
+    {
+      "path": "/api/me",
+      "status": 200,
+      "keys": [
+        "userId",
+        "roles",
+        "permissions",
+        "adminApproved"
+      ],
+      "counts": {
+        "roles": 1,
+        "permissions": 0
+      },
+      "actor": {
+        "userId": "EnvlbnlnSoUCsGRvO5MF8xn8kF6GZG7C",
+        "roles": [
+          "CUSTOMER"
+        ]
+      }
+    },
+    {
+      "path": "/api/me",
+      "status": 200,
+      "keys": [
+        "userId",
+        "roles",
+        "permissions",
+        "adminApproved"
+      ],
+      "counts": {
+        "roles": 1,
+        "permissions": 0
+      },
+      "actor": {
+        "userId": "EnvlbnlnSoUCsGRvO5MF8xn8kF6GZG7C",
+        "roles": [
+          "CUSTOMER"
+        ]
+      }
+    },
+    {
+      "path": "/api/me",
+      "status": 200,
+      "keys": [
+        "userId",
+        "roles",
+        "permissions",
+        "adminApproved"
+      ],
+      "counts": {
+        "roles": 1,
+        "permissions": 0
+      },
+      "actor": {
+        "userId": "EnvlbnlnSoUCsGRvO5MF8xn8kF6GZG7C",
+        "roles": [
+          "CUSTOMER"
+        ]
+      }
+    },
+    {
+      "path": "/api/me",
+      "status": 200,
+      "keys": [
+        "userId",
+        "roles",
+        "permissions",
+        "adminApproved"
+      ],
+      "counts": {
+        "roles": 1,
+        "permissions": 0
+      },
+      "actor": {
+        "userId": "EnvlbnlnSoUCsGRvO5MF8xn8kF6GZG7C",
+        "roles": [
+          "CUSTOMER"
+        ]
+      }
+    },
+    {
+      "path": "/api/me",
+      "status": 200,
+      "keys": [
+        "userId",
+        "roles",
+        "permissions",
+        "adminApproved"
+      ],
+      "counts": {
+        "roles": 1,
+        "permissions": 0
+      },
+      "actor": {
+        "userId": "EnvlbnlnSoUCsGRvO5MF8xn8kF6GZG7C",
+        "roles": [
+          "CUSTOMER"
+        ]
+      }
+    },
+    {
+      "path": "/api/me",
+      "status": 200,
+      "keys": [
+        "userId",
+        "roles",
+        "permissions",
+        "adminApproved"
+      ],
+      "counts": {
+        "roles": 1,
+        "permissions": 0
+      },
+      "actor": {
+        "userId": "EnvlbnlnSoUCsGRvO5MF8xn8kF6GZG7C",
+        "roles": [
+          "CUSTOMER"
+        ]
+      }
+    },
+    {
+      "path": "/api/me",
+      "status": 200,
+      "keys": [
+        "userId",
+        "roles",
+        "permissions",
+        "adminApproved"
+      ],
+      "counts": {
+        "roles": 1,
+        "permissions": 0
+      },
+      "actor": {
+        "userId": "EnvlbnlnSoUCsGRvO5MF8xn8kF6GZG7C",
+        "roles": [
+          "CUSTOMER"
+        ]
+      }
+    },
+    {
+      "path": "/api/customer/cart",
+      "status": 200,
+      "keys": [
+        "items",
+        "subtotal"
+      ],
+      "counts": {
+        "items": 0
+      }
+    },
+    {
+      "path": "/api/customer/wishlist",
+      "status": 200,
+      "keys": [
+        "products"
+      ],
+      "counts": {
+        "products": 0
+      }
+    },
+    {
+      "path": "/api/customer/addresses",
+      "status": 200,
+      "keys": [
+        "addresses"
+      ],
+      "counts": {
+        "addresses": 0
+      }
+    },
+    {
+      "path": "/api/orders",
+      "status": 200,
+      "keys": [
+        "orders"
+      ],
+      "counts": {
+        "orders": 0
+      }
+    },
+    {
+      "path": "/api/admin/summary",
+      "status": 403,
+      "keys": [
+        "error"
+      ],
+      "counts": {},
+      "error": "Forbidden"
+    },
+    {
+      "path": "/api/super-admin/summary",
+      "status": 403,
+      "keys": [
+        "error"
+      ],
+      "counts": {},
+      "error": "Forbidden"
+    },
+    {
+      "path": "/api/products",
+      "status": 200,
+      "keys": [
+        "products"
+      ],
+      "counts": {
+        "products": 2
+      }
+    },
+    {
+      "path": "/api/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "keys": [
+        "id",
+        "categoryId",
+        "subcategoryId",
+        "name",
+        "slug",
+        "description",
+        "price",
+        "currency",
+        "attributes",
+        "returnEnabled",
+        "createdAt",
+        "images",
+        "variants",
+        "available",
+        "rating",
+        "reviewCount"
+      ],
+      "counts": {
+        "images": 1,
+        "variants": 0
+      },
+      "product": {
+        "id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+        "name": "TEST Ownline Everyday Cotton Tote",
+        "slug": "phase11b2-cotton-tote-730d72e64790",
+        "price": "349.00",
+        "currency": "INR",
+        "categoryId": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+        "subcategoryId": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+        "available": true,
+        "variants": [],
+        "images": [
+          {
+            "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+            "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+            "altText": "Phase 11b-3 R2 verification image",
+            "sortOrder": 0
+          }
+        ]
+      }
+    },
+    {
+      "path": "/api/categories",
+      "status": 200,
+      "keys": [
+        "categories"
+      ],
+      "counts": {
+        "categories": 1
+      }
+    }
+  ],
+  "pages": [
+    {
+      "route": "/account",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Account | Ownline Dropship",
+      "headings": [
+        "Your Ownline Dropship",
+        "Profile",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour Ownline Dropship\n\nYour details, saved pieces and purchases, together in one place.\n\nExplore the collection\nProfile\nName\nÑv\nEmail\nshifannv003@gmail.com\nSign out\nAddresses\nOrders\nWishlist\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Ownline Dropship | Ownline Dropship",
+      "headings": [
+        "Everyday,\nwith feeling.",
+        "The Dress edit",
+        "Small details.\nEveryday feeling.",
+        "TEST Ownline Everyday Accessories",
+        "Find your\nown way.",
+        "Good things are worth finding.",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nEveryday,\nwith feeling.\n\nConsidered finds. A little more you.\n\nExplore the collection\nCONSIDERED FINDS FOR THE EVERYDAY\nDISCOVER YOUR OWNLINE\nCONSIDERED FINDS FOR THE EVERYDAY\nThe Dress edit\nExplore all clothing\n\nClothing will appear here when published.\n\nSee more Dress\nSmall details.\nEveryday feeling.\n\nPieces to wear. Things to carry. Finds to make your own. Explore the collection and find what feels like you.\n\nFind your everyday\nTEST Ownline Everyday Accessories\nExplore test ownline everyday accessories\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nSee more\nFind your\nown way.\n\nExplore the current collection by category.\n\nTEST Ownline Everyday Accessories\nGood things are worth finding.\nKeep your favourites close\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHI",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-campaign-poster.webp",
+          "complete": true,
+          "naturalWidth": 1536,
+          "naturalHeight": 1024,
+          "width": 1425,
+          "height": 960
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-editorial.webp",
+          "complete": true,
+          "naturalWidth": 900,
+          "naturalHeight": 1100,
+          "width": 712,
+          "height": 640
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 415,
+          "height": 519
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/search",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Search | Ownline Dropship",
+      "headings": [
+        "The collection",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nThe collection\n\nFind your everyday. Browse by name, price or the details that matter to you.\n\nThe Dress edit\nSearch products\nSearch\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nFilter\nPrice range\nMinimum\n₹\nMaximum\n₹\nIn stock\nApply filters\nClear filters\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 229,
+          "height": 286
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/orders",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Orders | Ownline Dropship",
+      "headings": [
+        "Your purchases",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour purchases\n\nFollow your deliveries, revisit the details and look after your pieces.\n\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "customer--orders-page-1440x960.png"
+    },
+    {
+      "route": "/account",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Account | Ownline Dropship",
+      "headings": [
+        "Your Ownline Dropship",
+        "Profile",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour Ownline Dropship\n\nYour details, saved pieces and purchases, together in one place.\n\nExplore the collection\nProfile\nName\nÑv\nEmail\nshifannv003@gmail.com\nSign out\nAddresses\nOrders\nWishlist\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/admin",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Admin | Ownline Dropship",
+      "headings": [
+        "This workspace needs another account"
+      ],
+      "text": "This workspace needs another account\n\nSign in with an authorized seller account.\n\nSign out\nTry again",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "This workspace needs another account"
+      ],
+      "text": "This workspace needs another account\n\nSign in with an authorized Super Admin account.\n\nSign out\nTry again",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Ownline Dropship | Ownline Dropship",
+      "headings": [
+        "Everyday,\nwith feeling.",
+        "The Dress edit",
+        "Small details.\nEveryday feeling.",
+        "TEST Ownline Everyday Accessories",
+        "Find your\nown way.",
+        "Good things are worth finding.",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nEveryday,\nwith feeling.\n\nConsidered finds. A little more you.\n\nExplore the collection\nCONSIDERED FINDS FOR THE EVERYDAY\nDISCOVER YOUR OWNLINE\nCONSIDERED FINDS FOR THE EVERYDAY\nThe Dress edit\nExplore all clothing\n\nClothing will appear here when published.\n\nSee more Dress\nSmall details.\nEveryday feeling.\n\nPieces to wear. Things to carry. Finds to make your own. Explore the collection and find what feels like you.\n\nFind your everyday\nTEST Ownline Everyday Accessories\nExplore test ownline everyday accessories\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nSee more\nFind your\nown way.\n\nExplore the current collection by category.\n\nTEST Ownline Everyday Accessories\nGood things are worth finding.\nKeep your favourites close\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHI",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-campaign-poster.webp",
+          "complete": true,
+          "naturalWidth": 1536,
+          "naturalHeight": 1024,
+          "width": 1425,
+          "height": 960
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-editorial.webp",
+          "complete": true,
+          "naturalWidth": 900,
+          "naturalHeight": 1100,
+          "width": 712,
+          "height": 640
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 415,
+          "height": 519
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/search",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Search | Ownline Dropship",
+      "headings": [
+        "The collection",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nThe collection\n\nFind your everyday. Browse by name, price or the details that matter to you.\n\nThe Dress edit\nSearch products\nSearch\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nFilter\nPrice range\nMinimum\n₹\nMaximum\n₹\nIn stock\nApply filters\nClear filters\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 229,
+          "height": 286
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/categories/phase11b2-accessories-730d72e64790",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "TEST Ownline Everyday Accessories | Ownline Dropship",
+      "headings": [
+        "TEST Ownline Everyday Accessories",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nTEST Ownline Everyday Accessories\n\nControlled development catalog for storefront verification. Not a live retail collection.\n\nAll collections\nAll\nTEST Cotton Bags\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nFilter\nPrice range\nMinimum\n₹\nMaximum\n₹\nIn stock\nApply filters\nClear filters\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 229,
+          "height": 286
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "TEST Ownline Everyday Cotton Tote | Ownline Dropship",
+      "headings": [
+        "TEST Ownline Everyday Cotton Tote",
+        "About this product",
+        "Customer reviews",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nShop\n/\nTEST Ownline Everyday Cotton Tote\nTEST Ownline Everyday Cotton Tote\nNo ratings yet\n₹349.00\n\nIn stock\n\nQuantity\nAdd to cart\nBuy now\n\nReturns are not enabled for this product.\n\nShipping availability and timing are confirmed by the store during fulfillment.\n\nAbout this product\n\nControlled development item for public catalog and static page verification. Not offered for sale.\n\nCustomer reviews\n\nNo published reviews yet.\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 615,
+          "height": 769
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/cart",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Cart | Ownline Dropship",
+      "headings": [
+        "Your shopping bag",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour shopping bag\n\nReview your pieces before moving to checkout.\n\nKeep exploring\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/wishlist",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Wishlist | Ownline Dropship",
+      "headings": [
+        "Your favourites",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour favourites\n\nKeep the pieces that caught your eye, ready for another look.\n\nFind something new\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/orders",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Orders | Ownline Dropship",
+      "headings": [
+        "Your purchases",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour purchases\n\nFollow your deliveries, revisit the details and look after your pieces.\n\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Account | Ownline Dropship",
+      "headings": [
+        "Your Ownline Dropship",
+        "Profile",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour Ownline Dropship\n\nYour details, saved pieces and purchases, together in one place.\n\nExplore the collection\nProfile\nName\nÑv\nEmail\nshifannv003@gmail.com\nSign out\nAddresses\nOrders\nWishlist\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account/addresses",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Addresses",
+      "headings": [
+        "Delivery addresses",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nDelivery addresses\n\nSave the places your next everyday find should arrive.\n\nYour account\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/returns",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Returns & refunds | Ownline Dropship",
+      "headings": [
+        "Returns & refunds",
+        "Follow your return",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nReturns & refunds\n\nCheck an existing request, from approval through inspection and refund.\n\nYour orders\nFollow your return\n\nUse the reference shown when you submitted your request. You can start a new return from a delivered purchase in Orders.\n\nReturn reference\nCheck return status\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/",
+      "status": 200,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "title": "Ownline Dropship | Ownline Dropship",
+      "headings": [
+        "Everyday,\nwith feeling.",
+        "The Dress edit",
+        "Small details.\nEveryday feeling.",
+        "TEST Ownline Everyday Accessories",
+        "Find your\nown way.",
+        "Good things are worth finding.",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nEveryday,\nwith feeling.\n\nConsidered finds. A little more you.\n\nExplore the collection\nCONSIDERED FINDS FOR THE EVERYDAY\nDISCOVER YOUR OWNLINE\nCONSIDERED FINDS FOR THE EVERYDAY\nThe Dress edit\nExplore all clothing\n\nClothing will appear here when published.\n\nSee more Dress\nSmall details.\nEveryday feeling.\n\nPieces to wear. Things to carry. Finds to make your own. Explore the collection and find what feels like you.\n\nFind your everyday\nTEST Ownline Everyday Accessories\nExplore test ownline everyday accessories\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nSee more\nFind your\nown way.\n\nExplore the current collection by category.\n\nTEST Ownline Everyday Accessories\nGood things are worth finding.\nKeep your favourites close\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHI",
+      "overflow": false,
+      "width": 1280,
+      "scrollWidth": 1265,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-campaign-poster.webp",
+          "complete": true,
+          "naturalWidth": 1536,
+          "naturalHeight": 1024,
+          "width": 1265,
+          "height": 800
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-editorial.webp",
+          "complete": true,
+          "naturalWidth": 900,
+          "naturalHeight": 1100,
+          "width": 632,
+          "height": 640
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 366,
+          "height": 458
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/search",
+      "status": 200,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "title": "Search | Ownline Dropship",
+      "headings": [
+        "The collection",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nThe collection\n\nFind your everyday. Browse by name, price or the details that matter to you.\n\nThe Dress edit\nSearch products\nSearch\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nFilter\nPrice range\nMinimum\n₹\nMaximum\n₹\nIn stock\nApply filters\nClear filters\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1280,
+      "scrollWidth": 1265,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 194,
+          "height": 242
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/categories/phase11b2-accessories-730d72e64790",
+      "status": 200,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "title": "TEST Ownline Everyday Accessories | Ownline Dropship",
+      "headings": [
+        "TEST Ownline Everyday Accessories",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nTEST Ownline Everyday Accessories\n\nControlled development catalog for storefront verification. Not a live retail collection.\n\nAll collections\nAll\nTEST Cotton Bags\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nFilter\nPrice range\nMinimum\n₹\nMaximum\n₹\nIn stock\nApply filters\nClear filters\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1280,
+      "scrollWidth": 1265,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 194,
+          "height": 242
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "title": "TEST Ownline Everyday Cotton Tote | Ownline Dropship",
+      "headings": [
+        "TEST Ownline Everyday Cotton Tote",
+        "About this product",
+        "Customer reviews",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nShop\n/\nTEST Ownline Everyday Cotton Tote\nTEST Ownline Everyday Cotton Tote\nNo ratings yet\n₹349.00\n\nIn stock\n\nQuantity\nAdd to cart\nBuy now\n\nReturns are not enabled for this product.\n\nShipping availability and timing are confirmed by the store during fulfillment.\n\nAbout this product\n\nControlled development item for public catalog and static page verification. Not offered for sale.\n\nCustomer reviews\n\nNo published reviews yet.\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1280,
+      "scrollWidth": 1265,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 541,
+          "height": 677
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/cart",
+      "status": 200,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "title": "Cart | Ownline Dropship",
+      "headings": [
+        "Your shopping bag",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour shopping bag\n\nReview your pieces before moving to checkout.\n\nKeep exploring\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1280,
+      "scrollWidth": 1265,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/wishlist",
+      "status": 200,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "title": "Wishlist | Ownline Dropship",
+      "headings": [
+        "Your favourites",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour favourites\n\nKeep the pieces that caught your eye, ready for another look.\n\nFind something new\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1280,
+      "scrollWidth": 1265,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/orders",
+      "status": 200,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "title": "Orders | Ownline Dropship",
+      "headings": [
+        "Your purchases",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour purchases\n\nFollow your deliveries, revisit the details and look after your pieces.\n\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1280,
+      "scrollWidth": 1265,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account",
+      "status": 200,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "title": "Account | Ownline Dropship",
+      "headings": [
+        "Your Ownline Dropship",
+        "Profile",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour Ownline Dropship\n\nYour details, saved pieces and purchases, together in one place.\n\nExplore the collection\nProfile\nName\nÑv\nEmail\nshifannv003@gmail.com\nSign out\nAddresses\nOrders\nWishlist\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1280,
+      "scrollWidth": 1265,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account/addresses",
+      "status": 200,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "title": "Addresses",
+      "headings": [
+        "Delivery addresses",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nDelivery addresses\n\nSave the places your next everyday find should arrive.\n\nYour account\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1280,
+      "scrollWidth": 1265,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/returns",
+      "status": 200,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "title": "Returns & refunds | Ownline Dropship",
+      "headings": [
+        "Returns & refunds",
+        "Follow your return",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nReturns & refunds\n\nCheck an existing request, from approval through inspection and refund.\n\nYour orders\nFollow your return\n\nUse the reference shown when you submitted your request. You can start a new return from a delivered purchase in Orders.\n\nReturn reference\nCheck return status\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1280,
+      "scrollWidth": 1265,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/",
+      "status": 200,
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "title": "Ownline Dropship | Ownline Dropship",
+      "headings": [
+        "Everyday,\nwith feeling.",
+        "The Dress edit",
+        "Small details.\nEveryday feeling.",
+        "TEST Ownline Everyday Accessories",
+        "Find your\nown way.",
+        "Good things are worth finding.",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nEveryday,\nwith feeling.\n\nConsidered finds. A little more you.\n\nExplore the collection\nCONSIDERED FINDS FOR THE EVERYDAY\nDISCOVER YOUR OWNLINE\nCONSIDERED FINDS FOR THE EVERYDAY\nThe Dress edit\nExplore all clothing\n\nClothing will appear here when published.\n\nSee more Dress\nSmall details.\nEveryday feeling.\n\nPieces to wear. Things to carry. Finds to make your own. Explore the collection and find what feels like you.\n\nFind your everyday\nTEST Ownline Everyday Accessories\nExplore test ownline everyday accessories\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nSee more\nFind your\nown way.\n\nExplore the current collection by category.\n\nTEST Ownline Everyday Accessories\nGood things are worth finding.\nKeep your favourites close\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHI",
+      "overflow": false,
+      "width": 1024,
+      "scrollWidth": 1009,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-campaign-poster.webp",
+          "complete": true,
+          "naturalWidth": 1536,
+          "naturalHeight": 1024,
+          "width": 1009,
+          "height": 768
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-editorial.webp",
+          "complete": true,
+          "naturalWidth": 900,
+          "naturalHeight": 1100,
+          "width": 504,
+          "height": 640
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 293,
+          "height": 366
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/search",
+      "status": 200,
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "title": "Search | Ownline Dropship",
+      "headings": [
+        "The collection",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nThe collection\n\nFind your everyday. Browse by name, price or the details that matter to you.\n\nThe Dress edit\nSearch products\nSearch\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nFilter\nPrice range\nMinimum\n₹\nMaximum\n₹\nIn stock\nApply filters\nClear filters\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1024,
+      "scrollWidth": 1009,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 143,
+          "height": 179
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "customer--search-authenticated-1024x768.png"
+    },
+    {
+      "route": "/categories/phase11b2-accessories-730d72e64790",
+      "status": 200,
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "title": "TEST Ownline Everyday Accessories | Ownline Dropship",
+      "headings": [
+        "TEST Ownline Everyday Accessories",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nTEST Ownline Everyday Accessories\n\nControlled development catalog for storefront verification. Not a live retail collection.\n\nAll collections\nAll\nTEST Cotton Bags\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nFilter\nPrice range\nMinimum\n₹\nMaximum\n₹\nIn stock\nApply filters\nClear filters\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1024,
+      "scrollWidth": 1009,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 143,
+          "height": 179
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "customer--categories-phase11b2-accessories-730d72e64790-authenticated-1024x768.png"
+    },
+    {
+      "route": "/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "title": "TEST Ownline Everyday Cotton Tote | Ownline Dropship",
+      "headings": [
+        "TEST Ownline Everyday Cotton Tote",
+        "About this product",
+        "Customer reviews",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nShop\n/\nTEST Ownline Everyday Cotton Tote\nTEST Ownline Everyday Cotton Tote\nNo ratings yet\n₹349.00\n\nIn stock\n\nQuantity\nAdd to cart\nBuy now\n\nReturns are not enabled for this product.\n\nShipping availability and timing are confirmed by the store during fulfillment.\n\nAbout this product\n\nControlled development item for public catalog and static page verification. Not offered for sale.\n\nCustomer reviews\n\nNo published reviews yet.\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1024,
+      "scrollWidth": 1009,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 423,
+          "height": 529
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/cart",
+      "status": 200,
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "title": "Cart | Ownline Dropship",
+      "headings": [
+        "Your shopping bag",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour shopping bag\n\nReview your pieces before moving to checkout.\n\nKeep exploring\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1024,
+      "scrollWidth": 1009,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/wishlist",
+      "status": 200,
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "title": "Wishlist | Ownline Dropship",
+      "headings": [
+        "Your favourites",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour favourites\n\nKeep the pieces that caught your eye, ready for another look.\n\nFind something new\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1024,
+      "scrollWidth": 1009,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/orders",
+      "status": 200,
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "title": "Orders | Ownline Dropship",
+      "headings": [
+        "Your purchases",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour purchases\n\nFollow your deliveries, revisit the details and look after your pieces.\n\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1024,
+      "scrollWidth": 1009,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account",
+      "status": 200,
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "title": "Account | Ownline Dropship",
+      "headings": [
+        "Your Ownline Dropship",
+        "Profile",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour Ownline Dropship\n\nYour details, saved pieces and purchases, together in one place.\n\nExplore the collection\nProfile\nName\nÑv\nEmail\nshifannv003@gmail.com\nSign out\nAddresses\nOrders\nWishlist\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1024,
+      "scrollWidth": 1009,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account/addresses",
+      "status": 200,
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "title": "Addresses",
+      "headings": [
+        "Delivery addresses",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nDelivery addresses\n\nSave the places your next everyday find should arrive.\n\nYour account\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1024,
+      "scrollWidth": 1009,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/returns",
+      "status": 200,
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "title": "Returns & refunds | Ownline Dropship",
+      "headings": [
+        "Returns & refunds",
+        "Follow your return",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nReturns & refunds\n\nCheck an existing request, from approval through inspection and refund.\n\nYour orders\nFollow your return\n\nUse the reference shown when you submitted your request. You can start a new return from a delivered purchase in Orders.\n\nReturn reference\nCheck return status\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1024,
+      "scrollWidth": 1009,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/",
+      "status": 200,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "title": "Ownline Dropship | Ownline Dropship",
+      "headings": [
+        "Everyday,\nwith feeling.",
+        "The Dress edit",
+        "Small details.\nEveryday feeling.",
+        "TEST Ownline Everyday Accessories",
+        "Find your\nown way.",
+        "Good things are worth finding.",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nEveryday,\nwith feeling.\n\nConsidered finds. A little more you.\n\nExplore the collection\nCONSIDERED FINDS FOR THE EVERYDAY\nDISCOVER YOUR OWNLINE\nCONSIDERED FINDS FOR THE EVERYDAY\nThe Dress edit\nExplore all clothing\n\nClothing will appear here when published.\n\nSee more Dress\nSmall details.\nEveryday feeling.\n\nPieces to wear. Things to carry. Finds to make your own. Explore the collection and find what feels like you.\n\nFind your everyday\nTEST Ownline Everyday Accessories\nExplore test ownline everyday accessories\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nSee more\nFind your\nown way.\n\nExplore the current collection by category.\n\nTEST Ownline Everyday Accessories\nGood things are worth finding.\nKeep your favourites close\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the every",
+      "overflow": false,
+      "width": 768,
+      "scrollWidth": 753,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-campaign-poster.webp",
+          "complete": true,
+          "naturalWidth": 1536,
+          "naturalHeight": 1024,
+          "width": 753,
+          "height": 1024
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-editorial.webp",
+          "complete": true,
+          "naturalWidth": 900,
+          "naturalHeight": 1100,
+          "width": 376,
+          "height": 640
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 217,
+          "height": 271
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/search",
+      "status": 200,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "title": "Search | Ownline Dropship",
+      "headings": [
+        "The collection",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nThe collection\n\nFind your everyday. Browse by name, price or the details that matter to you.\n\nThe Dress edit\nSearch products\nSearch\nFilters\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 768,
+      "scrollWidth": 753,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 217,
+          "height": 271
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/categories/phase11b2-accessories-730d72e64790",
+      "status": 200,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "title": "TEST Ownline Everyday Accessories | Ownline Dropship",
+      "headings": [
+        "TEST Ownline Everyday Accessories",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nTEST Ownline Everyday Accessories\n\nControlled development catalog for storefront verification. Not a live retail collection.\n\nAll collections\nAll\nTEST Cotton Bags\nFilters\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 768,
+      "scrollWidth": 753,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 217,
+          "height": 271
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "title": "TEST Ownline Everyday Cotton Tote | Ownline Dropship",
+      "headings": [
+        "TEST Ownline Everyday Cotton Tote",
+        "About this product",
+        "Customer reviews",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nShop\n/\nTEST Ownline Everyday Cotton Tote\nTEST Ownline Everyday Cotton Tote\nNo ratings yet\n₹349.00\n\nIn stock\n\nQuantity\nAdd to cart\nBuy now\n\nReturns are not enabled for this product.\n\nShipping availability and timing are confirmed by the store during fulfillment.\n\nAbout this product\n\nControlled development item for public catalog and static page verification. Not offered for sale.\n\nCustomer reviews\n\nNo published reviews yet.\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 768,
+      "scrollWidth": 753,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 318,
+          "height": 397
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/cart",
+      "status": 200,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "title": "Cart | Ownline Dropship",
+      "headings": [
+        "Your shopping bag",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nYour shopping bag\n\nReview your pieces before moving to checkout.\n\nKeep exploring\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 768,
+      "scrollWidth": 753,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/wishlist",
+      "status": 200,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "title": "Wishlist | Ownline Dropship",
+      "headings": [
+        "Your favourites",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nYour favourites\n\nKeep the pieces that caught your eye, ready for another look.\n\nFind something new\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 768,
+      "scrollWidth": 753,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/orders",
+      "status": 200,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "title": "Orders | Ownline Dropship",
+      "headings": [
+        "Your purchases",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nYour purchases\n\nFollow your deliveries, revisit the details and look after your pieces.\n\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 768,
+      "scrollWidth": 753,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account",
+      "status": 200,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "title": "Account | Ownline Dropship",
+      "headings": [
+        "Your Ownline Dropship",
+        "Profile",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nYour Ownline Dropship\n\nYour details, saved pieces and purchases, together in one place.\n\nExplore the collection\nProfile\nName\nÑv\nEmail\nshifannv003@gmail.com\nSign out\nAddresses\nOrders\nWishlist\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 768,
+      "scrollWidth": 753,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account/addresses",
+      "status": 200,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "title": "Addresses",
+      "headings": [
+        "Delivery addresses",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nDelivery addresses\n\nSave the places your next everyday find should arrive.\n\nYour account\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 768,
+      "scrollWidth": 753,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/returns",
+      "status": 200,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "title": "Returns & refunds | Ownline Dropship",
+      "headings": [
+        "Returns & refunds",
+        "Follow your return",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nReturns & refunds\n\nCheck an existing request, from approval through inspection and refund.\n\nYour orders\nFollow your return\n\nUse the reference shown when you submitted your request. You can start a new return from a delivered purchase in Orders.\n\nReturn reference\nCheck return status\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 768,
+      "scrollWidth": 753,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/",
+      "status": 200,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "Ownline Dropship | Ownline Dropship",
+      "headings": [
+        "Everyday,\nwith feeling.",
+        "The Dress edit",
+        "Small details.\nEveryday feeling.",
+        "TEST Ownline Everyday Accessories",
+        "Find your\nown way.",
+        "Good things are worth finding.",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nEveryday,\nwith feeling.\n\nConsidered finds. A little more you.\n\nExplore the collection\nCONSIDERED FINDS FOR THE EVERYDAY\nThe Dress edit\nExplore all clothing\n\nClothing will appear here when published.\n\nSee more Dress\nSmall details.\nEveryday feeling.\n\nPieces to wear. Things to carry. Finds to make your own. Explore the collection and find what feels like you.\n\nFind your everyday\nTEST Ownline Everyday Accessories\nExplore test ownline everyday accessories\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nSee more\nFind your\nown way.\n\nExplore the current collection by category.\n\nTEST Ownline Everyday Accessories\nGood things are worth finding.\nKeep your favourites close\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 390,
+      "scrollWidth": 375,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-campaign-poster.webp",
+          "complete": true,
+          "naturalWidth": 1536,
+          "naturalHeight": 1024,
+          "width": 375,
+          "height": 844
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-editorial.webp",
+          "complete": true,
+          "naturalWidth": 900,
+          "naturalHeight": 1100,
+          "width": 375,
+          "height": 450
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 166,
+          "height": 207
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/search",
+      "status": 200,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "Search | Ownline Dropship",
+      "headings": [
+        "The collection",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nThe collection\n\nFind your everyday. Browse by name, price or the details that matter to you.\n\nThe Dress edit\nSearch products\nSearch\nFilters\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 390,
+      "scrollWidth": 375,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 166,
+          "height": 207
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/categories/phase11b2-accessories-730d72e64790",
+      "status": 200,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "TEST Ownline Everyday Accessories | Ownline Dropship",
+      "headings": [
+        "TEST Ownline Everyday Accessories",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nTEST Ownline Everyday Accessories\n\nControlled development catalog for storefront verification. Not a live retail collection.\n\nAll collections\nAll\nTEST Cotton Bags\nFilters\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 390,
+      "scrollWidth": 375,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 166,
+          "height": 207
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "TEST Ownline Everyday Cotton Tote | Ownline Dropship",
+      "headings": [
+        "TEST Ownline Everyday Cotton Tote",
+        "About this product",
+        "Customer reviews",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nShop\n/\nTEST Ownline Everyday Cotton Tote\nTEST Ownline Everyday Cotton Tote\nNo ratings yet\n₹349.00\n\nIn stock\n\nQuantity\nAdd to cart\nBuy now\n\nReturns are not enabled for this product.\n\nShipping availability and timing are confirmed by the store during fulfillment.\n\nAbout this product\n\nControlled development item for public catalog and static page verification. Not offered for sale.\n\nCustomer reviews\n\nNo published reviews yet.\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 390,
+      "scrollWidth": 375,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 343,
+          "height": 429
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/cart",
+      "status": 200,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "Cart | Ownline Dropship",
+      "headings": [
+        "Your shopping bag",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nYour shopping bag\n\nReview your pieces before moving to checkout.\n\nKeep exploring\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 390,
+      "scrollWidth": 375,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/wishlist",
+      "status": 200,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "Wishlist | Ownline Dropship",
+      "headings": [
+        "Your favourites",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nYour favourites\n\nKeep the pieces that caught your eye, ready for another look.\n\nFind something new\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 390,
+      "scrollWidth": 375,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/orders",
+      "status": 200,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "Orders | Ownline Dropship",
+      "headings": [
+        "Your purchases",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nYour purchases\n\nFollow your deliveries, revisit the details and look after your pieces.\n\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 390,
+      "scrollWidth": 375,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account",
+      "status": 200,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "Account | Ownline Dropship",
+      "headings": [
+        "Your Ownline Dropship",
+        "Profile",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nYour Ownline Dropship\n\nYour details, saved pieces and purchases, together in one place.\n\nExplore the collection\nProfile\nName\nÑv\nEmail\nshifannv003@gmail.com\nSign out\nAddresses\nOrders\nWishlist\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 390,
+      "scrollWidth": 375,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account/addresses",
+      "status": 200,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "Addresses",
+      "headings": [
+        "Delivery addresses",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nDelivery addresses\n\nSave the places your next everyday find should arrive.\n\nYour account\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 390,
+      "scrollWidth": 375,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/returns",
+      "status": 200,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "Returns & refunds | Ownline Dropship",
+      "headings": [
+        "Returns & refunds",
+        "Follow your return",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nReturns & refunds\n\nCheck an existing request, from approval through inspection and refund.\n\nYour orders\nFollow your return\n\nUse the reference shown when you submitted your request. You can start a new return from a delivered purchase in Orders.\n\nReturn reference\nCheck return status\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 390,
+      "scrollWidth": 375,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/",
+      "status": 200,
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "title": "Ownline Dropship | Ownline Dropship",
+      "headings": [
+        "Everyday,\nwith feeling.",
+        "The Dress edit",
+        "Small details.\nEveryday feeling.",
+        "TEST Ownline Everyday Accessories",
+        "Find your\nown way.",
+        "Good things are worth finding.",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nEveryday,\nwith feeling.\n\nConsidered finds. A little more you.\n\nExplore the collection\nCONSIDERED FINDS FOR THE EVERYDAY\nThe Dress edit\nExplore all clothing\n\nClothing will appear here when published.\n\nSee more Dress\nSmall details.\nEveryday feeling.\n\nPieces to wear. Things to carry. Finds to make your own. Explore the collection and find what feels like you.\n\nFind your everyday\nTEST Ownline Everyday Accessories\nExplore test ownline everyday accessories\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nSee more\nFind your\nown way.\n\nExplore the current collection by category.\n\nTEST Ownline Everyday Accessories\nGood things are worth finding.\nKeep your favourites close\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 375,
+      "scrollWidth": 360,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-campaign-poster.webp",
+          "complete": true,
+          "naturalWidth": 1536,
+          "naturalHeight": 1024,
+          "width": 360,
+          "height": 812
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/images/ownline-editorial.webp",
+          "complete": true,
+          "naturalWidth": 900,
+          "naturalHeight": 1100,
+          "width": 360,
+          "height": 450
+        },
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 158,
+          "height": 198
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/search",
+      "status": 200,
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "title": "Search | Ownline Dropship",
+      "headings": [
+        "The collection",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nThe collection\n\nFind your everyday. Browse by name, price or the details that matter to you.\n\nThe Dress edit\nSearch products\nSearch\nFilters\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 375,
+      "scrollWidth": 360,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 158,
+          "height": 198
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/categories/phase11b2-accessories-730d72e64790",
+      "status": 200,
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "title": "TEST Ownline Everyday Accessories | Ownline Dropship",
+      "headings": [
+        "TEST Ownline Everyday Accessories",
+        "Filter",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nTEST Ownline Everyday Accessories\n\nControlled development catalog for storefront verification. Not a live retail collection.\n\nAll collections\nAll\nTEST Cotton Bags\nFilters\n\n2 pieces\n\nSort by\nNewest\nPrice: low to high\nPrice: high to low\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Image\n\n₹1.00\n\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 375,
+      "scrollWidth": 360,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 158,
+          "height": 198
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "title": "TEST Ownline Everyday Cotton Tote | Ownline Dropship",
+      "headings": [
+        "TEST Ownline Everyday Cotton Tote",
+        "About this product",
+        "Customer reviews",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nShop\n/\nTEST Ownline Everyday Cotton Tote\nTEST Ownline Everyday Cotton Tote\nNo ratings yet\n₹349.00\n\nIn stock\n\nQuantity\nAdd to cart\nBuy now\n\nReturns are not enabled for this product.\n\nShipping availability and timing are confirmed by the store during fulfillment.\n\nAbout this product\n\nControlled development item for public catalog and static page verification. Not offered for sale.\n\nCustomer reviews\n\nNo published reviews yet.\n\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 375,
+      "scrollWidth": 360,
+      "images": [
+        {
+          "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "complete": true,
+          "naturalWidth": 1,
+          "naturalHeight": 1,
+          "width": 328,
+          "height": 410
+        }
+      ],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/cart",
+      "status": 200,
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "title": "Cart | Ownline Dropship",
+      "headings": [
+        "Your shopping bag",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nYour shopping bag\n\nReview your pieces before moving to checkout.\n\nKeep exploring\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 375,
+      "scrollWidth": 360,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/wishlist",
+      "status": 200,
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "title": "Wishlist | Ownline Dropship",
+      "headings": [
+        "Your favourites",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nYour favourites\n\nKeep the pieces that caught your eye, ready for another look.\n\nFind something new\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 375,
+      "scrollWidth": 360,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/orders",
+      "status": 200,
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "title": "Orders | Ownline Dropship",
+      "headings": [
+        "Your purchases",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nYour purchases\n\nFollow your deliveries, revisit the details and look after your pieces.\n\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 375,
+      "scrollWidth": 360,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account",
+      "status": 200,
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "title": "Account | Ownline Dropship",
+      "headings": [
+        "Your Ownline Dropship",
+        "Profile",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nYour Ownline Dropship\n\nYour details, saved pieces and purchases, together in one place.\n\nExplore the collection\nProfile\nName\nÑv\nEmail\nshifannv003@gmail.com\nSign out\nAddresses\nOrders\nWishlist\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 375,
+      "scrollWidth": 360,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account/addresses",
+      "status": 200,
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "title": "Addresses",
+      "headings": [
+        "Delivery addresses",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nDelivery addresses\n\nSave the places your next everyday find should arrive.\n\nYour account\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 375,
+      "scrollWidth": 360,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/returns",
+      "status": 200,
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "title": "Returns & refunds | Ownline Dropship",
+      "headings": [
+        "Returns & refunds",
+        "Follow your return",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nReturns & refunds\n\nCheck an existing request, from approval through inspection and refund.\n\nYour orders\nFollow your return\n\nUse the reference shown when you submitted your request. You can start a new return from a delivered purchase in Orders.\n\nReturn reference\nCheck return status\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 375,
+      "scrollWidth": 360,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    },
+    {
+      "route": "/account",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Account | Ownline Dropship",
+      "headings": [
+        "Your Ownline Dropship",
+        "Profile",
+        "Find your\neveryday."
+      ],
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nCLOTHING\nNEW ARRIVALS\nSAVED\nYour Ownline Dropship\n\nYour details, saved pieces and purchases, together in one place.\n\nExplore the collection\nProfile\nName\nÑv\nEmail\nshifannv003@gmail.com\nSign out\nAddresses\nOrders\nWishlist\nReturns & refunds\nFind your\neveryday.\n\nPieces to wear. Finds to make your own.\n\nExplore the Dress edit\nThe collection\nShop all\nDress & clothing\nNew arrivals\nYour favourites\nHere for you\nYour account\nDelivery addresses\nOrders & tracking\nReturns & refunds\nShopping bag\nOWNLINEDROPSHIP\n\nConsidered finds for the everyday.\n\nBack to top",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshotError": "Capture timed out; DOM and HTTP evidence retained"
+    }
+  ],
+  "network": [
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/search",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/orders",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/orders",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/cart",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/addresses",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/orders",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/summary",
+      "status": 403,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/summary",
+      "status": 403,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/categories",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/search",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/categories/phase11b2-accessories-730d72e64790",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/cart",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/cart",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/wishlist",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/orders",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/orders",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account/addresses",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/addresses",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/returns",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/search",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/categories/phase11b2-accessories-730d72e64790",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/cart",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/cart",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/wishlist",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/orders",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/orders",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account/addresses",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/addresses",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/returns",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/search",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/categories/phase11b2-accessories-730d72e64790",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/cart",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/cart",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/wishlist",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/orders",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/orders",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account/addresses",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/addresses",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/returns",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/search",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/categories/phase11b2-accessories-730d72e64790",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/cart",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/cart",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/wishlist",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/orders",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/orders",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account/addresses",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/addresses",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/returns",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/search",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/categories/phase11b2-accessories-730d72e64790",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/cart",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/cart",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/wishlist",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/orders",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/orders",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account/addresses",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/addresses",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/returns",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/search",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/categories/phase11b2-accessories-730d72e64790",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/cart",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/cart",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/wishlist",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/wishlist",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/orders",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/orders",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account/addresses",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/customer/addresses",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/returns",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/account",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/get-session",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    }
+  ],
+  "runtimeErrors": [],
+  "consoleErrors": [
+    {
+      "page": "https://ownline-ecommerce.pages.dev/account",
+      "message": "Failed to load resource: the server responded with a status of 403 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/account",
+      "message": "Failed to load resource: the server responded with a status of 403 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/cart",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/wishlist",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/account/addresses",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/returns",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/cart",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/wishlist",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/account/addresses",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/returns",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/cart",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/wishlist",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/account/addresses",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/returns",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/search",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/categories/phase11b2-accessories-730d72e64790",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/cart",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/wishlist",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/account/addresses",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/returns",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/cart",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/wishlist",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/account/addresses",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/returns",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/cart",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/wishlist",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/account/addresses",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/returns",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    }
+  ],
+  "blocked": [],
+  "authOperations": [],
+  "failures": [
+    "UI sign-out missing",
+    "Customer sign-out UI"
+  ],
+  "navigation": [
+    {
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "links": [
+        "/categories/phase11b2-accessories-730d72e64790",
+        "/search",
+        "/clothing",
+        "/search?sort=newest",
+        "/wishlist",
+        "/account",
+        "/account/addresses",
+        "/orders",
+        "/returns",
+        "/cart",
+        "/search",
+        "/clothing",
+        "/search?sort=newest",
+        "/wishlist",
+        "/account",
+        "/orders"
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "links": [
+        "/categories/phase11b2-accessories-730d72e64790",
+        "/search",
+        "/clothing",
+        "/search?sort=newest",
+        "/wishlist",
+        "/account",
+        "/account/addresses",
+        "/orders",
+        "/returns",
+        "/cart",
+        "/search",
+        "/clothing",
+        "/search?sort=newest",
+        "/wishlist",
+        "/account",
+        "/orders"
+      ]
+    },
+    {
+      "width": 375,
+      "height": 812,
+      "overflow": false,
+      "links": [
+        "/categories/phase11b2-accessories-730d72e64790",
+        "/search",
+        "/clothing",
+        "/search?sort=newest",
+        "/wishlist",
+        "/account",
+        "/account/addresses",
+        "/orders",
+        "/returns",
+        "/cart",
+        "/search",
+        "/clothing",
+        "/search?sort=newest",
+        "/wishlist",
+        "/account",
+        "/orders"
+      ]
+    }
+  ],
+  "customerId": "EnvlbnlnSoUCsGRvO5MF8xn8kF6GZG7C",
+  "login": {
+    "method": "human Google login in isolated browser",
+    "verifiedByMe": true
+  },
+  "hardRefresh": {
+    "status": 200,
+    "sameIdentity": true
+  },
+  "publicListProduct": {
+    "id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+    "name": "TEST Ownline Everyday Cotton Tote",
+    "slug": "phase11b2-cotton-tote-730d72e64790",
+    "price": "349.00",
+    "currency": "INR",
+    "featured": true,
+    "category": "TEST Ownline Everyday Accessories",
+    "categorySlug": "phase11b2-accessories-730d72e64790",
+    "subcategory": "TEST Cotton Bags",
+    "subcategorySlug": "cotton-bags",
+    "available": true,
+    "image": {
+      "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "altText": "Phase 11b-3 R2 verification image"
+    }
+  },
+  "publicProduct": {
+    "id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+    "name": "TEST Ownline Everyday Cotton Tote",
+    "slug": "phase11b2-cotton-tote-730d72e64790",
+    "price": "349.00",
+    "currency": "INR",
+    "categoryId": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+    "subcategoryId": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+    "available": true,
+    "variants": [],
+    "images": [
+      {
+        "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+        "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+        "altText": "Phase 11b-3 R2 verification image",
+        "sortOrder": 0
+      }
+    ]
+  },
+  "productCategory": {
+    "id": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+    "name": "TEST Ownline Everyday Accessories",
+    "slug": "phase11b2-accessories-730d72e64790",
+    "subcategories": [
+      {
+        "id": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+        "name": "TEST Cotton Bags",
+        "slug": "cotton-bags"
+      }
+    ]
+  },
+  "media": {
+    "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+    "complete": true,
+    "width": 1,
+    "height": 1,
+    "visible": true
+  },
+  "productUI": {
+    "nameVisible": true,
+    "priceVisible": true,
+    "inStock": true
+  },
+  "mediaResponse": {
+    "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+    "status": 200,
+    "contentType": "image/png",
+    "bytes": 68
+  },
+  "finishedAt": "2026-10-08T08:27:00.226Z"
+}

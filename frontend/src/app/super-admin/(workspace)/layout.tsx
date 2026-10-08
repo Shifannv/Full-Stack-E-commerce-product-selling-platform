@@ -10,12 +10,13 @@ export default function SuperAdminWorkspaceLayout({
   return (
     <OperatorQueryProvider>
       <OperatorGate role="super-admin">
-        {(actor) => (
+        {(actor, signOutControl) => (
           <DashboardShell
             title="Platform workspace"
             subtitle="Ownline Dropship operations"
             homeHref="/super-admin"
             actor={actor}
+            headerActions={signOutControl}
           >
             {children}
           </DashboardShell>

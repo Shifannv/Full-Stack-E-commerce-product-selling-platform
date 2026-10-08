@@ -1,0 +1,192 @@
+{
+  "productId": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+  "checks": [
+    {
+      "field": "id",
+      "layer": "Admin detail â†’ public detail",
+      "admin": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "public": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "result": "PASS"
+    },
+    {
+      "field": "id",
+      "layer": "Admin detail â†’ public list",
+      "admin": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "public": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "result": "PASS"
+    },
+    {
+      "field": "name",
+      "layer": "Admin detail â†’ public detail",
+      "admin": "TEST Ownline Everyday Cotton Tote",
+      "public": "TEST Ownline Everyday Cotton Tote",
+      "result": "PASS"
+    },
+    {
+      "field": "name",
+      "layer": "Admin detail â†’ public list",
+      "admin": "TEST Ownline Everyday Cotton Tote",
+      "public": "TEST Ownline Everyday Cotton Tote",
+      "result": "PASS"
+    },
+    {
+      "field": "slug",
+      "layer": "Admin detail â†’ public detail",
+      "admin": "phase11b2-cotton-tote-730d72e64790",
+      "public": "phase11b2-cotton-tote-730d72e64790",
+      "result": "PASS"
+    },
+    {
+      "field": "slug",
+      "layer": "Admin detail â†’ public list",
+      "admin": "phase11b2-cotton-tote-730d72e64790",
+      "public": "phase11b2-cotton-tote-730d72e64790",
+      "result": "PASS"
+    },
+    {
+      "field": "price",
+      "layer": "Admin detail â†’ public detail",
+      "admin": "349.00",
+      "public": "349.00",
+      "result": "PASS"
+    },
+    {
+      "field": "price",
+      "layer": "Admin detail â†’ public list",
+      "admin": "349.00",
+      "public": "349.00",
+      "result": "PASS"
+    },
+    {
+      "field": "currency",
+      "layer": "Admin detail â†’ public detail",
+      "admin": "INR",
+      "public": "INR",
+      "result": "PASS"
+    },
+    {
+      "field": "currency",
+      "layer": "Admin detail â†’ public list",
+      "admin": "INR",
+      "public": "INR",
+      "result": "PASS"
+    },
+    {
+      "field": "category",
+      "layer": "Admin detail â†’ public list",
+      "admin": "TEST Ownline Everyday Accessories",
+      "public": "TEST Ownline Everyday Accessories",
+      "result": "PASS"
+    },
+    {
+      "field": "categorySlug",
+      "layer": "Admin detail â†’ public list",
+      "admin": "phase11b2-accessories-730d72e64790",
+      "public": "phase11b2-accessories-730d72e64790",
+      "result": "PASS"
+    },
+    {
+      "field": "subcategory",
+      "layer": "Admin detail â†’ public list",
+      "admin": "TEST Cotton Bags",
+      "public": "TEST Cotton Bags",
+      "result": "PASS"
+    },
+    {
+      "field": "subcategorySlug",
+      "layer": "Admin detail â†’ public list",
+      "admin": "cotton-bags",
+      "public": "cotton-bags",
+      "result": "PASS"
+    },
+    {
+      "field": "featured",
+      "layer": "Admin detail â†’ public list",
+      "admin": true,
+      "public": true,
+      "result": "PASS"
+    },
+    {
+      "field": "categoryId",
+      "layer": "Admin detail â†’ public detail",
+      "admin": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+      "public": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+      "result": "PASS"
+    },
+    {
+      "field": "subcategoryId",
+      "layer": "Admin detail â†’ public detail",
+      "admin": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+      "public": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+      "result": "PASS"
+    },
+    {
+      "field": "variants",
+      "layer": "Admin detail â†’ public detail (both empty)",
+      "admin": [],
+      "public": [],
+      "result": "PASS"
+    },
+    {
+      "field": "image record",
+      "layer": "Admin detail â†’ public detail",
+      "admin": [
+        {
+          "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+          "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "altText": "Phase 11b-3 R2 verification image",
+          "sortOrder": 0
+        }
+      ],
+      "public": [
+        {
+          "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+          "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "altText": "Phase 11b-3 R2 verification image",
+          "sortOrder": 0
+        }
+      ],
+      "result": "PASS"
+    },
+    {
+      "field": "availability from base-product inventory",
+      "layer": "Admin inventory â†’ public detail",
+      "admin": true,
+      "public": true,
+      "result": "PASS"
+    }
+  ],
+  "adminUI": {
+    "productDocumentStatus": 200,
+    "productNameVisible": true,
+    "slugVisible": true,
+    "inventoryDocumentStatus": 200
+  },
+  "customerUI": {
+    "nameVisible": true,
+    "priceVisible": true,
+    "inStock": true
+  },
+  "inventory": [
+    {
+      "variantId": null,
+      "availableQuantity": 12,
+      "reservedQuantity": 0,
+      "version": 0
+    }
+  ],
+  "media": {
+    "src": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+    "complete": true,
+    "width": 1,
+    "height": 1,
+    "visible": true
+  },
+  "realCatalogPhotography": "NOT VERIFIED: existing object is a 1Ã—1 verification PNG",
+  "contractNotes": [
+    "Featured state and category/subcategory names/slugs are exposed by the public list; the public detail does not expose featured state.",
+    "The public image projection intentionally omits Admin-only variantId.",
+    "No database query or production business mutation was performed."
+  ],
+  "result": "PASS"
+}

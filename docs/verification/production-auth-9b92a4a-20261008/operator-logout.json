@@ -1,0 +1,55 @@
+{
+  "startedAt": "2026-10-08T08:18:35.327Z",
+  "roles": [
+    {
+      "name": "admin",
+      "logoutRoute": "/admin/account",
+      "signInStatus": 200,
+      "authenticated": {
+        "status": 200,
+        "userId": "d68498ec-1894-4013-a47b-d8c807f3ef47",
+        "roles": [
+          "ADMIN"
+        ]
+      },
+      "logoutStatus": 200,
+      "afterLogout": {
+        "status": 401
+      },
+      "afterRefresh": {
+        "status": 401
+      },
+      "loginUIAfterRefresh": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "super-admin",
+      "logoutRoute": "/super-admin/advanced",
+      "signInStatus": 200,
+      "authenticated": {
+        "status": 200,
+        "userId": "faf09199-ebce-4b8a-87d6-bb7b843b6c9a",
+        "roles": [
+          "SUPER_ADMIN"
+        ]
+      },
+      "failure": "locator.waitFor: Timeout 20000ms exceeded.",
+      "result": "FAIL"
+    }
+  ],
+  "anonymous": [
+    {
+      "url": "/api/me",
+      "status": 401
+    },
+    {
+      "url": "/api/admin/summary",
+      "status": 401
+    },
+    {
+      "url": "/api/super-admin/summary",
+      "status": 401
+    }
+  ],
+  "blocked": []
+}

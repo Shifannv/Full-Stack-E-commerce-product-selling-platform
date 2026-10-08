@@ -1,0 +1,22 @@
+{
+  "method": "existing production account; browser UI sign-in; logout endpoint verification",
+  "blocked": [],
+  "loginStatus": 200,
+  "authenticated": {
+    "status": 200,
+    "roles": [
+      "SUPER_ADMIN"
+    ]
+  },
+  "normalWorkspaceSignOutButtons": 0,
+  "advancedSignOutButtons": 0,
+  "logoutStatus": 200,
+  "afterLogout": {
+    "status": 401
+  },
+  "afterRefresh": {
+    "status": 401
+  },
+  "backendLogout": "PASS",
+  "uiLogout": "MISSING FROM NORMAL WORKSPACE"
+}

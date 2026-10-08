@@ -1,0 +1,395 @@
+{
+  "mode": "admin",
+  "pages": [
+    {
+      "route": "/admin",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nDashboard\nSeller profile\nProducts\nInventory\nOrders\nReturns\nFinance\nAccount\nAdvanced tools\nView storefront\n\nSeller workspace\n\nCatalog, orders and finance\n\nView storefront\nYour workspace\n\nA clear view of your catalog, orders and payouts.\n\nAvailable balance\n₹0\n\nFrom settlements\n\nOpen Available balance\nGross settled sales\n₹0\n\nLifetime settled\n\nProducts\n2\n\nYour assigned catalog\n\nOpen Products\nOrders\n0\n\n0 paid & confirmed\n\nOpen Orders\nPending payouts\n0\n\nAwaiting Super Admin\n\nOpen Pending payouts\nReturns needing attention\nOpen returns\n\nNo return requests are waiting on you right now.\n\nA sales-over-time chart will appear once the backend exposes a time-series endpoint.",
+      "headings": [
+        "Your workspace",
+        "Returns needing attention"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/summary",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/onboarding",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/returns",
+          "query": "?status=REQUESTED&limit=5",
+          "status": 200
+        }
+      ],
+      "screenshot": "admin-loaded--admin.png"
+    },
+    {
+      "route": "/admin/onboarding",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nDashboard\nSeller profile\nProducts\nInventory\nOrders\nReturns\nFinance\nAccount\nAdvanced tools\nView storefront\n\nSeller workspace\n\nCatalog, orders and finance\n\nView storefront\nSeller profile\n\nYour account onboarding status and verification details.\n\nActive\n\nYour seller account is approved and active.\n\nIdentity & business\nLegal name\nTEST Ownline Verification Seller\nBusiness type\nDEVELOPMENT_TEST\nContact phone\n9999999999\nSubmitted\n29 Sept 2026\nKYC status\nApproved\nUploaded documents\nTEST ONLY NOT REAL KYC\n29 Sept 2026\nShipping origin\nBusiness\nTEST Ownline Seller\nContact\nTest Seller\nPhone\n9999999999\nAddress\nTest Only Verification Lane, Delhi, Delhi, 110001, IN\nReturn address\nBusiness\nTEST Ownline Seller\nContact\nTest Seller\nPhone\n9999999999\nAddress\nTest Only Return Lane, Delhi, Delhi, 110001, IN\nBank account\n\nNo bank account on file. Use Advanced tools → Onboarding to add bank details.\n\nAssigned categories\nf22ccfec…\nActive",
+      "headings": [
+        "Seller profile",
+        "Identity & business",
+        "Uploaded documents",
+        "Shipping origin",
+        "Return address",
+        "Bank account",
+        "Assigned categories"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/onboarding",
+          "query": "",
+          "status": 200
+        }
+      ],
+      "screenshot": "admin-loaded--admin-onboarding.png"
+    },
+    {
+      "route": "/admin/products",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nDashboard\nSeller profile\nProducts\nInventory\nOrders\nReturns\nFinance\nAccount\nAdvanced tools\nView storefront\n\nSeller workspace\n\nCatalog, orders and finance\n\nView storefront\nProducts\n\nYour product catalog — published, draft and archived listings.\n\nAll statuses\nDraft\nPublished\nArchived\nClear\nProducts\nProduct\tPrice\tStatus\tCreated\n\n\nTEST Ownline Out of Stock No Image\n\nphase11b2-oos-no-image-730d72e64790\n\n\t₹1\t\nPublished\t2 Oct 2026\n\n\nTEST Ownline Everyday Cotton Tote\n\nphase11b2-cotton-tote-730d72e64790\n\n\t₹349\t\nPublished\t29 Sept 2026",
+      "headings": [
+        "Products"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/products",
+          "query": "?limit=20&offset=0",
+          "status": 200
+        }
+      ],
+      "screenshot": "admin-loaded--admin-products.png"
+    },
+    {
+      "route": "/admin/inventory",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nDashboard\nSeller profile\nProducts\nInventory\nOrders\nReturns\nFinance\nAccount\nAdvanced tools\nView storefront\n\nSeller workspace\n\nCatalog, orders and finance\n\nView storefront\nInventory\n\nStock levels for your published products. Updates use optimistic concurrency — if two sessions edit the same row simultaneously, one will need to reload and retry.\n\nProducts with inventory\nProduct\tLast updated\n\n\nTEST Ownline Out of Stock No Image\n\nTEST Ownline Everyday Accessories / TEST Cotton Bags\n\n\t2 Oct 2026\n\n\nTEST Ownline Everyday Cotton Tote\n\nTEST Ownline Everyday Accessories / TEST Cotton Bags\n\n\t29 Sept 2026",
+      "headings": [
+        "Inventory"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/products",
+          "query": "?limit=20&offset=0&status=PUBLISHED",
+          "status": 200
+        }
+      ],
+      "screenshot": "admin-loaded--admin-inventory.png"
+    },
+    {
+      "route": "/admin/orders",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nDashboard\nSeller profile\nProducts\nInventory\nOrders\nReturns\nFinance\nAccount\nAdvanced tools\nView storefront\n\nSeller workspace\n\nCatalog, orders and finance\n\nView storefront\nOrders\n\nAll orders containing your products. The order total shown is your seller share only.\n\nNo orders yet.\n\n0 orders total · This endpoint returns all orders without pagination.",
+      "headings": [
+        "Orders"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/orders",
+          "query": "",
+          "status": 200
+        }
+      ],
+      "screenshot": "admin-loaded--admin-orders.png"
+    },
+    {
+      "route": "/admin/returns",
+      "status": 200,
+      "settled": true,
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nDashboard\nSeller profile\nProducts\nInventory\nOrders\nReturns\nFinance\nAccount\nAdvanced tools\nView storefront\n\nSeller workspace\n\nCatalog, orders and finance\n\nView storefront\nReturns\n\nCustomer return requests for your products.\n\nAll statuses\nREQUESTED\nAPPROVED\nRETURN PENDING\nRECEIVED\nQC IN PROGRESS\nQC APPROVED\nQC REJECTED\nREFUND PROCESSING\nREFUNDED\nRETURN ISSUE\nREJECTED\n\nTemporarily unavailable\n\nThe server could not complete this request. Try again in a moment.\n\nTry again",
+      "headings": [
+        "Returns"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "query": "",
+          "status": 200
+        },
+        {
+          "path": "/api/admin/returns",
+          "query": "?limit=20&offset=0",
+          "status": 503
+        },
+        {
+          "path": "/api/admin/returns",
+          "query": "?limit=20&offset=0",
+          "status": 503
+        }
+      ],
+      "screenshot": "admin-loaded--admin-returns.png"
+    },
+    {
+      "route": "/admin/finance",
+      "status": 200,
+      "settled": true,
+      "text": "Temporarily unavailable\n\nThe server could not complete this request. Try again in a moment.\n\nSign out\nTry again",
+      "headings": [
+        "Temporarily unavailable"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 503
+        }
+      ],
+      "screenshot": "admin-loaded--admin-finance.png"
+    },
+    {
+      "route": "/admin/products?id=c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "status": 200,
+      "settled": true,
+      "text": "Temporarily unavailable\n\nThe server could not complete this request. Try again in a moment.\n\nSign out\nTry again",
+      "headings": [
+        "Temporarily unavailable"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 503
+        }
+      ],
+      "screenshot": "admin-loaded--admin-products-id-c549089e-32fb-4217-96d7-35dc5a40eb70.png"
+    },
+    {
+      "route": "/admin/inventory?id=c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "status": 200,
+      "settled": true,
+      "text": "Temporarily unavailable\n\nThe server could not complete this request. Try again in a moment.\n\nSign out\nTry again",
+      "headings": [
+        "Temporarily unavailable"
+      ],
+      "overflow": false,
+      "loading": [],
+      "api": [
+        {
+          "path": "/api/me",
+          "query": "",
+          "status": 503
+        }
+      ],
+      "screenshot": "admin-loaded--admin-inventory-id-c549089e-32fb-4217-96d7-35dc5a40eb70.png"
+    }
+  ],
+  "network": [
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 401
+    },
+    {
+      "path": "/api/auth/sign-in/email",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/summary",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/onboarding",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/returns",
+      "query": "?status=REQUESTED&limit=5",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/onboarding",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/products",
+      "query": "?limit=20&offset=0",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/products",
+      "query": "?limit=20&offset=0&status=PUBLISHED",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/orders",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "query": "",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/returns",
+      "query": "?limit=20&offset=0",
+      "status": 503
+    },
+    {
+      "path": "/api/admin/returns",
+      "query": "?limit=20&offset=0",
+      "status": 503
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 503
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 503
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 503
+    },
+    {
+      "path": "/api/me",
+      "query": "",
+      "status": 503
+    },
+    {
+      "path": "/api/auth/sign-out",
+      "query": "",
+      "status": 503
+    }
+  ],
+  "blocked": [],
+  "runtimeErrors": [],
+  "loginStatus": 200,
+  "failure": "page.evaluate: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+  "result": "FAIL"
+}

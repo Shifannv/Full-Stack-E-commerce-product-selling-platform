@@ -1,0 +1,1533 @@
+{
+  "mode": "super-admin",
+  "startedAt": "2026-10-08T08:15:36.787Z",
+  "classification": "PARTIALLY VERIFIED",
+  "api": [
+    {
+      "path": "/api/me",
+      "status": 200,
+      "keys": [
+        "userId",
+        "roles",
+        "permissions",
+        "adminApproved"
+      ],
+      "counts": {
+        "roles": 1,
+        "permissions": 16
+      },
+      "actor": {
+        "userId": "faf09199-ebce-4b8a-87d6-bb7b843b6c9a",
+        "roles": [
+          "SUPER_ADMIN"
+        ]
+      }
+    },
+    {
+      "path": "/api/super-admin/summary",
+      "status": 200,
+      "keys": [
+        "admins",
+        "catalog",
+        "orders",
+        "finance",
+        "onboarding"
+      ],
+      "counts": {}
+    },
+    {
+      "path": "/api/super-admin/admins",
+      "status": 200,
+      "keys": [
+        "admins",
+        "limit",
+        "offset"
+      ],
+      "counts": {
+        "admins": 1
+      }
+    },
+    {
+      "path": "/api/super-admin/products",
+      "status": 200,
+      "keys": [
+        "products",
+        "limit",
+        "offset"
+      ],
+      "counts": {
+        "products": 2
+      }
+    },
+    {
+      "path": "/api/super-admin/roles",
+      "status": 200,
+      "keys": [
+        "roles",
+        "permissions"
+      ],
+      "counts": {
+        "roles": 3,
+        "permissions": 16
+      }
+    },
+    {
+      "path": "/api/super-admin/reconciliation",
+      "status": 200,
+      "keys": [
+        "items",
+        "count"
+      ],
+      "counts": {
+        "items": 0
+      }
+    },
+    {
+      "path": "/api/super-admin/reviews/pending",
+      "status": 200,
+      "keys": [
+        "reviews"
+      ],
+      "counts": {
+        "reviews": 0
+      }
+    },
+    {
+      "path": "/api/super-admin/payouts",
+      "status": 200,
+      "keys": [
+        "payouts",
+        "limit",
+        "offset"
+      ],
+      "counts": {
+        "payouts": 0
+      }
+    },
+    {
+      "path": "/api/super-admin/settlements",
+      "status": 200,
+      "keys": [
+        "settlements",
+        "limit",
+        "offset"
+      ],
+      "counts": {
+        "settlements": 0
+      }
+    },
+    {
+      "path": "/api/me",
+      "status": 200,
+      "keys": [
+        "userId",
+        "roles",
+        "permissions",
+        "adminApproved"
+      ],
+      "counts": {
+        "roles": 1,
+        "permissions": 16
+      },
+      "actor": {
+        "userId": "faf09199-ebce-4b8a-87d6-bb7b843b6c9a",
+        "roles": [
+          "SUPER_ADMIN"
+        ]
+      }
+    }
+  ],
+  "pages": [
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform sign-in"
+      ],
+      "text": "Platform sign-in\n\nSign in to manage Ownline Dropship.\n\nEmail\nPassword\nSign in",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "images": [],
+      "emailFields": 1,
+      "passwordFields": 1,
+      "screenshot": "super-admin--super-admin-login-1440x960.png"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform sign-in"
+      ],
+      "text": "Platform sign-in\n\nSign in to manage Ownline Dropship.\n\nEmail\nPassword\nSign in",
+      "overflow": false,
+      "width": 1280,
+      "scrollWidth": 1280,
+      "images": [],
+      "emailFields": 1,
+      "passwordFields": 1,
+      "screenshot": "super-admin--super-admin-login-1280x800.png"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform sign-in"
+      ],
+      "text": "Platform sign-in\n\nSign in to manage Ownline Dropship.\n\nEmail\nPassword\nSign in",
+      "overflow": false,
+      "width": 1024,
+      "scrollWidth": 1024,
+      "images": [],
+      "emailFields": 1,
+      "passwordFields": 1,
+      "screenshot": "super-admin--super-admin-login-1024x768.png"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform sign-in"
+      ],
+      "text": "Platform sign-in\n\nSign in to manage Ownline Dropship.\n\nEmail\nPassword\nSign in",
+      "overflow": false,
+      "width": 768,
+      "scrollWidth": 768,
+      "images": [],
+      "emailFields": 1,
+      "passwordFields": 1,
+      "screenshot": "super-admin--super-admin-login-768x1024.png"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform sign-in"
+      ],
+      "text": "Platform sign-in\n\nSign in to manage Ownline Dropship.\n\nEmail\nPassword\nSign in",
+      "overflow": false,
+      "width": 390,
+      "scrollWidth": 390,
+      "images": [],
+      "emailFields": 1,
+      "passwordFields": 1,
+      "screenshot": "super-admin--super-admin-login-390x844.png"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform sign-in"
+      ],
+      "text": "Platform sign-in\n\nSign in to manage Ownline Dropship.\n\nEmail\nPassword\nSign in",
+      "overflow": false,
+      "width": 375,
+      "scrollWidth": 375,
+      "images": [],
+      "emailFields": 1,
+      "passwordFields": 1,
+      "screenshot": "super-admin--super-admin-login-375x812.png"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform overview"
+      ],
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nPlatform overview\n\nWhat is happening across Ownline Dropship right now.\n\nLoading platform overview…",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-page-1440x960.png"
+    },
+    {
+      "route": "/super-admin/admins",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Temporarily unavailable"
+      ],
+      "text": "Temporarily unavailable\n\nThe server could not complete this request. Try again in a moment.\n\nSign out\nTry again",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-admins-page-1440x960.png"
+    },
+    {
+      "route": "/super-admin/products",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Products"
+      ],
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nProducts\n\nEvery product across all sellers, including drafts and archived items.\n\nSearch\nSearch\nStatus\nAll\nDraft\nPublished\nArchived\nLoading products…",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-products-page-1440x960.png"
+    },
+    {
+      "route": "/super-admin/roles",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Roles & permissions"
+      ],
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nRoles & permissions\n\nA role's permission grant is role-wide: changing it here would change every Admin who holds that role at once. There is no approved policy for that, so this view is read-only.\n\nLoading roles…",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-roles-page-1440x960.png"
+    },
+    {
+      "route": "/super-admin/reconciliation",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Reconciliation"
+      ],
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nReconciliation\n\nFinance-integrity items that need attention. PENDING and RETRYABLE items retry automatically; REVIEW items require a manual decision.\n\nAll domains\nPayment\nRefund\nFinance\nLoading reconciliation items…",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-reconciliation-page-1440x960.png"
+    },
+    {
+      "route": "/super-admin/reviews",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Review moderation",
+        "Authorize a refund"
+      ],
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nReview moderation\n\nPending customer reviews waiting for a publish or reject decision.\n\nNo reviews pending moderation\n\nAll submitted reviews have been moderated.\nAuthorize a refund\nReturn ID\n\nEnter a return ID above to authorize its refund.",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-reviews-page-1440x960.png"
+    },
+    {
+      "route": "/super-admin/payouts",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Finance",
+        "Payout requests",
+        "Settlement history"
+      ],
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nFinance\n\nGross Product Sales, Commission, Payment Gateway Fee and Refund Adjustment combine into each seller's Net Payable. Payout requests are decided and recorded here.\n\nPayout requests\nSearch\nSearch\nStatus\nAll\nRequested\nApproved\nRejected\nPaid\nLoading payout requests…\nSettlement history\nAll statuses\nAvailable\nPayout pending\nPaid\nOn hold\nLoading settlement history…",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1425,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-payouts-page-1440x960.png"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform overview"
+      ],
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nPlatform overview\n\nWhat is happening across Ownline Dropship right now.\n\nLoading platform overview…",
+      "overflow": false,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-authenticated-1440x960.png"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform overview"
+      ],
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nPlatform overview\n\nWhat is happening across Ownline Dropship right now.\n\nLoading platform overview…",
+      "overflow": false,
+      "width": 1280,
+      "scrollWidth": 1280,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-authenticated-1280x800.png"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform overview"
+      ],
+      "text": "Skip to content\nOWNLINEOPS\n\nWORKSPACE\n\nOverview\nSellers\nProducts\nReviews\nFinance\nReconciliation\nLifecycle requests\nRoles & permissions\nAdvanced tools\nView storefront\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nPlatform overview\n\nWhat is happening across Ownline Dropship right now.\n\nLoading platform overview…",
+      "overflow": false,
+      "width": 1024,
+      "scrollWidth": 1024,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-authenticated-1024x768.png"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform overview"
+      ],
+      "text": "Skip to content\n\nPlatform workspace\n\nOwnline Dropship operations\n\nView storefront\nPlatform overview\n\nWhat is happening across Ownline Dropship right now.\n\nLoading platform overview…",
+      "overflow": false,
+      "width": 768,
+      "scrollWidth": 768,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-authenticated-768x1024.png"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform overview"
+      ],
+      "text": "Skip to content\n\nPlatform workspace\n\nView storefront\nPlatform overview\n\nWhat is happening across Ownline Dropship right now.\n\nLoading platform overview…",
+      "overflow": false,
+      "width": 390,
+      "scrollWidth": 390,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-authenticated-390x844.png"
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "title": "Platform | Ownline Dropship",
+      "headings": [
+        "Platform overview"
+      ],
+      "text": "Skip to content\n\nPlatform workspace\n\nView storefront\nPlatform overview\n\nWhat is happening across Ownline Dropship right now.\n\nLoading platform overview…",
+      "overflow": false,
+      "width": 375,
+      "scrollWidth": 375,
+      "images": [],
+      "emailFields": 0,
+      "passwordFields": 0,
+      "screenshot": "super-admin--super-admin-authenticated-375x812.png"
+    }
+  ],
+  "network": [
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 401,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 401,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 401,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 401,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 401,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 401,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/sign-in/email",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin/admins",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 503,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin/products",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin/roles",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin/reconciliation",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin/reviews",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/reviews/pending",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin/payouts",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/settlements",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/payouts",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/summary",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/admins",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/products",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/roles",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/reconciliation",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/reviews/pending",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/payouts",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/settlements",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "type": "image",
+      "contentType": "image/png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "application/json"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    }
+  ],
+  "runtimeErrors": [],
+  "consoleErrors": [
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/admins",
+      "message": "Failed to load resource: the server responded with a status of 503 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/products",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/products",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/products",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/products",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/products",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/products",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/products",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/products",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/products",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/products",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/roles",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/roles",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/roles",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/roles",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/roles",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/roles",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/roles",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/roles",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/roles",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/roles",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reconciliation",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reconciliation",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reconciliation",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reconciliation",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reconciliation",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reconciliation",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reconciliation",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reconciliation",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reconciliation",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reconciliation",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reviews",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reviews",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reviews",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reviews",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reviews",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reviews",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reviews",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reviews",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reviews",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/reviews",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/payouts",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/payouts",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/payouts",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/payouts",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/payouts",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/payouts",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/payouts",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/payouts",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/payouts",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin/payouts",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "page": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    }
+  ],
+  "blocked": [],
+  "authOperations": [
+    {
+      "path": "/api/auth/sign-in/email",
+      "method": "POST"
+    }
+  ],
+  "failures": [
+    "UI sign-out missing"
+  ],
+  "navigation": [
+    {
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "links": [
+        "/super-admin",
+        "/super-admin/admins",
+        "/super-admin/products",
+        "/super-admin/reviews",
+        "/super-admin/payouts",
+        "/super-admin/reconciliation",
+        "/super-admin/lifecycle",
+        "/super-admin/roles",
+        "/super-admin/advanced"
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "links": [
+        "/super-admin",
+        "/super-admin/admins",
+        "/super-admin/products",
+        "/super-admin/reviews",
+        "/super-admin/payouts",
+        "/super-admin/reconciliation",
+        "/super-admin/lifecycle",
+        "/super-admin/roles",
+        "/super-admin/advanced"
+      ]
+    },
+    {
+      "width": 375,
+      "height": 812,
+      "overflow": false,
+      "links": [
+        "/super-admin",
+        "/super-admin/admins",
+        "/super-admin/products",
+        "/super-admin/reviews",
+        "/super-admin/payouts",
+        "/super-admin/reconciliation",
+        "/super-admin/lifecycle",
+        "/super-admin/roles",
+        "/super-admin/advanced"
+      ]
+    }
+  ],
+  "login": {
+    "method": "deployed login UI",
+    "status": 200
+  },
+  "actor": {
+    "userId": "faf09199-ebce-4b8a-87d6-bb7b843b6c9a",
+    "roles": [
+      "SUPER_ADMIN"
+    ]
+  },
+  "hardRefresh": {
+    "status": 200,
+    "roles": [
+      "SUPER_ADMIN"
+    ]
+  },
+  "finishedAt": "2026-10-08T08:16:37.163Z"
+}

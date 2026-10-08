@@ -28,13 +28,14 @@ export function OperatorGate({
   children,
 }: {
   role: "admin" | "super-admin";
-  children: (actor: Actor) => React.ReactNode;
+  children: (actor: Actor, signOutControl: React.ReactNode) => React.ReactNode;
 }) {
   const [state, setState] = useState<GateState>("loading");
   const [actor, setActor] = useState<Actor | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [busy, setBusy] = useState(false);
   const [signInError, setSignInError] = useState<string | null>(null);
+  const [signOutError, setSignOutError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
@@ -82,12 +83,15 @@ export function OperatorGate({
 
   async function signOut() {
     setBusy(true);
+    setSignOutError(null);
     try {
       await authApi.signOut();
-    } finally {
-      setBusy(false);
       setState("signed-out");
       setActor(null);
+    } catch (reason) {
+      setSignOutError(describeApiError(reason, "session").message);
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -124,6 +128,7 @@ export function OperatorGate({
             Try again
           </Button>
         </div>
+        {signOutError && <p role="alert" className="mt-3 text-sm text-destructive">{signOutError}</p>}
       </div>
     );
   }
@@ -186,7 +191,14 @@ export function OperatorGate({
   if (!actor) return null;
   return (
     <OperatorActorProvider actor={actor}>
-      {children(actor)}
+      {children(actor, (
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {signOutError && <p role="alert" className="text-sm text-destructive">{signOutError}</p>}
+          <Button variant="outline" disabled={busy} onClick={() => void signOut()}>
+            {busy ? "Signing out…" : "Sign out"}
+          </Button>
+        </div>
+      ))}
     </OperatorActorProvider>
   );
 }

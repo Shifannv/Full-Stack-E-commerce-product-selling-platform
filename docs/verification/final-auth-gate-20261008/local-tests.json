@@ -1,0 +1,22 @@
+[
+  {
+    "width": 1440,
+    "case": "failed logout shows error and preserves authenticated workspace",
+    "passed": true
+  },
+  {
+    "width": 1440,
+    "case": "successful logout unmounts workspace; refresh and direct access denied",
+    "passed": true
+  },
+  {
+    "width": 375,
+    "case": "failed logout shows error and preserves authenticated workspace",
+    "passed": true
+  },
+  {
+    "width": 375,
+    "case": "successful logout unmounts workspace; refresh and direct access denied",
+    "passed": true
+  }
+]

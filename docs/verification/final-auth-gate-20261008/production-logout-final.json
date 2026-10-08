@@ -1,0 +1,201 @@
+{
+  "startedAt": "2026-10-08T09:34:42.746Z",
+  "checks": [
+    {
+      "label": "ADMIN UI login",
+      "ok": true
+    },
+    {
+      "label": "ADMIN authenticated identity",
+      "ok": true
+    },
+    {
+      "label": "ADMIN visible Sign out",
+      "ok": true
+    },
+    {
+      "label": "ADMIN UI logout API",
+      "ok": true,
+      "evidence": {
+        "status": 200
+      }
+    },
+    {
+      "label": "ADMIN existing logout navigation",
+      "ok": true
+    },
+    {
+      "label": "ADMIN session invalidated",
+      "ok": true
+    },
+    {
+      "label": "ADMIN protected API 401",
+      "ok": true
+    },
+    {
+      "label": "ADMIN hard refresh signed out",
+      "ok": true
+    },
+    {
+      "label": "ADMIN direct protected access denied",
+      "ok": true
+    },
+    {
+      "label": "SUPER_ADMIN UI login",
+      "ok": true
+    },
+    {
+      "label": "SUPER_ADMIN authenticated identity",
+      "ok": true
+    },
+    {
+      "label": "SUPER_ADMIN visible Sign out",
+      "ok": true
+    },
+    {
+      "label": "SUPER_ADMIN UI logout API",
+      "ok": true,
+      "evidence": {
+        "status": 200
+      }
+    },
+    {
+      "label": "SUPER_ADMIN UI becomes signed out",
+      "ok": true
+    },
+    {
+      "label": "SUPER_ADMIN session invalidated",
+      "ok": true
+    },
+    {
+      "label": "SUPER_ADMIN protected API 401",
+      "ok": true
+    },
+    {
+      "label": "SUPER_ADMIN hard refresh signed out",
+      "ok": true
+    },
+    {
+      "label": "SUPER_ADMIN direct protected access denied",
+      "ok": true
+    }
+  ],
+  "requests": [
+    {
+      "timestamp": "2026-10-08T09:34:44.338Z",
+      "role": "ADMIN",
+      "endpoint": "/api/me",
+      "status": 200,
+      "shape": [
+        "userId",
+        "roles",
+        "permissions",
+        "adminApproved",
+        "mustChangePassword"
+      ],
+      "roles": [
+        "ADMIN"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T09:34:50.250Z",
+      "role": "ADMIN",
+      "endpoint": "/api/me",
+      "status": 401,
+      "shape": [
+        "error"
+      ],
+      "error": "Unauthorized"
+    },
+    {
+      "timestamp": "2026-10-08T09:34:50.459Z",
+      "role": "ADMIN",
+      "endpoint": "/api/admin/summary",
+      "status": 401,
+      "shape": [
+        "error"
+      ],
+      "error": "Unauthorized"
+    },
+    {
+      "timestamp": "2026-10-08T09:34:50.950Z",
+      "role": "ADMIN",
+      "endpoint": "/api/me",
+      "status": 401,
+      "shape": [
+        "error"
+      ],
+      "error": "Unauthorized"
+    },
+    {
+      "timestamp": "2026-10-08T09:34:55.420Z",
+      "role": "SUPER_ADMIN",
+      "endpoint": "/api/me",
+      "status": 200,
+      "shape": [
+        "userId",
+        "roles",
+        "permissions",
+        "adminApproved"
+      ],
+      "roles": [
+        "SUPER_ADMIN"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T09:35:02.028Z",
+      "role": "SUPER_ADMIN",
+      "endpoint": "/api/me",
+      "status": 401,
+      "shape": [
+        "error"
+      ],
+      "error": "Unauthorized"
+    },
+    {
+      "timestamp": "2026-10-08T09:35:02.143Z",
+      "role": "SUPER_ADMIN",
+      "endpoint": "/api/super-admin/summary",
+      "status": 401,
+      "shape": [
+        "error"
+      ],
+      "error": "Unauthorized"
+    },
+    {
+      "timestamp": "2026-10-08T09:35:03.584Z",
+      "role": "SUPER_ADMIN",
+      "endpoint": "/api/me",
+      "status": 401,
+      "shape": [
+        "error"
+      ],
+      "error": "Unauthorized"
+    }
+  ],
+  "authOperations": [
+    {
+      "timestamp": "2026-10-08T09:34:43.744Z",
+      "role": "ADMIN",
+      "path": "/api/auth/sign-in/email"
+    },
+    {
+      "timestamp": "2026-10-08T09:34:49.590Z",
+      "role": "ADMIN",
+      "path": "/api/auth/sign-out"
+    },
+    {
+      "timestamp": "2026-10-08T09:34:53.088Z",
+      "role": "SUPER_ADMIN",
+      "path": "/api/auth/sign-in/email"
+    },
+    {
+      "timestamp": "2026-10-08T09:35:01.454Z",
+      "role": "SUPER_ADMIN",
+      "path": "/api/auth/sign-out"
+    }
+  ],
+  "runtimeErrors": [],
+  "blocked": [],
+  "finishedAt": "2026-10-08T09:35:04.398Z"
+}
