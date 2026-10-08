@@ -1,0 +1,363 @@
+{
+  "productId": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+  "identifiers": {
+    "admin": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+    "database": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+    "publicAPI": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+    "customerPage": "c549089e-32fb-4217-96d7-35dc5a40eb70"
+  },
+  "fields": {
+    "id": {
+      "admin": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "database": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "publicAPI": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "customerPagePayload": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "match": true
+    },
+    "name": {
+      "admin": "TEST Ownline Everyday Cotton Tote",
+      "database": "TEST Ownline Everyday Cotton Tote",
+      "publicAPI": "TEST Ownline Everyday Cotton Tote",
+      "customerPagePayload": "TEST Ownline Everyday Cotton Tote",
+      "match": true
+    },
+    "slug": {
+      "admin": "phase11b2-cotton-tote-730d72e64790",
+      "database": "phase11b2-cotton-tote-730d72e64790",
+      "publicAPI": "phase11b2-cotton-tote-730d72e64790",
+      "customerPagePayload": "phase11b2-cotton-tote-730d72e64790",
+      "match": true
+    },
+    "price": {
+      "admin": "349.00",
+      "database": "349.00",
+      "publicAPI": "349.00",
+      "customerPagePayload": "349.00",
+      "match": true
+    },
+    "currency": {
+      "admin": "INR",
+      "database": "INR",
+      "publicAPI": "INR",
+      "customerPagePayload": "INR",
+      "match": true
+    },
+    "categoryId": {
+      "admin": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+      "database": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+      "publicAPI": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+      "customerPagePayload": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+      "match": true
+    },
+    "subcategoryId": {
+      "admin": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+      "database": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+      "publicAPI": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+      "customerPagePayload": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+      "match": true
+    },
+    "images": {
+      "admin": [
+        {
+          "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+          "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "altText": "Phase 11b-3 R2 verification image",
+          "sortOrder": 0
+        }
+      ],
+      "database": [
+        {
+          "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+          "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "altText": "Phase 11b-3 R2 verification image",
+          "sortOrder": 0
+        }
+      ],
+      "publicAPI": [
+        {
+          "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+          "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "altText": "Phase 11b-3 R2 verification image",
+          "sortOrder": 0
+        }
+      ],
+      "customerPagePayload": [
+        {
+          "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+          "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+          "altText": "Phase 11b-3 R2 verification image",
+          "sortOrder": 0
+        }
+      ],
+      "payloadMatch": true,
+      "renderingMatch": false
+    },
+    "variants": {
+      "admin": [],
+      "database": [],
+      "publicAPI": [],
+      "customerPagePayload": [],
+      "match": true
+    },
+    "availability": {
+      "adminInventory": {
+        "inventories": [
+          {
+            "id": "acc2f9d6-0669-4333-861d-eb0104381c54",
+            "productId": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+            "variantId": null,
+            "availableQuantity": 12,
+            "reservedQuantity": 0,
+            "version": 0,
+            "updatedAt": "2026-09-28T18:53:04.808Z"
+          }
+        ]
+      },
+      "database": [
+        {
+          "id": "acc2f9d6-0669-4333-861d-eb0104381c54",
+          "product_id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+          "variant_id": null,
+          "available_quantity": 12,
+          "reserved_quantity": 0,
+          "version": 0
+        }
+      ],
+      "publicAPI": true,
+      "customerPagePayload": true,
+      "renderedAvailable": true,
+      "match": true
+    },
+    "featured": {
+      "admin": true,
+      "database": true,
+      "publicList": true,
+      "customerHomeFeatured": true,
+      "match": true
+    }
+  },
+  "publication": {
+    "id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+    "name": "TEST Ownline Everyday Cotton Tote",
+    "slug": "phase11b2-cotton-tote-730d72e64790",
+    "price": "349.00",
+    "currency": "INR",
+    "status": "PUBLISHED",
+    "featured": true,
+    "category_id": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+    "subcategory_id": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+    "created_by_admin_id": "f7f5e3e3-685a-4bfc-b4dd-084c6c115851",
+    "category": "TEST Ownline Everyday Accessories",
+    "category_slug": "phase11b2-accessories-730d72e64790",
+    "category_status": "PUBLISHED",
+    "subcategory": "TEST Cotton Bags",
+    "subcategory_slug": "cotton-bags",
+    "subcategory_status": "PUBLISHED",
+    "subcategory_category_id": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+    "owner_admin_status": "ACTIVE"
+  },
+  "payloadFlowMatches": true,
+  "renderedMediaVerified": false,
+  "criticalFlowClassification": "PARTIALLY VERIFIED: identifiers and serialized product fields match; real product image is not rendered",
+  "safety": {
+    "users": {
+      "before": {
+        "count": 5,
+        "fingerprint": "7c9d4a162d4b6bb44557101d1aa15ee4"
+      },
+      "after": {
+        "count": 5,
+        "fingerprint": "7c9d4a162d4b6bb44557101d1aa15ee4"
+      },
+      "unchanged": true
+    },
+    "user_roles": {
+      "before": {
+        "count": 5,
+        "fingerprint": "af097f43c3f0fe7a6031016bdbd4f8a9"
+      },
+      "after": {
+        "count": 5,
+        "fingerprint": "af097f43c3f0fe7a6031016bdbd4f8a9"
+      },
+      "unchanged": true
+    },
+    "admins": {
+      "before": {
+        "count": 1,
+        "fingerprint": "92e183426cf12b5195fc79634e786d73"
+      },
+      "after": {
+        "count": 1,
+        "fingerprint": "92e183426cf12b5195fc79634e786d73"
+      },
+      "unchanged": true
+    },
+    "categories": {
+      "before": {
+        "count": 1,
+        "fingerprint": "448164d436ffadc31c8cc1cf4bc1e09e"
+      },
+      "after": {
+        "count": 1,
+        "fingerprint": "448164d436ffadc31c8cc1cf4bc1e09e"
+      },
+      "unchanged": true
+    },
+    "subcategories": {
+      "before": {
+        "count": 1,
+        "fingerprint": "5bed9d45509f68bc79cf46cd2fea3194"
+      },
+      "after": {
+        "count": 1,
+        "fingerprint": "5bed9d45509f68bc79cf46cd2fea3194"
+      },
+      "unchanged": true
+    },
+    "products": {
+      "before": {
+        "count": 2,
+        "fingerprint": "28761736f61a0df5a35add6e2d4a6915"
+      },
+      "after": {
+        "count": 2,
+        "fingerprint": "28761736f61a0df5a35add6e2d4a6915"
+      },
+      "unchanged": true
+    },
+    "product_variants": {
+      "before": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "after": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "unchanged": true
+    },
+    "product_images": {
+      "before": {
+        "count": 1,
+        "fingerprint": "2d4604a2bf37fa62f67be6b6a99543c6"
+      },
+      "after": {
+        "count": 1,
+        "fingerprint": "2d4604a2bf37fa62f67be6b6a99543c6"
+      },
+      "unchanged": true
+    },
+    "inventories": {
+      "before": {
+        "count": 2,
+        "fingerprint": "2e0116cdc100820071eb9c756e1d7ec1"
+      },
+      "after": {
+        "count": 2,
+        "fingerprint": "2e0116cdc100820071eb9c756e1d7ec1"
+      },
+      "unchanged": true
+    },
+    "orders": {
+      "before": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "after": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "unchanged": true
+    },
+    "order_items": {
+      "before": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "after": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "unchanged": true
+    },
+    "payments": {
+      "before": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "after": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "unchanged": true
+    },
+    "payout_requests": {
+      "before": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "after": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "unchanged": true
+    },
+    "admin_settlements": {
+      "before": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "after": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "unchanged": true
+    },
+    "shipments": {
+      "before": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "after": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "unchanged": true
+    },
+    "admin_category_assignments": {
+      "before": {
+        "count": 1,
+        "fingerprint": "f452b96f18019f39f4f74eb8a8bbd246"
+      },
+      "after": {
+        "count": 1,
+        "fingerprint": "f452b96f18019f39f4f74eb8a8bbd246"
+      },
+      "unchanged": true
+    },
+    "admin_credentials": {
+      "before": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "after": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "unchanged": true
+    },
+    "admin_bank_accounts": {
+      "before": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "after": {
+        "count": 0,
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "unchanged": true
+    }
+  },
+  "checkedBusinessDataUnchanged": true
+}

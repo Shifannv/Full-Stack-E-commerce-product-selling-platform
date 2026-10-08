@@ -1,0 +1,231 @@
+[
+  {
+    "route": "/",
+    "source": true,
+    "recordedCommitSource": true,
+    "localExport": true,
+    "productionStatus": 200,
+    "deploymentAliasStatus": 200,
+    "sameDocumentHash": true
+  },
+  {
+    "route": "/search",
+    "source": true,
+    "recordedCommitSource": true,
+    "localExport": true,
+    "productionStatus": 200,
+    "deploymentAliasStatus": 200,
+    "sameDocumentHash": true
+  },
+  {
+    "route": "/categories/phase11b2-accessories-730d72e64790",
+    "source": true,
+    "recordedCommitSource": true,
+    "localExport": false,
+    "productionStatus": 200,
+    "deploymentAliasStatus": 200,
+    "sameDocumentHash": true
+  },
+  {
+    "route": "/products/phase11b2-cotton-tote-730d72e64790",
+    "source": true,
+    "recordedCommitSource": true,
+    "localExport": false,
+    "productionStatus": 200,
+    "deploymentAliasStatus": 200,
+    "sameDocumentHash": true
+  },
+  {
+    "route": "/account",
+    "source": true,
+    "recordedCommitSource": true,
+    "localExport": true,
+    "productionStatus": 200,
+    "deploymentAliasStatus": 200,
+    "sameDocumentHash": true
+  },
+  {
+    "route": "/orders",
+    "source": true,
+    "recordedCommitSource": true,
+    "localExport": true,
+    "productionStatus": 200,
+    "deploymentAliasStatus": 200,
+    "sameDocumentHash": true
+  },
+  {
+    "route": "/wishlist",
+    "source": true,
+    "recordedCommitSource": true,
+    "localExport": true,
+    "productionStatus": 200,
+    "deploymentAliasStatus": 200,
+    "sameDocumentHash": true
+  },
+  {
+    "route": "/cart",
+    "source": true,
+    "recordedCommitSource": true,
+    "localExport": true,
+    "productionStatus": 200,
+    "deploymentAliasStatus": 200,
+    "sameDocumentHash": true
+  },
+  {
+    "route": "/account/addresses",
+    "source": true,
+    "recordedCommitSource": true,
+    "localExport": true,
+    "productionStatus": 200,
+    "deploymentAliasStatus": 200,
+    "sameDocumentHash": true
+  },
+  {
+    "route": "/returns",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  },
+  {
+    "route": "/admin",
+    "source": true,
+    "recordedCommitSource": true,
+    "localExport": true,
+    "productionStatus": 200,
+    "deploymentAliasStatus": 200,
+    "sameDocumentHash": true
+  },
+  {
+    "route": "/admin/onboarding",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  },
+  {
+    "route": "/admin/products",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  },
+  {
+    "route": "/admin/inventory",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  },
+  {
+    "route": "/admin/orders",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  },
+  {
+    "route": "/admin/returns",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  },
+  {
+    "route": "/admin/finance",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  },
+  {
+    "route": "/super-admin",
+    "source": true,
+    "recordedCommitSource": true,
+    "localExport": true,
+    "productionStatus": 200,
+    "deploymentAliasStatus": 200,
+    "sameDocumentHash": true
+  },
+  {
+    "route": "/super-admin/admins",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  },
+  {
+    "route": "/super-admin/products",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  },
+  {
+    "route": "/super-admin/roles",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  },
+  {
+    "route": "/super-admin/reconciliation",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  },
+  {
+    "route": "/super-admin/reviews",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  },
+  {
+    "route": "/super-admin/payouts",
+    "source": true,
+    "recordedCommitSource": false,
+    "localExport": true,
+    "productionStatus": 404,
+    "deploymentAliasStatus": 404,
+    "sameDocumentHash": true,
+    "deploymentHtmlFileStatus": 404
+  }
+]

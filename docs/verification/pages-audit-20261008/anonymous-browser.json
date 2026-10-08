@@ -1,0 +1,97 @@
+{
+  "capturedAt": "2026-10-07T20:08:43.037Z",
+  "isolatedAnonymousChrome": true,
+  "allowedMethods": [
+    "GET",
+    "HEAD"
+  ],
+  "blockedRequests": [],
+  "results": [
+    {
+      "route": "/",
+      "status": 200,
+      "observation": {
+        "title": "Ownline Dropship | Ownline Dropship",
+        "headings": [
+          "A little more you, every day.",
+          "Explore the collection, your way.",
+          "The selected edit",
+          "Just arrived",
+          "Good things are worth finding."
+        ],
+        "passwordInputs": 0,
+        "forms": 0,
+        "intro": false,
+        "campaign": false,
+        "videos": 0,
+        "imageComingSoon": true,
+        "productImages": []
+      },
+      "errors": []
+    },
+    {
+      "route": "/admin",
+      "status": 200,
+      "observation": {
+        "title": "Admin | Ownline Dropship",
+        "headings": [
+          "Your workspace",
+          "Dashboard unavailable",
+          "Performance overview",
+          "Needs attention",
+          "Recent products"
+        ],
+        "passwordInputs": 0,
+        "forms": 0,
+        "intro": false,
+        "campaign": false,
+        "videos": 0,
+        "imageComingSoon": false,
+        "productImages": []
+      },
+      "errors": []
+    },
+    {
+      "route": "/super-admin",
+      "status": 200,
+      "observation": {
+        "title": "Platform | Ownline Dropship",
+        "headings": [
+          "Platform at a glance",
+          "Dashboard unavailable",
+          "Performance overview",
+          "Needs attention",
+          "Admin accounts"
+        ],
+        "passwordInputs": 0,
+        "forms": 0,
+        "intro": false,
+        "campaign": false,
+        "videos": 0,
+        "imageComingSoon": false,
+        "productImages": []
+      },
+      "errors": []
+    },
+    {
+      "route": "/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "observation": {
+        "title": "TEST Ownline Everyday Cotton Tote | Ownline Dropship",
+        "headings": [
+          "TEST Ownline Everyday Cotton Tote",
+          "About this product",
+          "Customer reviews"
+        ],
+        "passwordInputs": 0,
+        "forms": 0,
+        "intro": false,
+        "campaign": false,
+        "videos": 0,
+        "imageComingSoon": true,
+        "productImages": []
+      },
+      "errors": []
+    }
+  ]
+}

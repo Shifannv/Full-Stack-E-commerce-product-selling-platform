@@ -1,0 +1,202 @@
+{
+  "evidence": "DIRECT PRODUCTION DATABASE READ ONLY",
+  "phase": "after",
+  "capturedAt": "2026-10-07T19:35:45.983Z",
+  "fingerprints": {
+    "users": {
+      "count": 5,
+      "fingerprint": "7c9d4a162d4b6bb44557101d1aa15ee4"
+    },
+    "user_roles": {
+      "count": 5,
+      "fingerprint": "af097f43c3f0fe7a6031016bdbd4f8a9"
+    },
+    "admins": {
+      "count": 1,
+      "fingerprint": "92e183426cf12b5195fc79634e786d73"
+    },
+    "categories": {
+      "count": 1,
+      "fingerprint": "448164d436ffadc31c8cc1cf4bc1e09e"
+    },
+    "subcategories": {
+      "count": 1,
+      "fingerprint": "5bed9d45509f68bc79cf46cd2fea3194"
+    },
+    "products": {
+      "count": 2,
+      "fingerprint": "28761736f61a0df5a35add6e2d4a6915"
+    },
+    "product_variants": {
+      "count": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "product_images": {
+      "count": 1,
+      "fingerprint": "2d4604a2bf37fa62f67be6b6a99543c6"
+    },
+    "inventories": {
+      "count": 2,
+      "fingerprint": "2e0116cdc100820071eb9c756e1d7ec1"
+    },
+    "orders": {
+      "count": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "order_items": {
+      "count": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "payments": {
+      "count": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "payout_requests": {
+      "count": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "admin_settlements": {
+      "count": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "shipments": {
+      "count": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "admin_category_assignments": {
+      "count": 1,
+      "fingerprint": "f452b96f18019f39f4f74eb8a8bbd246"
+    },
+    "admin_credentials": {
+      "count": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "admin_bank_accounts": {
+      "count": 0,
+      "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+    }
+  },
+  "products": [
+    {
+      "id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "name": "TEST Ownline Everyday Cotton Tote",
+      "slug": "phase11b2-cotton-tote-730d72e64790",
+      "price": "349.00",
+      "currency": "INR",
+      "status": "PUBLISHED",
+      "featured": true,
+      "category_id": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+      "subcategory_id": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+      "created_by_admin_id": "f7f5e3e3-685a-4bfc-b4dd-084c6c115851",
+      "category": "TEST Ownline Everyday Accessories",
+      "category_slug": "phase11b2-accessories-730d72e64790",
+      "category_status": "PUBLISHED",
+      "subcategory": "TEST Cotton Bags",
+      "subcategory_slug": "cotton-bags",
+      "subcategory_status": "PUBLISHED",
+      "subcategory_category_id": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+      "owner_admin_status": "ACTIVE"
+    },
+    {
+      "id": "cbcb3ee2-a282-43d9-8144-677a367cfe04",
+      "name": "TEST Ownline Out of Stock No Image",
+      "slug": "phase11b2-oos-no-image-730d72e64790",
+      "price": "1.00",
+      "currency": "INR",
+      "status": "PUBLISHED",
+      "featured": false,
+      "category_id": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+      "subcategory_id": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+      "created_by_admin_id": "f7f5e3e3-685a-4bfc-b4dd-084c6c115851",
+      "category": "TEST Ownline Everyday Accessories",
+      "category_slug": "phase11b2-accessories-730d72e64790",
+      "category_status": "PUBLISHED",
+      "subcategory": "TEST Cotton Bags",
+      "subcategory_slug": "cotton-bags",
+      "subcategory_status": "PUBLISHED",
+      "subcategory_category_id": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+      "owner_admin_status": "ACTIVE"
+    }
+  ],
+  "variants": [],
+  "images": [
+    {
+      "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+      "product_id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "variant_id": null,
+      "object_key": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "alt_text": "Phase 11b-3 R2 verification image",
+      "sort_order": 0
+    }
+  ],
+  "inventory": [
+    {
+      "id": "acc2f9d6-0669-4333-861d-eb0104381c54",
+      "product_id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "variant_id": null,
+      "available_quantity": 12,
+      "reserved_quantity": 0,
+      "version": 0
+    },
+    {
+      "id": "edf6c179-bced-489f-b942-530a4105f827",
+      "product_id": "cbcb3ee2-a282-43d9-8144-677a367cfe04",
+      "variant_id": null,
+      "available_quantity": 0,
+      "reserved_quantity": 0,
+      "version": 1
+    }
+  ],
+  "accounts": [
+    {
+      "id": "d68498ec-1894-4013-a47b-d8c807f3ef47",
+      "status": "ACTIVE",
+      "role": "ADMIN",
+      "admin_id": "f7f5e3e3-685a-4bfc-b4dd-084c6c115851",
+      "admin_status": "ACTIVE",
+      "providers": [
+        "credential"
+      ]
+    },
+    {
+      "id": "EnvlbnlnSoUCsGRvO5MF8xn8kF6GZG7C",
+      "status": "ACTIVE",
+      "role": "CUSTOMER",
+      "admin_id": null,
+      "admin_status": null,
+      "providers": [
+        "google"
+      ]
+    },
+    {
+      "id": "WDKGxOYs5uAov85kz4RcvDyqyDwUfxA7",
+      "status": "ACTIVE",
+      "role": "CUSTOMER",
+      "admin_id": null,
+      "admin_status": null,
+      "providers": [
+        "google"
+      ]
+    },
+    {
+      "id": "zL6kPSSk3LhSfDEFtHm5g3DklRpDeZT6",
+      "status": "ACTIVE",
+      "role": "CUSTOMER",
+      "admin_id": null,
+      "admin_status": null,
+      "providers": [
+        "google"
+      ]
+    },
+    {
+      "id": "faf09199-ebce-4b8a-87d6-bb7b843b6c9a",
+      "status": "ACTIVE",
+      "role": "SUPER_ADMIN",
+      "admin_id": null,
+      "admin_status": null,
+      "providers": [
+        "credential"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,848 @@
+{
+  "mode": "operators",
+  "pages": [
+    {
+      "text": "OWNLINEOPS\n\nWORKSPACE\n\nOverview\nProducts\nInsights\nView storefront\n\nAdmin workspace\n\nCatalog and order operations\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nSettled orders\n\nProducts\n\n2\n\nYour assigned catalog\n\nOrders\n\n0\n\nOrders containing your products\n\nAvailable balance\n\n₹0\n\nFrom settlements\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nConfirmed paid orders\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nRecent products\n\nFrom your assigned catalog\n\nTEST Ownline Out of Stock No Image\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹1\n\nTEST Ownline Everyday Cotton Tote\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹349",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Admin workspace navigation",
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "screenshot": "extra-admin-settled-1440x960.png"
+    },
+    {
+      "text": "OWNLINEOPS\n\nWORKSPACE\n\nOverview\nProducts\nInsights\nView storefront\n\nAdmin workspace\n\nCatalog and order operations\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nSettled orders\n\nProducts\n\n2\n\nYour assigned catalog\n\nOrders\n\n0\n\nOrders containing your products\n\nAvailable balance\n\n₹0\n\nFrom settlements\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nConfirmed paid orders\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nRecent products\n\nFrom your assigned catalog\n\nTEST Ownline Out of Stock No Image\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹1\n\nTEST Ownline Everyday Cotton Tote\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹349",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Admin workspace navigation",
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "screenshot": "extra-admin-settled-1280x800.png"
+    },
+    {
+      "text": "OWNLINEOPS\n\nWORKSPACE\n\nOverview\nProducts\nInsights\nView storefront\n\nAdmin workspace\n\nCatalog and order operations\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nSettled orders\n\nProducts\n\n2\n\nYour assigned catalog\n\nOrders\n\n0\n\nOrders containing your products\n\nAvailable balance\n\n₹0\n\nFrom settlements\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nConfirmed paid orders\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nRecent products\n\nFrom your assigned catalog\n\nTEST Ownline Out of Stock No Image\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹1\n\nTEST Ownline Everyday Cotton Tote\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹349",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Admin workspace navigation",
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "screenshot": "extra-admin-settled-1024x768.png"
+    },
+    {
+      "text": "Admin workspace\n\nCatalog and order operations\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nSettled orders\n\nProducts\n\n2\n\nYour assigned catalog\n\nOrders\n\n0\n\nOrders containing your products\n\nAvailable balance\n\n₹0\n\nFrom settlements\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nConfirmed paid orders\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nRecent products\n\nFrom your assigned catalog\n\nTEST Ownline Out of Stock No Image\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹1\n\nTEST Ownline Everyday Cotton Tote\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹349",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Admin workspace navigation",
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "screenshot": "extra-admin-settled-768x1024.png"
+    },
+    {
+      "text": "Admin workspace\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nSettled orders\n\nProducts\n\n2\n\nYour assigned catalog\n\nOrders\n\n0\n\nOrders containing your products\n\nAvailable balance\n\n₹0\n\nFrom settlements\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nConfirmed paid orders\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nRecent products\n\nFrom your assigned catalog\n\nTEST Ownline Out of Stock No Image\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹1\n\nTEST Ownline Everyday Cotton Tote\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹349",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Admin workspace navigation",
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "screenshot": "extra-admin-settled-390x844.png"
+    },
+    {
+      "text": "Admin workspace\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nSettled orders\n\nProducts\n\n2\n\nYour assigned catalog\n\nOrders\n\n0\n\nOrders containing your products\n\nAvailable balance\n\n₹0\n\nFrom settlements\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nConfirmed paid orders\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nRecent products\n\nFrom your assigned catalog\n\nTEST Ownline Out of Stock No Image\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹1\n\nTEST Ownline Everyday Cotton Tote\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹349",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Admin workspace navigation",
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "screenshot": "extra-admin-settled-375x812.png"
+    },
+    {
+      "text": "Admin workspace\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nSettled orders\n\nProducts\n\n2\n\nYour assigned catalog\n\nOrders\n\n0\n\nOrders containing your products\n\nAvailable balance\n\n₹0\n\nFrom settlements\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nConfirmed paid orders\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nRecent products\n\nFrom your assigned catalog\n\nTEST Ownline Out of Stock No Image\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹1\n\nTEST Ownline Everyday Cotton Tote\n\nTEST Ownline Everyday Accessories · TEST Cotton Bags\n\nPUBLISHED\n₹349\nAdmin workspace\nOverview\nProducts\nInsights\nClose",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Admin workspace navigation",
+          "disabled": false
+        },
+        {
+          "text": "Close",
+          "label": null,
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "screenshot": "extra-admin-menu-open-375x812.png"
+    },
+    {
+      "text": "Platform workspace\n\nView storefront\n\nPlatform overview\n\nPlatform at a glance\n\nStore activity across Ownline.\n\nLive account data\nDashboard unavailable\n\nForbidden\n\nTry again\n\nGross settled sales\n\n—\n\nSign in to view\n\nActive admins\n\n—\n\nSign in to view\n\nPublished products\n\n—\n\nSign in to view\n\nOrders\n\n—\n\nSign in to view\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nSign in to view your account totals.\n\nNeeds attention\n\nItems requiring attention will appear here.\n\nAdmin accounts\n\nSign in to view admin accounts.",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/super-admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Admins",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Platform workspace navigation",
+          "disabled": false
+        },
+        {
+          "text": "Try again",
+          "label": null,
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "screenshot": "extra-admin-super-admin-denied-375x812.png"
+    },
+    {
+      "text": "OWNLINEOPS\n\nWORKSPACE\n\nOverview\nAdmins\nInsights\nView storefront\n\nPlatform workspace\n\nOwnline operations\n\nView storefront\n\nPlatform overview\n\nPlatform at a glance\n\nStore activity across Ownline.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nPlatform total\n\nActive admins\n\n1\n\nOf all admin accounts\n\nPublished products\n\n2\n\nAcross the platform\n\nOrders\n\n0\n\nPlatform total\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nAdmins pending approval\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\nKYC applications\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nAdmin accounts\n\nMost recently created accounts\n\nPhase 11b-2 Test Seller\n\nphase11b2-admin-730d72e64790@example.invalid\n\nACTIVE",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/super-admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Admins",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Platform workspace navigation",
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "screenshot": "extra-super-admin-settled-1440x960.png"
+    },
+    {
+      "text": "OWNLINEOPS\n\nWORKSPACE\n\nOverview\nAdmins\nInsights\nView storefront\n\nPlatform workspace\n\nOwnline operations\n\nView storefront\n\nPlatform overview\n\nPlatform at a glance\n\nStore activity across Ownline.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nPlatform total\n\nActive admins\n\n1\n\nOf all admin accounts\n\nPublished products\n\n2\n\nAcross the platform\n\nOrders\n\n0\n\nPlatform total\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nAdmins pending approval\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\nKYC applications\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nAdmin accounts\n\nMost recently created accounts\n\nPhase 11b-2 Test Seller\n\nphase11b2-admin-730d72e64790@example.invalid\n\nACTIVE",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/super-admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Admins",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Platform workspace navigation",
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "screenshot": "extra-super-admin-settled-1280x800.png"
+    },
+    {
+      "text": "OWNLINEOPS\n\nWORKSPACE\n\nOverview\nAdmins\nInsights\nView storefront\n\nPlatform workspace\n\nOwnline operations\n\nView storefront\n\nPlatform overview\n\nPlatform at a glance\n\nStore activity across Ownline.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nPlatform total\n\nActive admins\n\n1\n\nOf all admin accounts\n\nPublished products\n\n2\n\nAcross the platform\n\nOrders\n\n0\n\nPlatform total\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nAdmins pending approval\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\nKYC applications\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nAdmin accounts\n\nMost recently created accounts\n\nPhase 11b-2 Test Seller\n\nphase11b2-admin-730d72e64790@example.invalid\n\nACTIVE",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/super-admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Admins",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Platform workspace navigation",
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "screenshot": "extra-super-admin-settled-1024x768.png"
+    },
+    {
+      "text": "Platform workspace\n\nOwnline operations\n\nView storefront\n\nPlatform overview\n\nPlatform at a glance\n\nStore activity across Ownline.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nPlatform total\n\nActive admins\n\n1\n\nOf all admin accounts\n\nPublished products\n\n2\n\nAcross the platform\n\nOrders\n\n0\n\nPlatform total\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nAdmins pending approval\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\nKYC applications\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nAdmin accounts\n\nMost recently created accounts\n\nPhase 11b-2 Test Seller\n\nphase11b2-admin-730d72e64790@example.invalid\n\nACTIVE",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/super-admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Admins",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Platform workspace navigation",
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "screenshot": "extra-super-admin-settled-768x1024.png"
+    },
+    {
+      "text": "Platform workspace\n\nView storefront\n\nPlatform overview\n\nPlatform at a glance\n\nStore activity across Ownline.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nPlatform total\n\nActive admins\n\n1\n\nOf all admin accounts\n\nPublished products\n\n2\n\nAcross the platform\n\nOrders\n\n0\n\nPlatform total\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nAdmins pending approval\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\nKYC applications\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nAdmin accounts\n\nMost recently created accounts\n\nPhase 11b-2 Test Seller\n\nphase11b2-admin-730d72e64790@example.invalid\n\nACTIVE",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/super-admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Admins",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Platform workspace navigation",
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "screenshot": "extra-super-admin-settled-390x844.png"
+    },
+    {
+      "text": "Platform workspace\n\nView storefront\n\nPlatform overview\n\nPlatform at a glance\n\nStore activity across Ownline.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nPlatform total\n\nActive admins\n\n1\n\nOf all admin accounts\n\nPublished products\n\n2\n\nAcross the platform\n\nOrders\n\n0\n\nPlatform total\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nAdmins pending approval\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\nKYC applications\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nAdmin accounts\n\nMost recently created accounts\n\nPhase 11b-2 Test Seller\n\nphase11b2-admin-730d72e64790@example.invalid\n\nACTIVE",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/super-admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Admins",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Platform workspace navigation",
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "screenshot": "extra-super-admin-settled-375x812.png"
+    },
+    {
+      "text": "Platform workspace\n\nView storefront\n\nPlatform overview\n\nPlatform at a glance\n\nStore activity across Ownline.\n\nLive account data\n\nGross settled sales\n\n₹0\n\nPlatform total\n\nActive admins\n\n1\n\nOf all admin accounts\n\nPublished products\n\n2\n\nAcross the platform\n\nOrders\n\n0\n\nPlatform total\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nAdmins pending approval\n\n0\n\nPending payout requests\n\n0\n\nA trend chart will appear when a time series API is available.\n\nNeeds attention\n\nItems awaiting the next step\n\nPending payouts\n0\nKYC applications\n0\n\nCounts reflect your current access and refresh when this page loads.\n\nAdmin accounts\n\nMost recently created accounts\n\nPhase 11b-2 Test Seller\n\nphase11b2-admin-730d72e64790@example.invalid\n\nACTIVE\nPlatform workspace\nOverview\nAdmins\nInsights\nClose",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "overflow": false,
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/super-admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Admins",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Admins",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Platform workspace navigation",
+          "disabled": false
+        },
+        {
+          "text": "Close",
+          "label": null,
+          "disabled": false
+        }
+      ],
+      "overflows": [],
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "screenshot": "extra-super-admin-menu-open-375x812.png"
+    }
+  ],
+  "api": [
+    {
+      "role": "admin",
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/summary",
+      "status": 200,
+      "shape": [
+        "products",
+        "orders",
+        "finance"
+      ]
+    },
+    {
+      "role": "admin",
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "roles": [
+        "ADMIN"
+      ]
+    },
+    {
+      "role": "super-admin",
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/summary",
+      "status": 200,
+      "shape": [
+        "admins",
+        "catalog",
+        "orders",
+        "finance",
+        "onboarding"
+      ]
+    },
+    {
+      "role": "super-admin",
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "roles": [
+        "SUPER_ADMIN"
+      ]
+    }
+  ],
+  "network": [
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/products",
+      "status": 401
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/summary",
+      "status": 401
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/sign-in/email",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/products",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/summary",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/admins",
+      "status": 403
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/summary",
+      "status": 403
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/sign-out",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/summary",
+      "status": 401
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/admins",
+      "status": 401
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/sign-in/email",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/admins",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/summary",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/sign-out",
+      "status": 200
+    }
+  ],
+  "mutations": [
+    {
+      "role": "admin",
+      "operation": "sign-in",
+      "status": 200
+    },
+    {
+      "role": "admin",
+      "operation": "sign-out",
+      "status": 200
+    },
+    {
+      "role": "super-admin",
+      "operation": "sign-in",
+      "status": 200
+    },
+    {
+      "role": "super-admin",
+      "operation": "sign-out",
+      "status": 200
+    }
+  ],
+  "blocked": []
+}

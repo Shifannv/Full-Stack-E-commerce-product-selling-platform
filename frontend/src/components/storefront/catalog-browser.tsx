@@ -39,22 +39,34 @@ type FilterControlsProps = {
 function FilterControls({ minPrice, maxPrice, available, setAvailable, setMinPrice, setMaxPrice, apply }: FilterControlsProps) {
   return (
     <form className="catalog-filter-form" onSubmit={(event) => { event.preventDefault(); apply({ minPrice, maxPrice, available: available ? "true" : "" }); }}>
-      <div className="catalog-filter-section">
-        <h3>Availability</h3>
-        <label className="catalog-check">
-          <input type="checkbox" checked={available} onChange={(event) => setAvailable(event.target.checked)} />
-          <span>In stock</span>
-        </label>
-      </div>
-      <div className="catalog-filter-section">
-        <h3>Price range</h3>
-        <div className="grid grid-cols-2 gap-2">
-          <label className="text-xs text-muted-foreground">Minimum<Input inputMode="decimal" type="number" min="0" step="0.01" value={minPrice} onChange={(event) => setMinPrice(event.target.value)} placeholder="₹0" /></label>
-          <label className="text-xs text-muted-foreground">Maximum<Input inputMode="decimal" type="number" min="0" step="0.01" value={maxPrice} onChange={(event) => setMaxPrice(event.target.value)} placeholder="Any" /></label>
+      <fieldset className="catalog-filter-section">
+        <legend className="catalog-filter-title">Price range</legend>
+        <div className="catalog-price-range">
+          <label className="catalog-price-label">
+            <span>Minimum</span>
+            <span className="catalog-price-field">
+              <span className="catalog-price-currency" aria-hidden="true">₹</span>
+              <Input className="catalog-price-input" aria-label="Minimum price (₹)" inputMode="decimal" type="number" min="0" step="0.01" value={minPrice} onChange={(event) => setMinPrice(event.target.value)} placeholder="0" />
+            </span>
+          </label>
+          <label className="catalog-price-label">
+            <span>Maximum</span>
+            <span className="catalog-price-field">
+              <span className="catalog-price-currency" aria-hidden="true">₹</span>
+              <Input className="catalog-price-input" aria-label="Maximum price (₹)" inputMode="decimal" type="number" min="0" step="0.01" value={maxPrice} onChange={(event) => setMaxPrice(event.target.value)} placeholder="Any" />
+            </span>
+          </label>
         </div>
+      </fieldset>
+      <label className="catalog-check">
+        <span>In stock</span>
+        <input className="sr-only" type="checkbox" role="switch" aria-checked={available} checked={available} onChange={(event) => setAvailable(event.target.checked)} />
+        <span className="catalog-stock-switch" aria-hidden="true"><span /></span>
+      </label>
+      <div className="catalog-filter-actions">
+        <Button type="submit" className="catalog-filter-apply">Apply filters</Button>
+        <Button type="button" variant="ghost" className="catalog-filter-clear" onClick={() => { setMinPrice(""); setMaxPrice(""); setAvailable(false); apply({ minPrice: "", maxPrice: "", available: "" }); }}>Clear filters</Button>
       </div>
-      <Button type="submit" className="w-full">Apply filters</Button>
-      <Button type="button" variant="ghost" className="w-full" onClick={() => { setMinPrice(""); setMaxPrice(""); setAvailable(false); apply({ minPrice: "", maxPrice: "", available: "" }); }}>Clear filters</Button>
     </form>
   );
 }

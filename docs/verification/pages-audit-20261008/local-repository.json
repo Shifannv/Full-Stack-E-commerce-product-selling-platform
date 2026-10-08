@@ -1,0 +1,1355 @@
+{
+  "head": "f4a9e1114663e32f9df4152346adca08d0b512d3",
+  "branch": "main",
+  "deployedMetadataCommit": "417d3b8fab197eb916279a80fc730327700e4efc",
+  "commitsAhead": 12,
+  "workingTree": "M docs/CURRENT_STATUS.md\n M frontend/next-env.d.ts\n M frontend/src/app/globals.css\n M frontend/src/components/storefront/catalog-browser.tsx\n?? docs/verification/PRODUCTION_AUTHENTICATED_E2E_2026_10_08.md\n?? docs/verification/PRODUCTION_AUTHENTICATED_E2E_RESULT_2026_10_08.md\n?? docs/verification/PRODUCTION_AUTHENTICATED_E2E_RESUME_2026_10_08.md\n?? docs/verification/PRODUCTION_MIGRATIONS_0017_0018.json\n?? docs/verification/PRODUCTION_MIGRATIONS_0017_0018.md\n?? docs/verification/TEES_IMAGE_AND_SUPER_ADMIN_BROWSER_LOCAL.md\n?? docs/verification/pages-audit-20261008/\n?? docs/verification/production-e2e-20261008/",
+  "routes": [
+    {
+      "route": "/",
+      "source": "frontend/src/app/(customer)/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": true,
+      "existingLocalExport": true,
+      "localExportFile": "index.html",
+      "localExportModified": "2026-10-07T07:07:31.698Z"
+    },
+    {
+      "route": "/search",
+      "source": "frontend/src/app/(customer)/search/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": true,
+      "existingLocalExport": true,
+      "localExportFile": "search.html",
+      "localExportModified": "2026-10-07T07:07:31.733Z"
+    },
+    {
+      "route": "/categories/[slug]",
+      "source": "frontend/src/app/(customer)/categories/[slug]/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": true,
+      "existingLocalExport": null,
+      "localExportFile": null
+    },
+    {
+      "route": "/products/[slug]",
+      "source": "frontend/src/app/(customer)/products/[slug]/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": true,
+      "existingLocalExport": null,
+      "localExportFile": null
+    },
+    {
+      "route": "/account",
+      "source": "frontend/src/app/(customer)/account/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": true,
+      "existingLocalExport": true,
+      "localExportFile": "account.html",
+      "localExportModified": "2026-10-07T07:07:30.018Z"
+    },
+    {
+      "route": "/orders",
+      "source": "frontend/src/app/(customer)/orders/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": true,
+      "existingLocalExport": true,
+      "localExportFile": "orders.html",
+      "localExportModified": "2026-10-07T07:07:31.663Z"
+    },
+    {
+      "route": "/wishlist",
+      "source": "frontend/src/app/(customer)/wishlist/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": true,
+      "existingLocalExport": true,
+      "localExportFile": "wishlist.html",
+      "localExportModified": "2026-10-07T07:07:31.677Z"
+    },
+    {
+      "route": "/cart",
+      "source": "frontend/src/app/(customer)/cart/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": true,
+      "existingLocalExport": true,
+      "localExportFile": "cart.html",
+      "localExportModified": "2026-10-07T07:07:30.032Z"
+    },
+    {
+      "route": "/account/addresses",
+      "source": "frontend/src/app/(customer)/account/addresses/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": true,
+      "existingLocalExport": true,
+      "localExportFile": "account/addresses.html",
+      "localExportModified": "2026-10-07T07:07:30.060Z"
+    },
+    {
+      "route": "/returns",
+      "source": "frontend/src/app/(customer)/returns/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "returns.html",
+      "localExportModified": "2026-10-07T07:07:31.663Z"
+    },
+    {
+      "route": "/admin",
+      "source": "frontend/src/app/admin/(workspace)/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": true,
+      "existingLocalExport": true,
+      "localExportFile": "admin.html",
+      "localExportModified": "2026-10-07T07:07:28.986Z"
+    },
+    {
+      "route": "/admin/onboarding",
+      "source": "frontend/src/app/admin/(workspace)/onboarding/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "admin/onboarding.html",
+      "localExportModified": "2026-10-07T07:07:29.212Z"
+    },
+    {
+      "route": "/admin/products",
+      "source": "frontend/src/app/admin/(workspace)/products/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "admin/products.html",
+      "localExportModified": "2026-10-07T07:07:29.212Z"
+    },
+    {
+      "route": "/admin/inventory",
+      "source": "frontend/src/app/admin/(workspace)/inventory/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "admin/inventory.html",
+      "localExportModified": "2026-10-07T07:07:29.197Z"
+    },
+    {
+      "route": "/admin/orders",
+      "source": "frontend/src/app/admin/(workspace)/orders/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "admin/orders.html",
+      "localExportModified": "2026-10-07T07:07:29.205Z"
+    },
+    {
+      "route": "/admin/returns",
+      "source": "frontend/src/app/admin/(workspace)/returns/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "admin/returns.html",
+      "localExportModified": "2026-10-07T07:07:29.224Z"
+    },
+    {
+      "route": "/admin/finance",
+      "source": "frontend/src/app/admin/(workspace)/finance/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "admin/finance.html",
+      "localExportModified": "2026-10-07T07:07:29.198Z"
+    },
+    {
+      "route": "/super-admin",
+      "source": "frontend/src/app/super-admin/(workspace)/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": true,
+      "existingLocalExport": true,
+      "localExportFile": "super-admin.html",
+      "localExportModified": "2026-10-07T07:07:30.756Z"
+    },
+    {
+      "route": "/super-admin/admins",
+      "source": "frontend/src/app/super-admin/(workspace)/admins/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "super-admin/admins.html",
+      "localExportModified": "2026-10-07T07:07:30.829Z"
+    },
+    {
+      "route": "/super-admin/products",
+      "source": "frontend/src/app/super-admin/(workspace)/products/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "super-admin/products.html",
+      "localExportModified": "2026-10-07T07:07:30.831Z"
+    },
+    {
+      "route": "/super-admin/roles",
+      "source": "frontend/src/app/super-admin/(workspace)/roles/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "super-admin/roles.html",
+      "localExportModified": "2026-10-07T07:07:31.055Z"
+    },
+    {
+      "route": "/super-admin/reconciliation",
+      "source": "frontend/src/app/super-admin/(workspace)/reconciliation/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "super-admin/reconciliation.html",
+      "localExportModified": "2026-10-07T07:07:30.847Z"
+    },
+    {
+      "route": "/super-admin/reviews",
+      "source": "frontend/src/app/super-admin/(workspace)/reviews/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "super-admin/reviews.html",
+      "localExportModified": "2026-10-07T07:07:30.847Z"
+    },
+    {
+      "route": "/super-admin/payouts",
+      "source": "frontend/src/app/super-admin/(workspace)/payouts/page.tsx",
+      "currentSource": true,
+      "recordedDeploymentCommitSource": false,
+      "existingLocalExport": true,
+      "localExportFile": "super-admin/payouts.html",
+      "localExportModified": "2026-10-07T07:07:30.832Z"
+    }
+  ],
+  "featureFiles": [
+    {
+      "file": "frontend/src/components/operator/operator-gate.tsx",
+      "current": true,
+      "recordedDeploymentCommit": false,
+      "introduced": "4f90ed02020f3a2984c5d215c8438647d9098438 2026-10-06T12:35:38+05:30  add operator components for query handling, pagination, and UI elements"
+    },
+    {
+      "file": "frontend/src/components/storefront/brand-intro.tsx",
+      "current": true,
+      "recordedDeploymentCommit": false,
+      "introduced": "6427a4a3d436847336b145498183b050dbad38b4 2026-10-04T14:50:14+05:30 updated  add storefront components for product editing, order actions, page heading, return lookup, and scroll reveal"
+    },
+    {
+      "file": "frontend/src/app/(customer)/returns/page.tsx",
+      "current": true,
+      "recordedDeploymentCommit": false,
+      "introduced": "6427a4a3d436847336b145498183b050dbad38b4 2026-10-04T14:50:14+05:30 updated  add storefront components for product editing, order actions, page heading, return lookup, and scroll reveal"
+    },
+    {
+      "file": "frontend/src/app/admin/(workspace)/onboarding/page.tsx",
+      "current": true,
+      "recordedDeploymentCommit": false,
+      "introduced": "f4a9e1114663e32f9df4152346adca08d0b512d3 2026-10-07T15:10:54+05:30 add frontend pages, components, and backend password reset email service for ecommerce platform"
+    },
+    {
+      "file": "frontend/src/app/super-admin/(workspace)/reviews/page.tsx",
+      "current": true,
+      "recordedDeploymentCommit": false,
+      "introduced": "f4a9e1114663e32f9df4152346adca08d0b512d3 2026-10-07T15:10:54+05:30 add frontend pages, components, and backend password reset email service for ecommerce platform"
+    }
+  ],
+  "publicLocalEnv": {
+    "NEXT_PUBLIC_SITE_URL": "http://127.0.0.1:3000",
+    "NEXT_PUBLIC_API_URL": "http://127.0.0.1:8787",
+    "NEXT_PUBLIC_R2_PUBLIC_BASE_URL": "http://127.0.0.1:8787/api/images"
+  },
+  "manifests": {
+    "BUILD_ID": "r7sZL9ABOzYSOCWot0jXZ",
+    "export-detail.json": {
+      "version": 1,
+      "outDirectory": "D:\\dropshiping-full-stack-E-commerce\\ecommerce\\frontend\\.next-build-verify",
+      "success": true
+    },
+    "app-path-routes-manifest.json": {
+      "/(customer)/account/addresses/page": "/account/addresses",
+      "/(customer)/account/page": "/account",
+      "/(customer)/cart/page": "/cart",
+      "/(customer)/categories/[slug]/page": "/categories/[slug]",
+      "/(customer)/checkout/page": "/checkout",
+      "/(customer)/clothing/page": "/clothing",
+      "/(customer)/orders/page": "/orders",
+      "/(customer)/page": "/",
+      "/(customer)/products/[slug]/page": "/products/[slug]",
+      "/(customer)/returns/page": "/returns",
+      "/(customer)/search/page": "/search",
+      "/(customer)/wishlist/page": "/wishlist",
+      "/_global-error/page": "/_global-error",
+      "/_not-found/page": "/_not-found",
+      "/admin/(auth)/forgot-password/page": "/admin/forgot-password",
+      "/admin/(auth)/reset-password/page": "/admin/reset-password",
+      "/admin/(auth)/setup/page": "/admin/setup",
+      "/admin/(workspace)/account/page": "/admin/account",
+      "/admin/(workspace)/advanced/page": "/admin/advanced",
+      "/admin/(workspace)/finance/page": "/admin/finance",
+      "/admin/(workspace)/inventory/page": "/admin/inventory",
+      "/admin/(workspace)/onboarding/page": "/admin/onboarding",
+      "/admin/(workspace)/orders/page": "/admin/orders",
+      "/admin/(workspace)/page": "/admin",
+      "/admin/(workspace)/products/page": "/admin/products",
+      "/admin/(workspace)/returns/page": "/admin/returns",
+      "/super-admin/(workspace)/admins/page": "/super-admin/admins",
+      "/super-admin/(workspace)/advanced/page": "/super-admin/advanced",
+      "/super-admin/(workspace)/lifecycle/page": "/super-admin/lifecycle",
+      "/super-admin/(workspace)/page": "/super-admin",
+      "/super-admin/(workspace)/payouts/page": "/super-admin/payouts",
+      "/super-admin/(workspace)/products/page": "/super-admin/products",
+      "/super-admin/(workspace)/reconciliation/page": "/super-admin/reconciliation",
+      "/super-admin/(workspace)/reviews/page": "/super-admin/reviews",
+      "/super-admin/(workspace)/roles/page": "/super-admin/roles"
+    },
+    "prerender-manifest.json": {
+      "version": 4,
+      "routes": {
+        "/": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 38341,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/",
+          "dataRoute": "/index.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/_global-error": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 8853,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/_global-error",
+          "dataRoute": "/_global-error.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/_not-found": {
+          "initialStatus": 404,
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 9265,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/_not-found",
+          "dataRoute": "/_not-found.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/account": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 25147,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/account",
+          "dataRoute": "/account.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/account/addresses": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 25615,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/account/addresses",
+          "dataRoute": "/account/addresses.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/admin": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 10755,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/admin",
+          "dataRoute": "/admin.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/admin/account": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11409,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/admin/account",
+          "dataRoute": "/admin/account.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/admin/advanced": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11053,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/admin/advanced",
+          "dataRoute": "/admin/advanced.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/admin/finance": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11867,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/admin/finance",
+          "dataRoute": "/admin/finance.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/admin/forgot-password": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 12506,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/admin/forgot-password",
+          "dataRoute": "/admin/forgot-password.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/admin/inventory": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11635,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/admin/inventory",
+          "dataRoute": "/admin/inventory.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/admin/onboarding": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11637,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/admin/onboarding",
+          "dataRoute": "/admin/onboarding.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/admin/orders": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11629,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/admin/orders",
+          "dataRoute": "/admin/orders.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/admin/products": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11869,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/admin/products",
+          "dataRoute": "/admin/products.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/admin/reset-password": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 10733,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/admin/reset-password",
+          "dataRoute": "/admin/reset-password.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/admin/returns": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11867,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/admin/returns",
+          "dataRoute": "/admin/returns.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/admin/setup": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 10678,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/admin/setup",
+          "dataRoute": "/admin/setup.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/cart": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 25091,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/cart",
+          "dataRoute": "/cart.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/categories/mens-clothing": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 29221,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/categories/[slug]",
+          "dataRoute": "/categories/mens-clothing.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/checkout": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 25149,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/checkout",
+          "dataRoute": "/checkout.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/clothing": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 25182,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/clothing",
+          "dataRoute": "/clothing.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/orders": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 25130,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/orders",
+          "dataRoute": "/orders.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/products/tees": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 32844,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/products/[slug]",
+          "dataRoute": "/products/tees.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/returns": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 28217,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/returns",
+          "dataRoute": "/returns.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/search": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 28250,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/search",
+          "dataRoute": "/search.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/super-admin": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 10779,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/super-admin",
+          "dataRoute": "/super-admin.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/super-admin/admins": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11648,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/super-admin/admins",
+          "dataRoute": "/super-admin/admins.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/super-admin/advanced": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11078,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/super-admin/advanced",
+          "dataRoute": "/super-admin/advanced.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/super-admin/lifecycle": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11890,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/super-admin/lifecycle",
+          "dataRoute": "/super-admin/lifecycle.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/super-admin/payouts": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11886,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/super-admin/payouts",
+          "dataRoute": "/super-admin/payouts.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/super-admin/products": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11888,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/super-admin/products",
+          "dataRoute": "/super-admin/products.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/super-admin/reconciliation": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11900,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/super-admin/reconciliation",
+          "dataRoute": "/super-admin/reconciliation.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/super-admin/reviews": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11886,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/super-admin/reviews",
+          "dataRoute": "/super-admin/reviews.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/super-admin/roles": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 11646,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/super-admin/roles",
+          "dataRoute": "/super-admin/roles.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/wishlist": {
+          "routeType": "page",
+          "response": "complete",
+          "compute": "static",
+          "htmlSize": 25138,
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "initialRevalidateSeconds": false,
+          "srcRoute": "/wishlist",
+          "dataRoute": "/wishlist.rsc",
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        }
+      },
+      "dynamicRoutes": {
+        "/categories/[slug]": {
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "routeRegex": "^/categories/([^/]+?)(?:/)?$",
+          "dataRoute": "/categories/[slug].rsc",
+          "fallback": false,
+          "fallbackRootParams": [],
+          "fallbackRouteParams": [],
+          "dataRouteRegex": "^/categories/([^/]+?)\\.rsc$",
+          "prefetchDataRoute": null,
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        },
+        "/products/[slug]": {
+          "experimentalBypassFor": [
+            {
+              "type": "header",
+              "key": "next-action"
+            },
+            {
+              "type": "header",
+              "key": "content-type",
+              "value": "multipart/form-data;.*"
+            }
+          ],
+          "routeRegex": "^/products/([^/]+?)(?:/)?$",
+          "dataRoute": "/products/[slug].rsc",
+          "fallback": false,
+          "fallbackRootParams": [],
+          "fallbackRouteParams": [],
+          "dataRouteRegex": "^/products/([^/]+?)\\.rsc$",
+          "prefetchDataRoute": null,
+          "allowHeader": [
+            "host",
+            "x-matched-path",
+            "x-prerender-revalidate",
+            "x-prerender-revalidate-if-generated",
+            "x-next-revalidated-tags",
+            "x-next-revalidate-tag-token"
+          ]
+        }
+      },
+      "notFoundRoutes": [],
+      "preview": {
+        "previewModeId": "18dc504d85814f64faf3665d968e087a",
+        "previewModeSigningKey": "b00192b6a310c978870d359f0ee103c425a4ea6be30453be96811d4767664b73",
+        "previewModeEncryptionKey": "7c1e168601ae9f3da3ca3a2361ab69e102e4e0f5991cf8d235370990a62a77b7"
+      }
+    }
+  }
+}

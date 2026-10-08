@@ -1,0 +1,1282 @@
+{
+  "checkedAt": "2026-10-07T18:54:05.819Z",
+  "repository": {
+    "files": [
+      "0000_phase1_identity_rbac.sql",
+      "0001_hard_ken_ellis.sql",
+      "0002_mean_blindfold.sql",
+      "0003_useful_energizer.sql",
+      "0004_customer_catalog_orders_reviews_finance.sql",
+      "0005_variant_checkout_snapshots.sql",
+      "0006_aromatic_wonder_man.sql",
+      "0007_wide_ghost_rider.sql",
+      "0008_products_featured_flag.sql",
+      "0009_nappy_black_queen.sql",
+      "0010_glossy_apocalypse.sql",
+      "0011_redundant_sebastian_shaw.sql",
+      "0012_admin_account_lifecycle.sql",
+      "0013_api_security.sql",
+      "0014_shipping_operations.sql",
+      "0015_persistent_finance_settings.sql",
+      "0016_reconciliation_items.sql",
+      "0017_admin_initial_credentials.sql",
+      "0018_admin_bank_verification.sql"
+    ],
+    "migrations": [
+      {
+        "idx": 0,
+        "version": "7",
+        "when": 1790415414970,
+        "tag": "0000_phase1_identity_rbac",
+        "breakpoints": true,
+        "hash": "af2594c87912aed03ed465c55cf1bcdbefb9eba5d8187fe6b1e12558098a4a55",
+        "committedHash": "55a6f0adcbdfd68dd8b89cb96c6313f4e245f4375fc42cf6fec62c62f71d1a08",
+        "checkoutLineEndingsOnly": true
+      },
+      {
+        "idx": 1,
+        "version": "7",
+        "when": 1790419854874,
+        "tag": "0001_hard_ken_ellis",
+        "breakpoints": true,
+        "hash": "252c5594c1938acf17882c81645ca5f777baf7bb99426fbd616d5f8fcff36592",
+        "committedHash": "91921a1456651abbb13b6df02295def90ebe06843904c6477e7c38ef910d7c39",
+        "checkoutLineEndingsOnly": true
+      },
+      {
+        "idx": 2,
+        "version": "7",
+        "when": 1790420823862,
+        "tag": "0002_mean_blindfold",
+        "breakpoints": true,
+        "hash": "dc7b162b04767133a25f00ce68b5eea0c9756dc1b39f4d0ad54b9943d452d4ad",
+        "committedHash": "452ce82f818ae72ea31c0a5f65de65bfe40332e015bbad1223785447aa0bcff8",
+        "checkoutLineEndingsOnly": true
+      },
+      {
+        "idx": 3,
+        "version": "7",
+        "when": 1790421652444,
+        "tag": "0003_useful_energizer",
+        "breakpoints": true,
+        "hash": "cd315de8bc6b06658068a1614c2ef175f0841d1702a4b965c4d51fadee012805",
+        "committedHash": "cd315de8bc6b06658068a1614c2ef175f0841d1702a4b965c4d51fadee012805",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 4,
+        "version": "7",
+        "when": 1790512983688,
+        "tag": "0004_customer_catalog_orders_reviews_finance",
+        "breakpoints": true,
+        "hash": "2ce59c63b31967a94c68c26f3b9144d76b1e5ad09b45bd7dcf1b1ad16fed2789",
+        "committedHash": "2ce59c63b31967a94c68c26f3b9144d76b1e5ad09b45bd7dcf1b1ad16fed2789",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 5,
+        "version": "7",
+        "when": 1790513431524,
+        "tag": "0005_variant_checkout_snapshots",
+        "breakpoints": true,
+        "hash": "0570d6251bf4e59352dddabc57c846409cade83f540675a4448fa51160b4fb3a",
+        "committedHash": "0570d6251bf4e59352dddabc57c846409cade83f540675a4448fa51160b4fb3a",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 6,
+        "version": "7",
+        "when": 1790514851206,
+        "tag": "0006_aromatic_wonder_man",
+        "breakpoints": true,
+        "hash": "b0abe96b0638cb511866597154f39be2571f6fb214812d3105f1138267c39c51",
+        "committedHash": "b0abe96b0638cb511866597154f39be2571f6fb214812d3105f1138267c39c51",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 7,
+        "version": "7",
+        "when": 1790519101404,
+        "tag": "0007_wide_ghost_rider",
+        "breakpoints": true,
+        "hash": "87770d5de2530fe02e62165cfc779cf90d6d7c9994becc72b35edbb5561da36e",
+        "committedHash": "87770d5de2530fe02e62165cfc779cf90d6d7c9994becc72b35edbb5561da36e",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 8,
+        "version": "7",
+        "when": 1790612120322,
+        "tag": "0008_products_featured_flag",
+        "breakpoints": true,
+        "hash": "e583b7c54d2bef9b42d9df34c3ae61a67e27c4ec75f2bcdcce70bd3c34df6e25",
+        "committedHash": "e583b7c54d2bef9b42d9df34c3ae61a67e27c4ec75f2bcdcce70bd3c34df6e25",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 9,
+        "version": "7",
+        "when": 1790684218635,
+        "tag": "0009_nappy_black_queen",
+        "breakpoints": true,
+        "hash": "a44c56e33f7b3714c28d430aabd483c045fab08885455544481951bab5288e6e",
+        "committedHash": "a44c56e33f7b3714c28d430aabd483c045fab08885455544481951bab5288e6e",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 10,
+        "version": "7",
+        "when": 1790701672077,
+        "tag": "0010_glossy_apocalypse",
+        "breakpoints": true,
+        "hash": "97a8abb6cff3595bcae7ac3f7e44c2d25c5ccca9e96fcff836a761daf0782e7c",
+        "committedHash": "97a8abb6cff3595bcae7ac3f7e44c2d25c5ccca9e96fcff836a761daf0782e7c",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 11,
+        "version": "7",
+        "when": 1790703623112,
+        "tag": "0011_redundant_sebastian_shaw",
+        "breakpoints": true,
+        "hash": "eb0a7add0d035d55d888a1bad1b83cda47515ad6eff07d2b1ed6846ad3e17e57",
+        "committedHash": "eb0a7add0d035d55d888a1bad1b83cda47515ad6eff07d2b1ed6846ad3e17e57",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 12,
+        "version": "7",
+        "when": 1790750072530,
+        "tag": "0012_admin_account_lifecycle",
+        "breakpoints": true,
+        "hash": "f63e2190ba803bdb4f51efb154e8fbf44ee1ce555b1eb8049485b5ada5c9a505",
+        "committedHash": "243baffc13fe1c97c6e84f96b2da91b1d24825c008fa7733919dba6fcb48a36a",
+        "checkoutLineEndingsOnly": true
+      },
+      {
+        "idx": 13,
+        "version": "7",
+        "when": 1790753242615,
+        "tag": "0013_api_security",
+        "breakpoints": true,
+        "hash": "8bf51f54ff6146ce45d0b4d38c74895eeb4605c38bd436652aedff85c804f769",
+        "committedHash": "8bf51f54ff6146ce45d0b4d38c74895eeb4605c38bd436652aedff85c804f769",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 14,
+        "version": "7",
+        "when": 1790760106475,
+        "tag": "0014_shipping_operations",
+        "breakpoints": true,
+        "hash": "7dac14904cc5b2ebf292b7e53fc74c8604d7181fc55690e75aa76d947699d061",
+        "committedHash": "7dac14904cc5b2ebf292b7e53fc74c8604d7181fc55690e75aa76d947699d061",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 15,
+        "version": "7",
+        "when": 1790832000000,
+        "tag": "0015_persistent_finance_settings",
+        "breakpoints": true,
+        "hash": "8e729ece9840b8a1de22576e9d044ed9ad1338808b07af5b51c0ca274c1a1c22",
+        "committedHash": "8e729ece9840b8a1de22576e9d044ed9ad1338808b07af5b51c0ca274c1a1c22",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 16,
+        "version": "7",
+        "when": 1790900000000,
+        "tag": "0016_reconciliation_items",
+        "breakpoints": true,
+        "hash": "01eb8bcd36c53b95887869a3ad9b83e86a373bc0836fe17da4b97a44468eeaec",
+        "committedHash": "01eb8bcd36c53b95887869a3ad9b83e86a373bc0836fe17da4b97a44468eeaec",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 17,
+        "version": "7",
+        "when": 1791220656127,
+        "tag": "0017_admin_initial_credentials",
+        "breakpoints": true,
+        "hash": "3212b618af9d4ef9c6a0bcf5ab28b942fab657a9d76467556205dcdeea6b63b6",
+        "committedHash": "3212b618af9d4ef9c6a0bcf5ab28b942fab657a9d76467556205dcdeea6b63b6",
+        "checkoutLineEndingsOnly": false
+      },
+      {
+        "idx": 18,
+        "version": "7",
+        "when": 1791221082316,
+        "tag": "0018_admin_bank_verification",
+        "breakpoints": true,
+        "hash": "090916c3d28a2a68943dfa6cb1cb9365aeba7048d75f42dfd0595bdea57a1e1d",
+        "committedHash": "090916c3d28a2a68943dfa6cb1cb9365aeba7048d75f42dfd0595bdea57a1e1d",
+        "checkoutLineEndingsOnly": false
+      }
+    ],
+    "unchangedFromHEAD": true
+  },
+  "target": {
+    "host": "ownline-ecommerce-ownline-ecommerce.i.aivencloud.com",
+    "port": "14805",
+    "database": "defaultdb",
+    "matchesLiveWorkerHyperdrive": true
+  },
+  "cronSchedules": [],
+  "before": {
+    "identity": [
+      {
+        "database": "defaultdb",
+        "database_user": "avnadmin",
+        "server_address": "139.59.3.89/32",
+        "server_port": 14805,
+        "tls": true
+      }
+    ],
+    "records": [
+      {
+        "id": 1,
+        "hash": "55a6f0adcbdfd68dd8b89cb96c6313f4e245f4375fc42cf6fec62c62f71d1a08",
+        "created_at": "1790415414970"
+      },
+      {
+        "id": 2,
+        "hash": "91921a1456651abbb13b6df02295def90ebe06843904c6477e7c38ef910d7c39",
+        "created_at": "1790419854874"
+      },
+      {
+        "id": 3,
+        "hash": "452ce82f818ae72ea31c0a5f65de65bfe40332e015bbad1223785447aa0bcff8",
+        "created_at": "1790420823862"
+      },
+      {
+        "id": 4,
+        "hash": "cd315de8bc6b06658068a1614c2ef175f0841d1702a4b965c4d51fadee012805",
+        "created_at": "1790421652444"
+      },
+      {
+        "id": 5,
+        "hash": "2ce59c63b31967a94c68c26f3b9144d76b1e5ad09b45bd7dcf1b1ad16fed2789",
+        "created_at": "1790512983688"
+      },
+      {
+        "id": 6,
+        "hash": "0570d6251bf4e59352dddabc57c846409cade83f540675a4448fa51160b4fb3a",
+        "created_at": "1790513431524"
+      },
+      {
+        "id": 7,
+        "hash": "b0abe96b0638cb511866597154f39be2571f6fb214812d3105f1138267c39c51",
+        "created_at": "1790514851206"
+      },
+      {
+        "id": 8,
+        "hash": "87770d5de2530fe02e62165cfc779cf90d6d7c9994becc72b35edbb5561da36e",
+        "created_at": "1790519101404"
+      },
+      {
+        "id": 9,
+        "hash": "e583b7c54d2bef9b42d9df34c3ae61a67e27c4ec75f2bcdcce70bd3c34df6e25",
+        "created_at": "1790612120322"
+      },
+      {
+        "id": 10,
+        "hash": "a44c56e33f7b3714c28d430aabd483c045fab08885455544481951bab5288e6e",
+        "created_at": "1790684218635"
+      },
+      {
+        "id": 11,
+        "hash": "97a8abb6cff3595bcae7ac3f7e44c2d25c5ccca9e96fcff836a761daf0782e7c",
+        "created_at": "1790701672077"
+      },
+      {
+        "id": 12,
+        "hash": "eb0a7add0d035d55d888a1bad1b83cda47515ad6eff07d2b1ed6846ad3e17e57",
+        "created_at": "1790703623112"
+      },
+      {
+        "id": 13,
+        "hash": "243baffc13fe1c97c6e84f96b2da91b1d24825c008fa7733919dba6fcb48a36a",
+        "created_at": "1790750072530"
+      },
+      {
+        "id": 14,
+        "hash": "8bf51f54ff6146ce45d0b4d38c74895eeb4605c38bd436652aedff85c804f769",
+        "created_at": "1790753242615"
+      },
+      {
+        "id": 15,
+        "hash": "7dac14904cc5b2ebf292b7e53fc74c8604d7181fc55690e75aa76d947699d061",
+        "created_at": "1790760106475"
+      },
+      {
+        "id": 16,
+        "hash": "8e729ece9840b8a1de22576e9d044ed9ad1338808b07af5b51c0ca274c1a1c22",
+        "created_at": "1790832000000"
+      },
+      {
+        "id": 17,
+        "hash": "01eb8bcd36c53b95887869a3ad9b83e86a373bc0836fe17da4b97a44468eeaec",
+        "created_at": "1790900000000"
+      }
+    ],
+    "pending": [
+      "0017_admin_initial_credentials",
+      "0018_admin_bank_verification"
+    ],
+    "newColumns": [],
+    "constraints": [
+      {
+        "conname": "shipments_admin_id_admins_id_fk",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "FOREIGN KEY (admin_id) REFERENCES admins(id)"
+      },
+      {
+        "conname": "shipments_admin_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL admin_id"
+      },
+      {
+        "conname": "shipments_created_at_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "conname": "shipments_destination_address_snapshot_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL destination_address_snapshot"
+      },
+      {
+        "conname": "shipments_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL id"
+      },
+      {
+        "conname": "shipments_id_order_admin_unique",
+        "contype": "u",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "UNIQUE (id, order_id, admin_id)"
+      },
+      {
+        "conname": "shipments_order_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL order_id"
+      },
+      {
+        "conname": "shipments_order_id_orders_id_fk",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "FOREIGN KEY (order_id) REFERENCES orders(id)"
+      },
+      {
+        "conname": "shipments_origin_address_snapshot_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL origin_address_snapshot"
+      },
+      {
+        "conname": "shipments_pkey",
+        "contype": "p",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "conname": "shipments_provider_key_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL provider_key"
+      },
+      {
+        "conname": "shipments_provider_key_shipping_provider_configs_provider_key_f",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "FOREIGN KEY (provider_key) REFERENCES shipping_provider_configs(provider_key)"
+      },
+      {
+        "conname": "shipments_status_check",
+        "contype": "c",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "CHECK ((status = ANY (ARRAY['CREATED'::text, 'CONFIRMED'::text, 'PACKED'::text, 'SHIPPED'::text, 'PICKED_UP'::text, 'IN_TRANSIT'::text, 'OUT_FOR_DELIVERY'::text, 'DELIVERED'::text, 'DELIVERY_FAILED'::text, 'RTO'::text, 'CANCELLED'::text])))"
+      },
+      {
+        "conname": "shipments_status_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL status"
+      },
+      {
+        "conname": "shipments_updated_at_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL updated_at"
+      },
+      {
+        "conname": "shipping_locations_origin_fk",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "FOREIGN KEY (admin_address_id, admin_id, address_type) REFERENCES admin_addresses(id, admin_id, address_type)"
+      },
+      {
+        "conname": "shipping_locations_provider_address_unique",
+        "contype": "u",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "UNIQUE (provider_key, admin_address_id)"
+      },
+      {
+        "conname": "shipping_locations_status_check",
+        "contype": "c",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'INACTIVE'::text])))"
+      },
+      {
+        "conname": "shipping_locations_type_check",
+        "contype": "c",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "CHECK ((address_type = 'SHIPPING_ORIGIN'::text))"
+      },
+      {
+        "conname": "shipping_provider_locations_address_type_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL address_type"
+      },
+      {
+        "conname": "shipping_provider_locations_admin_address_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL admin_address_id"
+      },
+      {
+        "conname": "shipping_provider_locations_admin_id_admins_id_fk",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "FOREIGN KEY (admin_id) REFERENCES admins(id)"
+      },
+      {
+        "conname": "shipping_provider_locations_admin_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL admin_id"
+      },
+      {
+        "conname": "shipping_provider_locations_created_at_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "conname": "shipping_provider_locations_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL id"
+      },
+      {
+        "conname": "shipping_provider_locations_location_name_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL location_name"
+      },
+      {
+        "conname": "shipping_provider_locations_pkey",
+        "contype": "p",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "conname": "shipping_provider_locations_provider_key_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL provider_key"
+      },
+      {
+        "conname": "shipping_provider_locations_provider_key_shipping_provider_conf",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "FOREIGN KEY (provider_key) REFERENCES shipping_provider_configs(provider_key)"
+      },
+      {
+        "conname": "shipping_provider_locations_provider_location_ref_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL provider_location_ref"
+      },
+      {
+        "conname": "shipping_provider_locations_status_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL status"
+      },
+      {
+        "conname": "shipping_provider_locations_updated_at_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL updated_at"
+      }
+    ],
+    "counts": {
+      "admins": "1",
+      "super_admins": "1",
+      "customers": "3",
+      "users": "5",
+      "products": "2",
+      "orders": "0"
+    },
+    "superAdminState": {
+      "fingerprint": "6436830aac04e714843d1c6277018f20"
+    },
+    "inventory": {
+      "rows": "2",
+      "available": "12",
+      "reserved": "0",
+      "version_sum": "1",
+      "fingerprint": "2e0116cdc100820071eb9c756e1d7ec1"
+    },
+    "businessFingerprints": {
+      "admins": {
+        "rows": "1",
+        "fingerprint": "92e183426cf12b5195fc79634e786d73"
+      },
+      "users": {
+        "rows": "5",
+        "fingerprint": "7c9d4a162d4b6bb44557101d1aa15ee4"
+      },
+      "user_roles": {
+        "rows": "5",
+        "fingerprint": "af097f43c3f0fe7a6031016bdbd4f8a9"
+      },
+      "products": {
+        "rows": "2",
+        "fingerprint": "28761736f61a0df5a35add6e2d4a6915"
+      },
+      "product_variants": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "orders": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "order_items": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "payments": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "payout_requests": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "admin_settlements": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "shipments": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "shipping_provider_locations": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      }
+    }
+  },
+  "execution": {
+    "mechanism": "npm run migrate -> drizzle-kit migrate",
+    "exitCode": 0,
+    "stdout": "\n> backend@1.0.0 migrate\n> drizzle-kit migrate\n\nNo config path provided, using default 'drizzle.config.ts'\nReading config file 'D:\\dropshiping-full-stack-E-commerce\\ecommerce\\backend\\drizzle.config.ts'\nUsing 'pg' driver for database querying\n[⣷] applying migrations...\u001b[2K\u001b[1G[⣯] applying migrations...\u001b[2K\u001b[1G[⣟] applying migrations...\u001b[2K\u001b[1G[⡿] applying migrations...\u001b[2K\u001b[1G[⢿] applying migrations...\u001b[2K\u001b[1G[✓] migrations applied successfully!",
+    "stderr": ""
+  },
+  "after": {
+    "identity": [
+      {
+        "database": "defaultdb",
+        "database_user": "avnadmin",
+        "server_address": "139.59.3.89/32",
+        "server_port": 14805,
+        "tls": true
+      }
+    ],
+    "records": [
+      {
+        "id": 1,
+        "hash": "55a6f0adcbdfd68dd8b89cb96c6313f4e245f4375fc42cf6fec62c62f71d1a08",
+        "created_at": "1790415414970"
+      },
+      {
+        "id": 2,
+        "hash": "91921a1456651abbb13b6df02295def90ebe06843904c6477e7c38ef910d7c39",
+        "created_at": "1790419854874"
+      },
+      {
+        "id": 3,
+        "hash": "452ce82f818ae72ea31c0a5f65de65bfe40332e015bbad1223785447aa0bcff8",
+        "created_at": "1790420823862"
+      },
+      {
+        "id": 4,
+        "hash": "cd315de8bc6b06658068a1614c2ef175f0841d1702a4b965c4d51fadee012805",
+        "created_at": "1790421652444"
+      },
+      {
+        "id": 5,
+        "hash": "2ce59c63b31967a94c68c26f3b9144d76b1e5ad09b45bd7dcf1b1ad16fed2789",
+        "created_at": "1790512983688"
+      },
+      {
+        "id": 6,
+        "hash": "0570d6251bf4e59352dddabc57c846409cade83f540675a4448fa51160b4fb3a",
+        "created_at": "1790513431524"
+      },
+      {
+        "id": 7,
+        "hash": "b0abe96b0638cb511866597154f39be2571f6fb214812d3105f1138267c39c51",
+        "created_at": "1790514851206"
+      },
+      {
+        "id": 8,
+        "hash": "87770d5de2530fe02e62165cfc779cf90d6d7c9994becc72b35edbb5561da36e",
+        "created_at": "1790519101404"
+      },
+      {
+        "id": 9,
+        "hash": "e583b7c54d2bef9b42d9df34c3ae61a67e27c4ec75f2bcdcce70bd3c34df6e25",
+        "created_at": "1790612120322"
+      },
+      {
+        "id": 10,
+        "hash": "a44c56e33f7b3714c28d430aabd483c045fab08885455544481951bab5288e6e",
+        "created_at": "1790684218635"
+      },
+      {
+        "id": 11,
+        "hash": "97a8abb6cff3595bcae7ac3f7e44c2d25c5ccca9e96fcff836a761daf0782e7c",
+        "created_at": "1790701672077"
+      },
+      {
+        "id": 12,
+        "hash": "eb0a7add0d035d55d888a1bad1b83cda47515ad6eff07d2b1ed6846ad3e17e57",
+        "created_at": "1790703623112"
+      },
+      {
+        "id": 13,
+        "hash": "243baffc13fe1c97c6e84f96b2da91b1d24825c008fa7733919dba6fcb48a36a",
+        "created_at": "1790750072530"
+      },
+      {
+        "id": 14,
+        "hash": "8bf51f54ff6146ce45d0b4d38c74895eeb4605c38bd436652aedff85c804f769",
+        "created_at": "1790753242615"
+      },
+      {
+        "id": 15,
+        "hash": "7dac14904cc5b2ebf292b7e53fc74c8604d7181fc55690e75aa76d947699d061",
+        "created_at": "1790760106475"
+      },
+      {
+        "id": 16,
+        "hash": "8e729ece9840b8a1de22576e9d044ed9ad1338808b07af5b51c0ca274c1a1c22",
+        "created_at": "1790832000000"
+      },
+      {
+        "id": 17,
+        "hash": "01eb8bcd36c53b95887869a3ad9b83e86a373bc0836fe17da4b97a44468eeaec",
+        "created_at": "1790900000000"
+      },
+      {
+        "id": 18,
+        "hash": "3212b618af9d4ef9c6a0bcf5ab28b942fab657a9d76467556205dcdeea6b63b6",
+        "created_at": "1791220656127"
+      },
+      {
+        "id": 19,
+        "hash": "090916c3d28a2a68943dfa6cb1cb9365aeba7048d75f42dfd0595bdea57a1e1d",
+        "created_at": "1791221082316"
+      }
+    ],
+    "pending": [],
+    "newColumns": [
+      {
+        "table_name": "admin_bank_accounts",
+        "column_name": "admin_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "ordinal_position": 1
+      },
+      {
+        "table_name": "admin_bank_accounts",
+        "column_name": "encrypted_details",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "ordinal_position": 2
+      },
+      {
+        "table_name": "admin_bank_accounts",
+        "column_name": "account_last4",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "ordinal_position": 3
+      },
+      {
+        "table_name": "admin_bank_accounts",
+        "column_name": "status",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "column_default": "'PENDING'::text",
+        "ordinal_position": 4
+      },
+      {
+        "table_name": "admin_bank_accounts",
+        "column_name": "revision",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()",
+        "ordinal_position": 5
+      },
+      {
+        "table_name": "admin_bank_accounts",
+        "column_name": "reviewed_by_user_id",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "column_default": null,
+        "ordinal_position": 6
+      },
+      {
+        "table_name": "admin_bank_accounts",
+        "column_name": "reviewed_at",
+        "data_type": "timestamp without time zone",
+        "is_nullable": "YES",
+        "column_default": null,
+        "ordinal_position": 7
+      },
+      {
+        "table_name": "admin_bank_accounts",
+        "column_name": "review_notes",
+        "data_type": "text",
+        "is_nullable": "YES",
+        "column_default": null,
+        "ordinal_position": 8
+      },
+      {
+        "table_name": "admin_bank_accounts",
+        "column_name": "updated_at",
+        "data_type": "timestamp without time zone",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "ordinal_position": 9
+      },
+      {
+        "table_name": "admin_credentials",
+        "column_name": "admin_id",
+        "data_type": "uuid",
+        "is_nullable": "NO",
+        "column_default": null,
+        "ordinal_position": 1
+      },
+      {
+        "table_name": "admin_credentials",
+        "column_name": "must_change_password",
+        "data_type": "boolean",
+        "is_nullable": "NO",
+        "column_default": "true",
+        "ordinal_position": 2
+      },
+      {
+        "table_name": "admin_credentials",
+        "column_name": "provisioned_by_user_id",
+        "data_type": "text",
+        "is_nullable": "NO",
+        "column_default": null,
+        "ordinal_position": 3
+      },
+      {
+        "table_name": "admin_credentials",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone",
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "ordinal_position": 4
+      },
+      {
+        "table_name": "admin_credentials",
+        "column_name": "password_changed_at",
+        "data_type": "timestamp without time zone",
+        "is_nullable": "YES",
+        "column_default": null,
+        "ordinal_position": 5
+      }
+    ],
+    "constraints": [
+      {
+        "conname": "admin_bank_accounts_account_last4_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "admin_bank_accounts",
+        "definition": "NOT NULL account_last4"
+      },
+      {
+        "conname": "admin_bank_accounts_admin_id_admins_id_fk",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "admin_bank_accounts",
+        "definition": "FOREIGN KEY (admin_id) REFERENCES admins(id)"
+      },
+      {
+        "conname": "admin_bank_accounts_admin_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "admin_bank_accounts",
+        "definition": "NOT NULL admin_id"
+      },
+      {
+        "conname": "admin_bank_accounts_encrypted_details_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "admin_bank_accounts",
+        "definition": "NOT NULL encrypted_details"
+      },
+      {
+        "conname": "admin_bank_accounts_pkey",
+        "contype": "p",
+        "convalidated": true,
+        "table_name": "admin_bank_accounts",
+        "definition": "PRIMARY KEY (admin_id)"
+      },
+      {
+        "conname": "admin_bank_accounts_reviewed_by_user_id_users_id_fk",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "admin_bank_accounts",
+        "definition": "FOREIGN KEY (reviewed_by_user_id) REFERENCES users(id)"
+      },
+      {
+        "conname": "admin_bank_accounts_revision_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "admin_bank_accounts",
+        "definition": "NOT NULL revision"
+      },
+      {
+        "conname": "admin_bank_accounts_status_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "admin_bank_accounts",
+        "definition": "NOT NULL status"
+      },
+      {
+        "conname": "admin_bank_accounts_updated_at_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "admin_bank_accounts",
+        "definition": "NOT NULL updated_at"
+      },
+      {
+        "conname": "admin_credentials_admin_id_admins_id_fk",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "admin_credentials",
+        "definition": "FOREIGN KEY (admin_id) REFERENCES admins(id)"
+      },
+      {
+        "conname": "admin_credentials_admin_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "admin_credentials",
+        "definition": "NOT NULL admin_id"
+      },
+      {
+        "conname": "admin_credentials_created_at_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "admin_credentials",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "conname": "admin_credentials_must_change_password_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "admin_credentials",
+        "definition": "NOT NULL must_change_password"
+      },
+      {
+        "conname": "admin_credentials_pkey",
+        "contype": "p",
+        "convalidated": true,
+        "table_name": "admin_credentials",
+        "definition": "PRIMARY KEY (admin_id)"
+      },
+      {
+        "conname": "admin_credentials_provisioned_by_user_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "admin_credentials",
+        "definition": "NOT NULL provisioned_by_user_id"
+      },
+      {
+        "conname": "admin_credentials_provisioned_by_user_id_users_id_fk",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "admin_credentials",
+        "definition": "FOREIGN KEY (provisioned_by_user_id) REFERENCES users(id)"
+      },
+      {
+        "conname": "shipments_admin_id_admins_id_fk",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "FOREIGN KEY (admin_id) REFERENCES admins(id)"
+      },
+      {
+        "conname": "shipments_admin_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL admin_id"
+      },
+      {
+        "conname": "shipments_created_at_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "conname": "shipments_destination_address_snapshot_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL destination_address_snapshot"
+      },
+      {
+        "conname": "shipments_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL id"
+      },
+      {
+        "conname": "shipments_id_order_admin_unique",
+        "contype": "u",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "UNIQUE (id, order_id, admin_id)"
+      },
+      {
+        "conname": "shipments_order_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL order_id"
+      },
+      {
+        "conname": "shipments_order_id_orders_id_fk",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "FOREIGN KEY (order_id) REFERENCES orders(id)"
+      },
+      {
+        "conname": "shipments_origin_address_snapshot_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL origin_address_snapshot"
+      },
+      {
+        "conname": "shipments_pkey",
+        "contype": "p",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "conname": "shipments_provider_key_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL provider_key"
+      },
+      {
+        "conname": "shipments_provider_key_shipping_provider_configs_provider_key_f",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "FOREIGN KEY (provider_key) REFERENCES shipping_provider_configs(provider_key)"
+      },
+      {
+        "conname": "shipments_status_check",
+        "contype": "c",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "CHECK ((status = ANY (ARRAY['CREATED'::text, 'CONFIRMED'::text, 'PACKED'::text, 'SHIPPED'::text, 'PICKED_UP'::text, 'IN_TRANSIT'::text, 'OUT_FOR_DELIVERY'::text, 'DELIVERED'::text, 'DELIVERY_FAILED'::text, 'RTO'::text, 'CANCELLED'::text])))"
+      },
+      {
+        "conname": "shipments_status_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL status"
+      },
+      {
+        "conname": "shipments_updated_at_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipments",
+        "definition": "NOT NULL updated_at"
+      },
+      {
+        "conname": "shipping_locations_origin_fk",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "FOREIGN KEY (admin_address_id, admin_id, address_type) REFERENCES admin_addresses(id, admin_id, address_type)"
+      },
+      {
+        "conname": "shipping_locations_provider_address_unique",
+        "contype": "u",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "UNIQUE (provider_key, admin_address_id)"
+      },
+      {
+        "conname": "shipping_locations_status_check",
+        "contype": "c",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'INACTIVE'::text])))"
+      },
+      {
+        "conname": "shipping_locations_type_check",
+        "contype": "c",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "CHECK ((address_type = 'SHIPPING_ORIGIN'::text))"
+      },
+      {
+        "conname": "shipping_provider_locations_address_type_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL address_type"
+      },
+      {
+        "conname": "shipping_provider_locations_admin_address_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL admin_address_id"
+      },
+      {
+        "conname": "shipping_provider_locations_admin_id_admins_id_fk",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "FOREIGN KEY (admin_id) REFERENCES admins(id)"
+      },
+      {
+        "conname": "shipping_provider_locations_admin_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL admin_id"
+      },
+      {
+        "conname": "shipping_provider_locations_created_at_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "conname": "shipping_provider_locations_id_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL id"
+      },
+      {
+        "conname": "shipping_provider_locations_location_name_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL location_name"
+      },
+      {
+        "conname": "shipping_provider_locations_pkey",
+        "contype": "p",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "conname": "shipping_provider_locations_provider_key_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL provider_key"
+      },
+      {
+        "conname": "shipping_provider_locations_provider_key_shipping_provider_conf",
+        "contype": "f",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "FOREIGN KEY (provider_key) REFERENCES shipping_provider_configs(provider_key)"
+      },
+      {
+        "conname": "shipping_provider_locations_provider_location_ref_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL provider_location_ref"
+      },
+      {
+        "conname": "shipping_provider_locations_status_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL status"
+      },
+      {
+        "conname": "shipping_provider_locations_updated_at_not_null",
+        "contype": "n",
+        "convalidated": true,
+        "table_name": "shipping_provider_locations",
+        "definition": "NOT NULL updated_at"
+      }
+    ],
+    "counts": {
+      "admins": "1",
+      "super_admins": "1",
+      "customers": "3",
+      "users": "5",
+      "products": "2",
+      "orders": "0"
+    },
+    "superAdminState": {
+      "fingerprint": "6436830aac04e714843d1c6277018f20"
+    },
+    "inventory": {
+      "rows": "2",
+      "available": "12",
+      "reserved": "0",
+      "version_sum": "1",
+      "fingerprint": "2e0116cdc100820071eb9c756e1d7ec1"
+    },
+    "businessFingerprints": {
+      "admins": {
+        "rows": "1",
+        "fingerprint": "92e183426cf12b5195fc79634e786d73"
+      },
+      "users": {
+        "rows": "5",
+        "fingerprint": "7c9d4a162d4b6bb44557101d1aa15ee4"
+      },
+      "user_roles": {
+        "rows": "5",
+        "fingerprint": "af097f43c3f0fe7a6031016bdbd4f8a9"
+      },
+      "products": {
+        "rows": "2",
+        "fingerprint": "28761736f61a0df5a35add6e2d4a6915"
+      },
+      "product_variants": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "orders": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "order_items": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "payments": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "payout_requests": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "admin_settlements": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "shipments": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      "shipping_provider_locations": {
+        "rows": "0",
+        "fingerprint": "d41d8cd98f00b204e9800998ecf8427e"
+      }
+    }
+  },
+  "newTableCounts": [
+    {
+      "admin_credentials": "0",
+      "admin_bank_accounts": "0"
+    }
+  ],
+  "worker": [
+    {
+      "path": "/health",
+      "status": 200,
+      "body": "{\"status\":\"ok\"}"
+    },
+    {
+      "path": "/health/db",
+      "status": 200,
+      "body": "{\"status\":\"ok\",\"database\":\"connected\",\"result\":{\"ok\":1}}"
+    },
+    {
+      "path": "/api/me",
+      "status": 401,
+      "body": "{\"error\":\"Unauthorized\"}"
+    }
+  ],
+  "result": "PRODUCTION DATABASE MIGRATION VERIFIED"
+}

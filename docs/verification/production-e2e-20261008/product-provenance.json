@@ -1,0 +1,142 @@
+{
+  "mobileMenu": {
+    "visibleLinks": [
+      {
+        "text": "OWNLINEDROPSHIP",
+        "href": "/"
+      },
+      {
+        "text": "",
+        "href": "/search"
+      },
+      {
+        "text": "",
+        "href": "/cart"
+      },
+      {
+        "text": "Shop",
+        "href": "/search"
+      },
+      {
+        "text": "New arrivals",
+        "href": "/search?sort=newest"
+      },
+      {
+        "text": "Saved",
+        "href": "/wishlist"
+      }
+    ],
+    "closeVisible": true
+  },
+  "priceFilter": {
+    "url": "https://ownline-ecommerce.pages.dev/search?q=TEST+Ownline+Everyday+Cotton+Tote&minPrice=100&maxPrice=400",
+    "productPresent": 1
+  },
+  "stockFilter": {
+    "checked": true,
+    "url": "https://ownline-ecommerce.pages.dev/search?q=TEST+Ownline+Everyday+Cotton+Tote&minPrice=100&maxPrice=400&available=true"
+  },
+  "sortFilter": {
+    "value": "price-asc",
+    "url": "https://ownline-ecommerce.pages.dev/search?q=TEST+Ownline+Everyday+Cotton+Tote&minPrice=100&maxPrice=400&available=true&sort=price-asc"
+  },
+  "serialized": {
+    "productObjects": [
+      {
+        "id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+        "categoryId": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+        "subcategoryId": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+        "name": "TEST Ownline Everyday Cotton Tote",
+        "slug": "phase11b2-cotton-tote-730d72e64790",
+        "description": "Controlled development item for public catalog and static page verification. Not offered for sale.",
+        "price": "349.00",
+        "currency": "INR",
+        "attributes": {},
+        "returnEnabled": false,
+        "createdAt": "2026-09-28T18:53:02.395Z",
+        "images": [
+          {
+            "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+            "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+            "altText": "Phase 11b-3 R2 verification image",
+            "sortOrder": 0
+          }
+        ],
+        "variants": [],
+        "available": true,
+        "rating": null,
+        "reviewCount": 0
+      }
+    ],
+    "imageObjects": [
+      {
+        "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+        "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+        "altText": "Phase 11b-3 R2 verification image",
+        "sortOrder": 0
+      }
+    ],
+    "domImageCount": 0,
+    "placeholder": true,
+    "renderedName": "TEST Ownline Everyday Cotton Tote",
+    "visibleAvailability": true,
+    "visiblePrice": true
+  },
+  "mobilePurchaseControls": [
+    {
+      "tag": "INPUT",
+      "text": "",
+      "label": null,
+      "disabled": false,
+      "width": 96,
+      "height": 40,
+      "left": 16,
+      "right": 112
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Add to cart",
+      "label": null,
+      "disabled": false,
+      "width": 160,
+      "height": 36,
+      "left": 16,
+      "right": 176
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Buy now",
+      "label": null,
+      "disabled": false,
+      "width": 131.1999969482422,
+      "height": 36,
+      "left": 184,
+      "right": 315.1999969482422
+    },
+    {
+      "tag": "BUTTON",
+      "text": "",
+      "label": "Add to wishlist",
+      "disabled": false,
+      "width": 36,
+      "height": 36,
+      "left": 323.20001220703125,
+      "right": 359.20001220703125
+    }
+  ],
+  "landingNetwork": [],
+  "firstVisit": {
+    "status": 200,
+    "initial": {
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nNEW ARRIVALS\nSAVED\n\nTHE OWNLINE EDIT\n\nA little more you, every day.\n\nDiscover considered pieces for the way you actually live.\n\nEXPLORE THE COLLECTION\n\nCURATED FOR THE EVERYDAY\n\nTHE COLLECTION IS TAKING SHAPE\nTEST Ownline Everyday Cotton Tote\n\nFIND YOUR PLACE\n\nExplore the collection, your way.\n\nBrowse the categories in the current Ownline collection.\n\nTEST Ownline Everyday Accessories\n\nDISCOVER\n\nThe selected edit\nSHOP ALL\nImage coming soon\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFRESH FINDS\n\nJust arrived\nVIEW ALL\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Ima",
+      "videos": 0,
+      "dialogs": 0
+    },
+    "settled": {
+      "text": "Skip to content\nOWNLINEDROPSHIP\nSHOP\nNEW ARRIVALS\nSAVED\n\nTHE OWNLINE EDIT\n\nA little more you, every day.\n\nDiscover considered pieces for the way you actually live.\n\nEXPLORE THE COLLECTION\n\nCURATED FOR THE EVERYDAY\n\nTHE COLLECTION IS TAKING SHAPE\nTEST Ownline Everyday Cotton Tote\n\nFIND YOUR PLACE\n\nExplore the collection, your way.\n\nBrowse the categories in the current Ownline collection.\n\nTEST Ownline Everyday Accessories\n\nDISCOVER\n\nThe selected edit\nSHOP ALL\nImage coming soon\nFEATURED\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Everyday Cotton Tote\n\n₹349.00\n\nFRESH FINDS\n\nJust arrived\nVIEW ALL\nImage coming soon\nSOLD OUT\n\nTEST OWNLINE EVERYDAY ACCESSORIES\n\nTEST Ownline Out of Stock No Ima",
+      "videos": 0,
+      "dialogs": 0,
+      "overflow": false
+    }
+  }
+}

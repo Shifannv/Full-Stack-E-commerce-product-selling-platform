@@ -1,0 +1,1425 @@
+{
+  "evidence": "DIRECT PRODUCTION BROWSER AND IN-BROWSER HTTP",
+  "mode": "admin",
+  "startedAt": "2026-10-07T19:20:33.525Z",
+  "pages": [
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "status": 200,
+      "title": "Admin | Ownline Dropship",
+      "text": "OWNLINEOPS\n\nWORKSPACE\n\nOverview\nProducts\nInsights\nView storefront\n\nAdmin workspace\n\nCatalog and order operations\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\nDashboard unavailable\n\nSign in with an authorized account, then try again.\n\nTry again\n\nGross settled sales\n\n—\n\nSign in to view\n\nProducts\n\n—\n\nSign in to view\n\nOrders\n\n—\n\nSign in to view\n\nAvailable balance\n\n—\n\nSign in to view\n\nPerformance overview\n\nCurrent totals from your dashboard API\n\nSign in to view your account totals.\n\nNeeds attention\n\nItems requiring attention will appear here.\n\nRecent products\n\nSign in to view your products.",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "width": 1425,
+      "overflow": false,
+      "headings": [
+        "Your workspace",
+        "Dashboard unavailable",
+        "Performance overview",
+        "Needs attention",
+        "Recent products"
+      ],
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Try again",
+          "label": null,
+          "disabled": false,
+          "width": 60,
+          "height": 20
+        }
+      ]
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "status": 200,
+      "title": "Admin | Ownline Dropship",
+      "text": "OWNLINEOPS\n\nWORKSPACE\n\nOverview\nProducts\nInsights\nView storefront\n\nAdmin workspace\n\nCatalog and order operations\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\nLoading dashboard data…",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "width": 1440,
+      "overflow": false,
+      "headings": [
+        "Your workspace"
+      ],
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [],
+      "screenshot": "admin-admin-1440x960.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/onboarding",
+      "status": 404,
+      "title": "Ownline Dropship",
+      "text": "404\nThis page could not be found.",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "width": 1440,
+      "overflow": false,
+      "headings": [
+        "404",
+        "This page could not be found."
+      ],
+      "images": [],
+      "links": [],
+      "buttons": [],
+      "screenshot": "admin-admin-onboarding-1440x960.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/products",
+      "status": 404,
+      "title": "Ownline Dropship",
+      "text": "404\nThis page could not be found.",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "width": 1440,
+      "overflow": false,
+      "headings": [
+        "404",
+        "This page could not be found."
+      ],
+      "images": [],
+      "links": [],
+      "buttons": [],
+      "screenshot": "admin-admin-products-1440x960.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/inventory",
+      "status": 404,
+      "title": "Ownline Dropship",
+      "text": "404\nThis page could not be found.",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "width": 1440,
+      "overflow": false,
+      "headings": [
+        "404",
+        "This page could not be found."
+      ],
+      "images": [],
+      "links": [],
+      "buttons": [],
+      "screenshot": "admin-admin-inventory-1440x960.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/orders",
+      "status": 404,
+      "title": "Ownline Dropship",
+      "text": "404\nThis page could not be found.",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "width": 1440,
+      "overflow": false,
+      "headings": [
+        "404",
+        "This page could not be found."
+      ],
+      "images": [],
+      "links": [],
+      "buttons": [],
+      "screenshot": "admin-admin-orders-1440x960.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/returns",
+      "status": 404,
+      "title": "Ownline Dropship",
+      "text": "404\nThis page could not be found.",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "width": 1440,
+      "overflow": false,
+      "headings": [
+        "404",
+        "This page could not be found."
+      ],
+      "images": [],
+      "links": [],
+      "buttons": [],
+      "screenshot": "admin-admin-returns-1440x960.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/finance",
+      "status": 404,
+      "title": "Ownline Dropship",
+      "text": "404\nThis page could not be found.",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "width": 1440,
+      "overflow": false,
+      "headings": [
+        "404",
+        "This page could not be found."
+      ],
+      "images": [],
+      "links": [],
+      "buttons": [],
+      "screenshot": "admin-admin-finance-1440x960.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "status": 200,
+      "title": "Admin | Ownline Dropship",
+      "text": "OWNLINEOPS\n\nWORKSPACE\n\nOverview\nProducts\nInsights\nView storefront\n\nAdmin workspace\n\nCatalog and order operations\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\nLoading dashboard data…",
+      "viewport": {
+        "width": 1440,
+        "height": 960
+      },
+      "width": 1440,
+      "overflow": false,
+      "headings": [
+        "Your workspace"
+      ],
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [],
+      "screenshot": "admin-admin-1440x960.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "status": 200,
+      "title": "Admin | Ownline Dropship",
+      "text": "OWNLINEOPS\n\nWORKSPACE\n\nOverview\nProducts\nInsights\nView storefront\n\nAdmin workspace\n\nCatalog and order operations\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\nLoading dashboard data…",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "width": 1280,
+      "overflow": false,
+      "headings": [
+        "Your workspace"
+      ],
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [],
+      "screenshot": "admin-admin-1280x800.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "status": 200,
+      "title": "Admin | Ownline Dropship",
+      "text": "OWNLINEOPS\n\nWORKSPACE\n\nOverview\nProducts\nInsights\nView storefront\n\nAdmin workspace\n\nCatalog and order operations\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\nLoading dashboard data…",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "width": 1024,
+      "overflow": false,
+      "headings": [
+        "Your workspace"
+      ],
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [],
+      "screenshot": "admin-admin-1024x768.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "status": 200,
+      "title": "Admin | Ownline Dropship",
+      "text": "Admin workspace\n\nCatalog and order operations\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\nLoading dashboard data…",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "width": 768,
+      "overflow": false,
+      "headings": [
+        "Your workspace"
+      ],
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Admin workspace navigation",
+          "disabled": false,
+          "width": 36,
+          "height": 36
+        }
+      ],
+      "screenshot": "admin-admin-768x1024.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "status": 200,
+      "title": "Admin | Ownline Dropship",
+      "text": "Admin workspace\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\nLoading dashboard data…",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "width": 390,
+      "overflow": false,
+      "headings": [
+        "Your workspace"
+      ],
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Admin workspace navigation",
+          "disabled": false,
+          "width": 36,
+          "height": 36
+        }
+      ],
+      "screenshot": "admin-admin-390x844.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "status": 200,
+      "title": "Admin | Ownline Dropship",
+      "text": "Admin workspace\n\nView storefront\n\nStore overview\n\nYour workspace\n\nA clear view of your catalog and operations.\n\nLive account data\nLoading dashboard data…",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "width": 375,
+      "overflow": false,
+      "headings": [
+        "Your workspace"
+      ],
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Products",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Admin workspace navigation",
+          "disabled": false,
+          "width": 36,
+          "height": 36
+        }
+      ],
+      "screenshot": "admin-admin-375x812.png"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "status": 200,
+      "title": "Platform | Ownline Dropship",
+      "text": "Platform workspace\n\nView storefront\n\nPlatform overview\n\nPlatform at a glance\n\nStore activity across Ownline.\n\nLive account data\nLoading dashboard data…",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "width": 375,
+      "overflow": false,
+      "headings": [
+        "Platform at a glance"
+      ],
+      "images": [],
+      "links": [
+        {
+          "text": "OWNLINEOps",
+          "href": "/super-admin"
+        },
+        {
+          "text": "Overview",
+          "href": "#overview"
+        },
+        {
+          "text": "Admins",
+          "href": "#records"
+        },
+        {
+          "text": "Insights",
+          "href": "#insights"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        },
+        {
+          "text": "View storefront",
+          "href": "/"
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "label": "Open Platform workspace navigation",
+          "disabled": false,
+          "width": 36,
+          "height": 36
+        }
+      ],
+      "screenshot": "admin-super-admin-375x812.png"
+    }
+  ],
+  "api": [
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "userId",
+          "roles",
+          "permissions",
+          "adminApproved",
+          "mustChangePassword"
+        ]
+      },
+      "actor": {
+        "userId": "d68498ec-1894-4013-a47b-d8c807f3ef47",
+        "roles": [
+          "ADMIN"
+        ],
+        "permissions": [
+          "reviews.moderate",
+          "products.delete",
+          "inventory.view",
+          "inventory.update",
+          "earnings.view",
+          "orders.update",
+          "reviews.view",
+          "payouts.request",
+          "products.create",
+          "analytics.view",
+          "customers.message",
+          "products.view",
+          "orders.view",
+          "products.update",
+          "customers.view",
+          "payouts.view"
+        ],
+        "adminApproved": true,
+        "mustChangePassword": false
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/summary",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "products",
+          "orders",
+          "finance"
+        ]
+      },
+      "data": {
+        "products": {
+          "total": 2
+        },
+        "orders": {
+          "total": 0,
+          "confirmedPaid": 0
+        },
+        "finance": {
+          "availableBalance": "0",
+          "grossSettledSales": "0",
+          "pendingPayoutRequests": 0
+        }
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/onboarding",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "profile",
+          "application",
+          "documents",
+          "addresses",
+          "categories",
+          "bank"
+        ]
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/categories",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "categories"
+        ]
+      },
+      "data": {
+        "categories": [
+          {
+            "id": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+            "name": "TEST Ownline Everyday Accessories",
+            "slug": "phase11b2-accessories-730d72e64790",
+            "status": "PUBLISHED",
+            "subcategories": [
+              {
+                "id": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+                "name": "TEST Cotton Bags",
+                "slug": "cotton-bags"
+              }
+            ],
+            "fields": []
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/products",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "products",
+          "limit",
+          "offset"
+        ]
+      },
+      "data": {
+        "products": [
+          {
+            "id": "cbcb3ee2-a282-43d9-8144-677a367cfe04",
+            "name": "TEST Ownline Out of Stock No Image",
+            "slug": "phase11b2-oos-no-image-730d72e64790",
+            "price": "1.00",
+            "currency": "INR",
+            "status": "PUBLISHED",
+            "featured": false,
+            "returnEnabled": false,
+            "category": "TEST Ownline Everyday Accessories",
+            "categorySlug": "phase11b2-accessories-730d72e64790",
+            "subcategory": "TEST Cotton Bags",
+            "subcategorySlug": "cotton-bags",
+            "createdAt": "2026-10-02T06:59:43.458Z",
+            "updatedAt": "2026-10-02T07:01:28.338Z"
+          },
+          {
+            "id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+            "name": "TEST Ownline Everyday Cotton Tote",
+            "slug": "phase11b2-cotton-tote-730d72e64790",
+            "price": "349.00",
+            "currency": "INR",
+            "status": "PUBLISHED",
+            "featured": true,
+            "returnEnabled": false,
+            "category": "TEST Ownline Everyday Accessories",
+            "categorySlug": "phase11b2-accessories-730d72e64790",
+            "subcategory": "TEST Cotton Bags",
+            "subcategorySlug": "cotton-bags",
+            "createdAt": "2026-09-28T18:53:02.395Z",
+            "updatedAt": "2026-09-28T18:53:07.499Z"
+          }
+        ],
+        "limit": 20,
+        "offset": 0
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/orders",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "orders"
+        ]
+      },
+      "data": {
+        "orders": []
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/returns",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "returns",
+          "limit",
+          "offset"
+        ]
+      },
+      "data": {
+        "returns": [],
+        "limit": 20,
+        "offset": 0
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/finance",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "availableBalance",
+          "settlements",
+          "payouts",
+          "refundObligations"
+        ]
+      },
+      "data": {
+        "availableBalance": "0.00",
+        "settlements": [],
+        "payouts": [],
+        "refundObligations": []
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/products/cbcb3ee2-a282-43d9-8144-677a367cfe04",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "id",
+          "name",
+          "slug",
+          "description",
+          "sku",
+          "price",
+          "currency",
+          "status",
+          "attributes",
+          "returnEnabled",
+          "featured",
+          "weightKg",
+          "lengthCm",
+          "breadthCm",
+          "heightCm",
+          "categoryId",
+          "category",
+          "categorySlug",
+          "subcategoryId",
+          "subcategory",
+          "subcategorySlug",
+          "createdAt",
+          "updatedAt",
+          "variants",
+          "images"
+        ]
+      },
+      "data": {
+        "id": "cbcb3ee2-a282-43d9-8144-677a367cfe04",
+        "name": "TEST Ownline Out of Stock No Image",
+        "slug": "phase11b2-oos-no-image-730d72e64790",
+        "description": "Controlled catalog verification fixture.\n\nThis product is published intentionally with zero inventory and no product image so that the storefront can be tested for correct out-of-stock and no-image-fallback behaviour without requiring a real purchasable product.\n\nNot offered for sale. Do not order.",
+        "sku": "TEST-OOS-NOIMG-730d72e64790",
+        "price": "1.00",
+        "currency": "INR",
+        "status": "PUBLISHED",
+        "attributes": {},
+        "returnEnabled": false,
+        "featured": false,
+        "weightKg": "0.001",
+        "lengthCm": "1.00",
+        "breadthCm": "1.00",
+        "heightCm": "1.00",
+        "categoryId": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+        "category": "TEST Ownline Everyday Accessories",
+        "categorySlug": "phase11b2-accessories-730d72e64790",
+        "subcategoryId": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+        "subcategory": "TEST Cotton Bags",
+        "subcategorySlug": "cotton-bags",
+        "createdAt": "2026-10-02T06:59:43.458Z",
+        "updatedAt": "2026-10-02T07:01:28.338Z",
+        "variants": [],
+        "images": []
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/products/cbcb3ee2-a282-43d9-8144-677a367cfe04/inventory",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "inventories"
+        ]
+      },
+      "data": {
+        "inventories": [
+          {
+            "id": "edf6c179-bced-489f-b942-530a4105f827",
+            "productId": "cbcb3ee2-a282-43d9-8144-677a367cfe04",
+            "variantId": null,
+            "availableQuantity": 0,
+            "reservedQuantity": 0,
+            "version": 1,
+            "updatedAt": "2026-10-02T07:01:26.127Z"
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/products/c549089e-32fb-4217-96d7-35dc5a40eb70",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "id",
+          "name",
+          "slug",
+          "description",
+          "sku",
+          "price",
+          "currency",
+          "status",
+          "attributes",
+          "returnEnabled",
+          "featured",
+          "weightKg",
+          "lengthCm",
+          "breadthCm",
+          "heightCm",
+          "categoryId",
+          "category",
+          "categorySlug",
+          "subcategoryId",
+          "subcategory",
+          "subcategorySlug",
+          "createdAt",
+          "updatedAt",
+          "variants",
+          "images"
+        ]
+      },
+      "data": {
+        "id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+        "name": "TEST Ownline Everyday Cotton Tote",
+        "slug": "phase11b2-cotton-tote-730d72e64790",
+        "description": "Controlled development item for public catalog and static page verification. Not offered for sale.",
+        "sku": "TEST-TOTE-730d72e64790",
+        "price": "349.00",
+        "currency": "INR",
+        "status": "PUBLISHED",
+        "attributes": {},
+        "returnEnabled": false,
+        "featured": true,
+        "weightKg": "0.250",
+        "lengthCm": "36.00",
+        "breadthCm": "32.00",
+        "heightCm": "4.00",
+        "categoryId": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+        "category": "TEST Ownline Everyday Accessories",
+        "categorySlug": "phase11b2-accessories-730d72e64790",
+        "subcategoryId": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+        "subcategory": "TEST Cotton Bags",
+        "subcategorySlug": "cotton-bags",
+        "createdAt": "2026-09-28T18:53:02.395Z",
+        "updatedAt": "2026-09-28T18:53:07.499Z",
+        "variants": [],
+        "images": [
+          {
+            "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+            "variantId": null,
+            "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+            "altText": "Phase 11b-3 R2 verification image",
+            "sortOrder": 0
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/products/c549089e-32fb-4217-96d7-35dc5a40eb70/inventory",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "inventories"
+        ]
+      },
+      "data": {
+        "inventories": [
+          {
+            "id": "acc2f9d6-0669-4333-861d-eb0104381c54",
+            "productId": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+            "variantId": null,
+            "availableQuantity": 12,
+            "reservedQuantity": 0,
+            "version": 0,
+            "updatedAt": "2026-09-28T18:53:04.808Z"
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/summary",
+      "status": 403,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "error"
+        ]
+      },
+      "error": "Forbidden"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/roles",
+      "status": 403,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "error"
+        ]
+      },
+      "error": "Forbidden"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/products",
+      "status": 403,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "error"
+        ]
+      },
+      "error": "Forbidden"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 200,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "userId",
+          "roles",
+          "permissions",
+          "adminApproved",
+          "mustChangePassword"
+        ]
+      },
+      "actor": {
+        "userId": "d68498ec-1894-4013-a47b-d8c807f3ef47",
+        "roles": [
+          "ADMIN"
+        ],
+        "permissions": [
+          "reviews.moderate",
+          "products.delete",
+          "inventory.view",
+          "inventory.update",
+          "earnings.view",
+          "orders.update",
+          "reviews.view",
+          "payouts.request",
+          "products.create",
+          "analytics.view",
+          "customers.message",
+          "products.view",
+          "orders.view",
+          "products.update",
+          "customers.view",
+          "payouts.view"
+        ],
+        "adminApproved": true,
+        "mustChangePassword": false
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 401,
+      "shape": {
+        "type": "object",
+        "keys": [
+          "error"
+        ]
+      },
+      "actor": {},
+      "error": "Unauthorized"
+    }
+  ],
+  "consoleErrors": [
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/onboarding",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/products",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/inventory",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/orders",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/returns",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/finance",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 403 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 403 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "message": "Failed to load resource: the server responded with a status of 403 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 403 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 403 ()"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/super-admin",
+      "message": "Failed to load resource: the server responded with a status of 401 ()"
+    }
+  ],
+  "runtimeErrors": [],
+  "failedResponses": [
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/summary",
+      "status": 401,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/admin/products",
+      "status": 401,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/__next.!KGN1c3RvbWVyKQ.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/__next.admin.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/__next.!KGN1c3RvbWVyKQ.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/__next.admin.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/onboarding",
+      "status": 404,
+      "resourceType": "document"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/products",
+      "status": 404,
+      "resourceType": "document"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/inventory",
+      "status": 404,
+      "resourceType": "document"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/orders",
+      "status": 404,
+      "resourceType": "document"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/returns",
+      "status": 404,
+      "resourceType": "document"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/finance",
+      "status": 404,
+      "resourceType": "document"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/__next.!KGN1c3RvbWVyKQ.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/__next.admin.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/__next.!KGN1c3RvbWVyKQ.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/__next.admin.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin/__next.admin.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/__next.!KGN1c3RvbWVyKQ.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/__next.!KGN1c3RvbWVyKQ.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/__next.!KGN1c3RvbWVyKQ.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/__next.!KGN1c3RvbWVyKQ.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/summary",
+      "status": 403,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/roles",
+      "status": 403,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/products",
+      "status": 403,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/__next.!KGN1c3RvbWVyKQ.__PAGE__.txt",
+      "status": 404,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/admins",
+      "status": 403,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/super-admin/summary",
+      "status": 403,
+      "resourceType": "fetch"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/me",
+      "status": 401,
+      "resourceType": "fetch"
+    }
+  ],
+  "failedRequests": [
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/admin",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "blockedRequests": [],
+  "mutations": [
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/sign-in/email",
+      "method": "POST",
+      "purpose": "authorized authentication/session operation; body and headers not captured"
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/auth/sign-out",
+      "method": "POST",
+      "purpose": "authorized authentication/session operation; body and headers not captured"
+    }
+  ],
+  "loginUI": "NOT VERIFIED: deployed operator dashboard exposes no sign-in form",
+  "login": {
+    "status": 200,
+    "method": "production auth API from isolated browser; response body not captured"
+  },
+  "onboarding": {
+    "status": 200,
+    "keys": [
+      "profile",
+      "application",
+      "documents",
+      "addresses",
+      "categories",
+      "bank"
+    ],
+    "applicationStatus": "APPROVED",
+    "categoryCount": 1,
+    "profileStatus": "ACTIVE"
+  },
+  "operatorRefresh": {
+    "me": {
+      "status": 200,
+      "body": {
+        "userId": "d68498ec-1894-4013-a47b-d8c807f3ef47",
+        "roles": [
+          "ADMIN"
+        ],
+        "permissions": [
+          "reviews.moderate",
+          "products.delete",
+          "inventory.view",
+          "inventory.update",
+          "earnings.view",
+          "orders.update",
+          "reviews.view",
+          "payouts.request",
+          "products.create",
+          "analytics.view",
+          "customers.message",
+          "products.view",
+          "orders.view",
+          "products.update",
+          "customers.view",
+          "payouts.view"
+        ],
+        "adminApproved": true,
+        "mustChangePassword": false
+      }
+    }
+  },
+  "logout": {
+    "status": 200
+  },
+  "afterLogoutMe": {
+    "status": 401,
+    "body": {
+      "error": "Unauthorized"
+    }
+  },
+  "finishedAt": "2026-10-07T19:21:22.081Z"
+}

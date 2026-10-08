@@ -1,0 +1,606 @@
+{
+  "capturedAt": "2026-10-07T19:53:53.234Z",
+  "project": {
+    "name": "ownline-ecommerce",
+    "id": "4ef2d157-6e7c-4110-ba88-6fa4746a5043",
+    "created_on": "2026-10-02T03:34:12.731771Z",
+    "subdomain": "ownline-ecommerce.pages.dev",
+    "domains": [
+      "ownline-ecommerce.pages.dev"
+    ],
+    "production_branch": "main",
+    "build_config": {
+      "destination_dir": "out",
+      "web_analytics_tag": null,
+      "web_analytics_token": null
+    },
+    "canonical_deployment": {
+      "id": "dabe2d07-817b-4aef-8bee-e7efb1283367",
+      "created_on": "2026-10-03T08:26:53.074735Z",
+      "modified_on": "2026-10-03T08:26:54.65915Z",
+      "environment": "production",
+      "url": "https://dabe2d07.ownline-ecommerce.pages.dev",
+      "aliases": null,
+      "deployment_trigger": {
+        "type": "ad_hoc",
+        "metadata": {
+          "branch": "main",
+          "commit_hash": "417d3b8fab197eb916279a80fc730327700e4efc",
+          "commit_message": "Cloudflare production baseline reconciliation; providers and cron remain parked",
+          "commit_dirty": true
+        }
+      },
+      "latest_stage": {
+        "name": "deploy",
+        "started_on": null,
+        "ended_on": "2026-10-03T08:26:54.65915Z",
+        "status": "success"
+      },
+      "stages": [
+        {
+          "name": "queued",
+          "started_on": "2026-10-03T08:26:53.074735Z",
+          "ended_on": null,
+          "status": "active"
+        },
+        {
+          "name": "initialize",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "clone_repo",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "build",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "deploy",
+          "started_on": null,
+          "ended_on": "2026-10-03T08:26:54.65915Z",
+          "status": "success"
+        }
+      ],
+      "build_config": {
+        "build_command": null,
+        "destination_dir": "out",
+        "build_caching": null,
+        "root_dir": null,
+        "web_analytics_tag": null,
+        "web_analytics_token": null
+      },
+      "is_skipped": false,
+      "uses_functions": true,
+      "production_branch": "main",
+      "env_vars": {
+        "CATALOG_BUILD_API_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+        },
+        "NEXT_PUBLIC_API_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ownline-ecommerce.pages.dev"
+        },
+        "NEXT_PUBLIC_R2_PUBLIC_BASE_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": ""
+        },
+        "NEXT_PUBLIC_SITE_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ownline-ecommerce.pages.dev"
+        },
+        "PUBLIC_WORKER_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+        }
+      }
+    },
+    "latest_deployment": {
+      "id": "dabe2d07-817b-4aef-8bee-e7efb1283367",
+      "created_on": "2026-10-03T08:26:53.074735Z",
+      "modified_on": "2026-10-03T08:26:54.65915Z",
+      "environment": "production",
+      "url": "https://dabe2d07.ownline-ecommerce.pages.dev",
+      "aliases": null,
+      "deployment_trigger": {
+        "type": "ad_hoc",
+        "metadata": {
+          "branch": "main",
+          "commit_hash": "417d3b8fab197eb916279a80fc730327700e4efc",
+          "commit_message": "Cloudflare production baseline reconciliation; providers and cron remain parked",
+          "commit_dirty": true
+        }
+      },
+      "latest_stage": {
+        "name": "deploy",
+        "started_on": null,
+        "ended_on": "2026-10-03T08:26:54.65915Z",
+        "status": "success"
+      },
+      "stages": [
+        {
+          "name": "queued",
+          "started_on": "2026-10-03T08:26:53.074735Z",
+          "ended_on": null,
+          "status": "active"
+        },
+        {
+          "name": "initialize",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "clone_repo",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "build",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "deploy",
+          "started_on": null,
+          "ended_on": "2026-10-03T08:26:54.65915Z",
+          "status": "success"
+        }
+      ],
+      "build_config": {
+        "build_command": null,
+        "destination_dir": "out",
+        "build_caching": null,
+        "root_dir": null,
+        "web_analytics_tag": null,
+        "web_analytics_token": null
+      },
+      "is_skipped": false,
+      "uses_functions": true,
+      "production_branch": "main",
+      "env_vars": {
+        "CATALOG_BUILD_API_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+        },
+        "NEXT_PUBLIC_API_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ownline-ecommerce.pages.dev"
+        },
+        "NEXT_PUBLIC_R2_PUBLIC_BASE_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": ""
+        },
+        "NEXT_PUBLIC_SITE_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ownline-ecommerce.pages.dev"
+        },
+        "PUBLIC_WORKER_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+        }
+      }
+    },
+    "deployment_configs": {
+      "preview": {
+        "compatibility_date": "2026-10-02",
+        "compatibility_flags": [],
+        "env_vars": {}
+      },
+      "production": {
+        "compatibility_date": "2026-10-02",
+        "compatibility_flags": [],
+        "env_vars": {
+          "CATALOG_BUILD_API_URL": {
+            "type": "plain_text",
+            "present": true,
+            "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+          },
+          "NEXT_PUBLIC_API_URL": {
+            "type": "plain_text",
+            "present": true,
+            "value": "https://ownline-ecommerce.pages.dev"
+          },
+          "NEXT_PUBLIC_R2_PUBLIC_BASE_URL": {
+            "type": "plain_text",
+            "present": true,
+            "value": ""
+          },
+          "NEXT_PUBLIC_SITE_URL": {
+            "type": "plain_text",
+            "present": true,
+            "value": "https://ownline-ecommerce.pages.dev"
+          },
+          "PUBLIC_WORKER_URL": {
+            "type": "plain_text",
+            "present": true,
+            "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+          }
+        }
+      }
+    }
+  },
+  "deployments": [
+    {
+      "id": "dabe2d07-817b-4aef-8bee-e7efb1283367",
+      "created_on": "2026-10-03T08:26:53.074735Z",
+      "modified_on": "2026-10-03T08:26:54.65915Z",
+      "environment": "production",
+      "url": "https://dabe2d07.ownline-ecommerce.pages.dev",
+      "aliases": null,
+      "deployment_trigger": {
+        "type": "ad_hoc",
+        "metadata": {
+          "branch": "main",
+          "commit_hash": "417d3b8fab197eb916279a80fc730327700e4efc",
+          "commit_message": "Cloudflare production baseline reconciliation; providers and cron remain parked",
+          "commit_dirty": true
+        }
+      },
+      "latest_stage": {
+        "name": "deploy",
+        "started_on": null,
+        "ended_on": "2026-10-03T08:26:54.65915Z",
+        "status": "success"
+      },
+      "stages": [
+        {
+          "name": "queued",
+          "started_on": "2026-10-03T08:26:53.074735Z",
+          "ended_on": null,
+          "status": "active"
+        },
+        {
+          "name": "initialize",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "clone_repo",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "build",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "deploy",
+          "started_on": null,
+          "ended_on": "2026-10-03T08:26:54.65915Z",
+          "status": "success"
+        }
+      ],
+      "build_config": {
+        "build_command": null,
+        "destination_dir": "out",
+        "build_caching": null,
+        "root_dir": null,
+        "web_analytics_tag": null,
+        "web_analytics_token": null
+      },
+      "is_skipped": false,
+      "uses_functions": true,
+      "production_branch": "main",
+      "env_vars": {
+        "CATALOG_BUILD_API_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+        },
+        "NEXT_PUBLIC_API_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ownline-ecommerce.pages.dev"
+        },
+        "NEXT_PUBLIC_R2_PUBLIC_BASE_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": ""
+        },
+        "NEXT_PUBLIC_SITE_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ownline-ecommerce.pages.dev"
+        },
+        "PUBLIC_WORKER_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+        }
+      }
+    },
+    {
+      "id": "887a0e3c-ed6f-4b6a-b87a-8077e4b349fa",
+      "created_on": "2026-10-02T09:15:08.01084Z",
+      "modified_on": "2026-10-02T09:15:09.508804Z",
+      "environment": "production",
+      "url": "https://887a0e3c.ownline-ecommerce.pages.dev",
+      "aliases": null,
+      "deployment_trigger": {
+        "type": "ad_hoc",
+        "metadata": {
+          "branch": "main",
+          "commit_hash": "417d3b8fab197eb916279a80fc730327700e4efc",
+          "commit_message": "feat: implement same-origin API proxy for Cloudflare Pages to ensure first-party cookie handling",
+          "commit_dirty": true
+        }
+      },
+      "latest_stage": {
+        "name": "deploy",
+        "started_on": null,
+        "ended_on": "2026-10-02T09:15:09.508804Z",
+        "status": "success"
+      },
+      "stages": [
+        {
+          "name": "queued",
+          "started_on": "2026-10-02T09:15:08.01084Z",
+          "ended_on": null,
+          "status": "active"
+        },
+        {
+          "name": "initialize",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "clone_repo",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "build",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "deploy",
+          "started_on": null,
+          "ended_on": "2026-10-02T09:15:09.508804Z",
+          "status": "success"
+        }
+      ],
+      "build_config": {
+        "build_command": null,
+        "destination_dir": null,
+        "build_caching": null,
+        "root_dir": null,
+        "web_analytics_tag": null,
+        "web_analytics_token": null
+      },
+      "is_skipped": false,
+      "uses_functions": true,
+      "production_branch": "main",
+      "env_vars": {
+        "CATALOG_BUILD_API_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+        },
+        "NEXT_PUBLIC_API_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ownline-ecommerce.pages.dev"
+        },
+        "NEXT_PUBLIC_SITE_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ownline-ecommerce.pages.dev"
+        },
+        "PUBLIC_WORKER_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+        }
+      }
+    },
+    {
+      "id": "77167351-70c9-4479-b494-c23bf27ad557",
+      "created_on": "2026-10-02T03:35:28.322705Z",
+      "modified_on": "2026-10-02T03:35:31.35082Z",
+      "environment": "production",
+      "url": "https://77167351.ownline-ecommerce.pages.dev",
+      "aliases": null,
+      "deployment_trigger": {
+        "type": "ad_hoc",
+        "metadata": {
+          "branch": "main",
+          "commit_hash": "417d3b8fab197eb916279a80fc730327700e4efc",
+          "commit_message": "Infra-test frontend deployment from current repository",
+          "commit_dirty": false
+        }
+      },
+      "latest_stage": {
+        "name": "deploy",
+        "started_on": null,
+        "ended_on": "2026-10-02T03:35:31.35082Z",
+        "status": "success"
+      },
+      "stages": [
+        {
+          "name": "queued",
+          "started_on": "2026-10-02T03:35:28.322705Z",
+          "ended_on": null,
+          "status": "active"
+        },
+        {
+          "name": "initialize",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "clone_repo",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "build",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "deploy",
+          "started_on": null,
+          "ended_on": "2026-10-02T03:35:31.35082Z",
+          "status": "success"
+        }
+      ],
+      "build_config": {
+        "build_command": null,
+        "destination_dir": null,
+        "build_caching": null,
+        "root_dir": null,
+        "web_analytics_tag": null,
+        "web_analytics_token": null
+      },
+      "is_skipped": false,
+      "uses_functions": true,
+      "production_branch": "main",
+      "env_vars": {
+        "CATALOG_BUILD_API_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+        },
+        "NEXT_PUBLIC_API_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ownline-ecommerce.pages.dev"
+        },
+        "NEXT_PUBLIC_SITE_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ownline-ecommerce.pages.dev"
+        },
+        "PUBLIC_WORKER_URL": {
+          "type": "plain_text",
+          "present": true,
+          "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+        }
+      }
+    }
+  ],
+  "productionDeployment": {
+    "id": "dabe2d07-817b-4aef-8bee-e7efb1283367",
+    "created_on": "2026-10-03T08:26:53.074735Z",
+    "modified_on": "2026-10-03T08:26:54.65915Z",
+    "environment": "production",
+    "url": "https://dabe2d07.ownline-ecommerce.pages.dev",
+    "aliases": null,
+    "deployment_trigger": {
+      "type": "ad_hoc",
+      "metadata": {
+        "branch": "main",
+        "commit_hash": "417d3b8fab197eb916279a80fc730327700e4efc",
+        "commit_message": "Cloudflare production baseline reconciliation; providers and cron remain parked",
+        "commit_dirty": true
+      }
+    },
+    "latest_stage": {
+      "name": "deploy",
+      "started_on": null,
+      "ended_on": "2026-10-03T08:26:54.65915Z",
+      "status": "success"
+    },
+    "stages": [
+      {
+        "name": "queued",
+        "started_on": "2026-10-03T08:26:53.074735Z",
+        "ended_on": null,
+        "status": "active"
+      },
+      {
+        "name": "initialize",
+        "started_on": null,
+        "ended_on": null,
+        "status": "idle"
+      },
+      {
+        "name": "clone_repo",
+        "started_on": null,
+        "ended_on": null,
+        "status": "idle"
+      },
+      {
+        "name": "build",
+        "started_on": null,
+        "ended_on": null,
+        "status": "idle"
+      },
+      {
+        "name": "deploy",
+        "started_on": null,
+        "ended_on": "2026-10-03T08:26:54.65915Z",
+        "status": "success"
+      }
+    ],
+    "build_config": {
+      "build_command": null,
+      "destination_dir": "out",
+      "build_caching": null,
+      "root_dir": null,
+      "web_analytics_tag": null,
+      "web_analytics_token": null
+    },
+    "is_skipped": false,
+    "uses_functions": true,
+    "production_branch": "main",
+    "env_vars": {
+      "CATALOG_BUILD_API_URL": {
+        "type": "plain_text",
+        "present": true,
+        "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+      },
+      "NEXT_PUBLIC_API_URL": {
+        "type": "plain_text",
+        "present": true,
+        "value": "https://ownline-ecommerce.pages.dev"
+      },
+      "NEXT_PUBLIC_R2_PUBLIC_BASE_URL": {
+        "type": "plain_text",
+        "present": true,
+        "value": ""
+      },
+      "NEXT_PUBLIC_SITE_URL": {
+        "type": "plain_text",
+        "present": true,
+        "value": "https://ownline-ecommerce.pages.dev"
+      },
+      "PUBLIC_WORKER_URL": {
+        "type": "plain_text",
+        "present": true,
+        "value": "https://ecommerce-api.ownlinedropshipping.workers.dev"
+      }
+    }
+  }
+}

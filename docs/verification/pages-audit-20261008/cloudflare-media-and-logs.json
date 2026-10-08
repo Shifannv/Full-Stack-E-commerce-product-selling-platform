@@ -1,0 +1,33 @@
+{
+  "capturedAt": "2026-10-07T19:57:20.435Z",
+  "logs": {
+    "httpStatus": 401,
+    "success": false,
+    "errors": [
+      {
+        "code": 10000,
+        "message": "Authentication error"
+      }
+    ]
+  },
+  "r2Managed": {
+    "httpStatus": 401,
+    "success": false,
+    "errors": [
+      {
+        "code": 10000,
+        "message": "Authentication error"
+      }
+    ]
+  },
+  "r2Custom": {
+    "httpStatus": 401,
+    "success": false,
+    "errors": [
+      {
+        "code": 10000,
+        "message": "Authentication error"
+      }
+    ]
+  }
+}

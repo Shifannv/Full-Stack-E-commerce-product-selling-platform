@@ -1,0 +1,84 @@
+{
+  "capturedAt": "2026-10-07T20:05:29.617Z",
+  "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+  "requests": [
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 744,
+      "sha256": "d07d5d50f9a6eb3bb7701140ffa3ea0da222586ab720741e8039033e962300fa",
+      "publicResponse": {
+        "id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+        "categoryId": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+        "subcategoryId": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+        "name": "TEST Ownline Everyday Cotton Tote",
+        "slug": "phase11b2-cotton-tote-730d72e64790",
+        "description": "Controlled development item for public catalog and static page verification. Not offered for sale.",
+        "price": "349.00",
+        "currency": "INR",
+        "attributes": {},
+        "returnEnabled": false,
+        "createdAt": "2026-09-28T18:53:02.395Z",
+        "images": [
+          {
+            "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+            "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+            "altText": "Phase 11b-3 R2 verification image",
+            "sortOrder": 0
+          }
+        ],
+        "variants": [],
+        "available": true,
+        "rating": null,
+        "reviewCount": 0
+      }
+    },
+    {
+      "url": "https://ownline-ecommerce.pages.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 68,
+      "sha256": "36301ece93d96811008b89131c3a6c26cb223801c0da1761fc81838de9341c4d"
+    },
+    {
+      "url": "https://ecommerce-api.ownlinedropshipping.workers.dev/api/products/phase11b2-cotton-tote-730d72e64790",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 744,
+      "sha256": "d07d5d50f9a6eb3bb7701140ffa3ea0da222586ab720741e8039033e962300fa",
+      "publicResponse": {
+        "id": "c549089e-32fb-4217-96d7-35dc5a40eb70",
+        "categoryId": "f22ccfec-a2ba-42d1-a3b5-5f6f7868b299",
+        "subcategoryId": "ba53ebdc-5fe7-40f6-8bc1-3eba76bad403",
+        "name": "TEST Ownline Everyday Cotton Tote",
+        "slug": "phase11b2-cotton-tote-730d72e64790",
+        "description": "Controlled development item for public catalog and static page verification. Not offered for sale.",
+        "price": "349.00",
+        "currency": "INR",
+        "attributes": {},
+        "returnEnabled": false,
+        "createdAt": "2026-09-28T18:53:02.395Z",
+        "images": [
+          {
+            "id": "12bd210a-f195-4554-a8cd-97a7d706db41",
+            "objectKey": "products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+            "altText": "Phase 11b-3 R2 verification image",
+            "sortOrder": 0
+          }
+        ],
+        "variants": [],
+        "available": true,
+        "rating": null,
+        "reviewCount": 0
+      }
+    },
+    {
+      "url": "https://ecommerce-api.ownlinedropshipping.workers.dev/api/images/products/c549089e-32fb-4217-96d7-35dc5a40eb70/2e9b6eb9-497e-486a-9310-d24091637c42.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 68,
+      "sha256": "36301ece93d96811008b89131c3a6c26cb223801c0da1761fc81838de9341c4d"
+    }
+  ]
+}
