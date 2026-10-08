@@ -8,5 +8,5 @@ CATALOG_BUILD_API_URL = "https://ecommerce-api.ownlinedropshipping.workers.dev"
 NEXT_PUBLIC_API_URL = "https://ownline-ecommerce.pages.dev"
 NEXT_PUBLIC_SITE_URL = "https://ownline-ecommerce.pages.dev"
 PUBLIC_WORKER_URL = "https://ecommerce-api.ownlinedropshipping.workers.dev"
-# Production media domain is pending. Never inherit local .env.local media URLs.
-NEXT_PUBLIC_R2_PUBLIC_BASE_URL = ""
+# Existing /api/images/* Worker route is reached through the Pages API proxy.
+NEXT_PUBLIC_R2_PUBLIC_BASE_URL = "https://ownline-ecommerce.pages.dev/api/images"

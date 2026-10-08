@@ -107,15 +107,15 @@ async function main() {
   await imageResponse.arrayBuffer();
   const cases = [
     ["/", "TEST Ownline Everyday Cotton Tote"],
-    ["/search", "Search the collection"],
+    ["/search", "The collection"],
     [`/categories/${categorySlug}`, "TEST Ownline Everyday Accessories"],
     [`/products/${productSlug}`, "TEST Ownline Everyday Cotton Tote"],
-    ["/wishlist", "Wishlist"],
-    ["/cart", "Cart"],
-    ["/account", "Account"],
+    ["/wishlist", "Your favourites"],
+    ["/cart", "Your shopping bag"],
+    ["/account", "Your Ownline Dropship"],
     ["/account/addresses", "Address"],
-    ["/orders", "Orders"],
-    ["/checkout", "Checkout"],
+    ["/orders", "Your purchases"],
+    ["/checkout", "Review your order"],
   ];
   for (const [path, expected] of cases) {
     const tab = await page(path);
